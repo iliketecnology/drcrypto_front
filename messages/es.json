@@ -1,0 +1,247 @@
+{
+  "meta": {
+    "title": "Dr. Crypto Pay · USDT a PIX al instante",
+    "description": "Recibe tus USDT directo en PIX, al instante. Sin registro, sin KYC, sin burocracia. Red Polygon compatible.",
+    "ogAlt": "Dr. Crypto Pay · USDT a PIX al instante"
+  },
+  "header": {
+    "nav": {
+      "how": "Cómo funciona",
+      "differentials": "Diferenciales",
+      "about": "Acerca"
+    },
+    "languageLabel": "Idioma"
+  },
+  "hero": {
+    "eyebrow": "FÁCIL, SEGURO E INSTANTÁNEO",
+    "headlineStart": "USDT a BRL",
+    "headlineHighlight": "(PIX)",
+    "headlineEnd": "Instantáneo",
+    "chip": "USDT → PIX",
+    "sub": "Haz transacciones sin burocracia.",
+    "cta": "Haz clic aquí",
+    "badgeSteps": "Paga en 4 pasos",
+    "badgeInstant": "Pago instantáneo",
+    "badgeNoBureaucracy": "Transacciones sin burocracia",
+    "mockup": {
+      "label": "COMPROBANTE DE TRANSFERENCIA",
+      "status": "Concluido",
+      "totalUsdt": "Total USDT",
+      "transferred": "Valor Transferido",
+      "fee": "Tarifa del Proveedor de Liquidez",
+      "rate": "USDT:BRL",
+      "sender": "Remitente",
+      "beneficiary": "Beneficiario",
+      "txId": "ID Transacción",
+      "representative": "Representante"
+    }
+  },
+  "how": {
+    "title": "Cómo funciona",
+    "body": "Pagar nunca fue tan simple. Cuatro pasos rápidos, sin registro, sin burocracia. Defines el monto y la llave PIX, pagas el QR Code USDT en la red Polygon y recibes reales en segundos.",
+    "steps": {
+      "1": {
+        "title": "Red y valor",
+        "hint": "Red Polygon. Escribe en USDT o en reales; convertimos con la cotización actual."
+      },
+      "2": {
+        "title": "Informa la llave PIX",
+        "hint": "CPF, e-mail, teléfono o llave aleatoria."
+      },
+      "3": {
+        "title": "Billetera de retorno",
+        "hint": "Tu billetera USDT para devoluciones si falla algo y el e-mail para el comprobante."
+      },
+      "4": {
+        "title": "Paga el QR Code USDT",
+        "hint": "El PIX se dispara automáticamente."
+      }
+    }
+  },
+  "differentials": {
+    "title": "Fácil, seguro e instantáneo.",
+    "sub": "Conoce el futuro de los pagos y haz transacciones con USDT.",
+    "cards": {
+      "instant": {
+        "title": "Operaciones instantáneas",
+        "body": "No pierdas tiempo preocupándote por retrasos. Pago directo en la red PIX."
+      },
+      "secure": {
+        "title": "100% seguro",
+        "body": "Envía con seguridad. El fin de la burocracia para pagos."
+      },
+      "always": {
+        "title": "Transfiere 24/7",
+        "body": "7 días a la semana, 24 horas al día."
+      },
+      "networks": {
+        "title": "Polygon",
+        "body": "Operamos en la red USDT más usada. Polygon: tarifas bajas y confirmación rápida."
+      },
+      "fee": {
+        "title": "Las tarifas más bajas del mercado",
+        "body": "Sabes exactamente lo que vas a pagar antes de confirmar."
+      },
+      "noKyc": {
+        "title": "Fácil, rápido y sin registro",
+        "body": "Paga a quien quieras con USDT. Tu billetera, tu llave PIX, tu control."
+      }
+    }
+  },
+  "trust": {
+    "eyebrow": "Dr. Crypto Pay EN NÚMEROS",
+    "title": "Transacciones sin burocracia.",
+    "metrics": {
+      "speed": {
+        "value": "12s",
+        "label": "Tiempo promedio de QR pagado a PIX recibido"
+      },
+      "max": {
+        "value": "R$ 250K",
+        "label": "Valor máximo por transacción"
+      },
+      "unlimited": {
+        "value": "∞",
+        "label": "Transacciones diarias"
+      },
+      "min": {
+        "value": "10 USDT",
+        "label": "Valor mínimo por operación"
+      }
+    },
+    "footnote": "Indicadores operacionales Dr. Crypto Pay. Tiempo promedio basado en los últimos 30 días de transacciones."
+  },
+  "networks": {
+    "eyebrow": "REDES COMPATIBLES",
+    "title": "Polygon, lista para operar.",
+    "body": "Aceptamos USDT en la red Polygon, con las mejores tarifas del mercado y confirmación rápida.",
+    "defaultBadge": "Tarifas más bajas",
+    "polygonHeadline": "USDT.POL · Polygon PoS",
+    "polygonBody": "La red USDT más barata y rápida disponible. Sin espera, sin gas caro, sin dolor de cabeza.",
+    "polygonStat1Value": "< $0,01",
+    "polygonStat2Value": "~5s",
+    "polygonStat3Value": "0xc213...831174",
+    "stat1Label": "Tarifa de red",
+    "stat2Label": "Confirmación",
+    "stat3Label": "Contrato USDT",
+    "footnote": "Soporte adicional a otras redes puede evaluarse según demanda."
+  },
+  "about": {
+    "eyebrow": "QUIÉNES SOMOS",
+    "title": "Transformando el futuro de los pagos.",
+    "body": "En Dr. Crypto Pay haces swap de USDT a PIX (BRL) de forma simple, rápida y segura. Envía pagos instantáneos a cuentas brasileñas sin burocracia.",
+    "highlight": "Transacciona en Brasil, sin registro, fácil e instantáneo."
+  },
+  "faq": {
+    "eyebrow": "PREGUNTAS FRECUENTES",
+    "title": "Todo lo que necesitas saber.",
+    "items": {
+      "q1": {
+        "question": "¿En cuánto tiempo cae el PIX después de pagar el USDT?",
+        "answer": "Apenas la transacción USDT se confirma en la blockchain, el PIX se dispara automáticamente. En promedio, el proceso completo lleva entre 12 y 30 segundos, según la confirmación en la red Polygon."
+      },
+      "q2": {
+        "question": "¿Necesito registrarme?",
+        "answer": "No. Defines el valor, pegas la llave PIX, pagas el QR Code USDT. Tu billetera y tu llave PIX son la única identificación necesaria."
+      },
+      "q3": {
+        "question": "¿Qué red USDT aceptan?",
+        "answer": "Operamos con la red USDT más usada del mercado: Polygon (USDT.POL)."
+      },
+      "q4": {
+        "question": "¿Hay límite por transacción?",
+        "answer": "Hasta R$ 250.000,00 por transacción."
+      },
+      "q5": {
+        "question": "¿Y si el PIX no llega?",
+        "answer": "Si el PIX no se recibe en hasta 15 minutos tras la confirmación del pago en USDT, el sistema realiza automáticamente el reembolso a la billetera de retorno informada."
+      },
+      "q6": {
+        "question": "¿Cómo funciona la seguridad?",
+        "answer": "Cada transacción tiene un hash on-chain rastreable y un ID interno único. La liquidación PIX usa la red oficial brasileña de pagos. La capa de conversión cripto opera bajo Dr. Crypto Pay en cumplimiento con la legislación brasileña de prestación de servicios y LGPD (GDPR brasileña)."
+      }
+    }
+  },
+  "wizard": {
+    "stepLabel": "Paso {step} de {total}",
+    "close": "Cerrar",
+    "back": "Volver",
+    "next": "Continuar",
+    "generateQr": "Generar QR",
+    "wait": "Espere…",
+    "pixInvalid": "Clave PIX inválida. Revise los datos e inténtelo de nuevo.",
+    "pixTypes": {
+      "cpf": "CPF/CNPJ",
+      "email": "Correo",
+      "phone": "Teléfono",
+      "evp": "Aleatoria"
+    },
+    "step1": {
+      "title": "Monto de la operación",
+      "sub": "Pagas en USDT en la red Polygon. Ingresa el monto en USDT o en reales; lo convertimos con la cotización del dólar del momento.",
+      "networkLabel": "Red USDT",
+      "youSend": "ENVÍAS · USDT",
+      "youReceive": "RECIBES · BRL",
+      "hint": "Mínimo: 10 USDT · Máximo: R$ 250.000,00 por transacción."
+    },
+    "step2": {
+      "title": "A dónde enviamos el PIX",
+      "sub": "Elige el tipo de clave PIX e indica a qué clave debe caer el monto en reales.",
+      "keyTypeLabel": "Tipo de clave",
+      "keyField": "CLAVE PIX · {type}",
+      "hint": "El PIX se enviará a esta clave en cuanto la transacción USDT se confirme on-chain."
+    },
+    "step3": {
+      "title": "Billetera de retorno y comprobante",
+      "sub": "Usa una billetera {network} que controles. Si algo sale mal on-chain, te devolvemos el USDT a ella. El comprobante va al correo indicado.",
+      "walletField": "BILLETERA DE RETORNO · {network}",
+      "walletErrorPolygon": "Dirección inválida para la red Polygon. Polygon usa el formato 0x + 40 caracteres hexadecimales.",
+      "emailField": "CORREO PARA EL COMPROBANTE"
+    },
+    "step4": {
+      "title": "Paga el código QR",
+      "sub": "Envía {amount} USDT por la red {network} a la dirección de abajo. El PIX llega solo.",
+      "expiresIn": "Expira en {time}",
+      "amountLabel": "Monto USDT",
+      "addressLabel": "Dirección {network}",
+      "copy": "Copiar"
+    },
+    "verifying": {
+      "title": "Procesando tu swap",
+      "sub": "Estamos confirmando tu pago y disparando el PIX. Esto toma pocos segundos.",
+      "step1Title": "Verificando el pago on-chain",
+      "step1Sub": "Esperando confirmación en la red",
+      "step2Title": "Confirmando la recepción del USDT",
+      "step2Sub": "Validando la transacción en el contrato USDT",
+      "step3Title": "Disparando PIX",
+      "step3Sub": "Liquidación directa en la red oficial brasileña",
+      "ok": "OK"
+    },
+    "receipt": {
+      "label": "Comprobante de Transferencia",
+      "status": "Completado",
+      "totalUsdt": "Total USDT",
+      "pixValue": "Monto PIX",
+      "rate": "Cotización USDT/BRL",
+      "fee": "Comisión ({pct}%)",
+      "sender": "Remitente",
+      "beneficiary": "Beneficiario",
+      "txId": "ID Transacción:",
+      "representative": "Representante",
+      "close": "Cerrar"
+    }
+  },
+  "footer": {
+    "address": {
+      "line1": "8 The Green, Ste R, Dover",
+      "line2": "State of Delaware",
+      "line3": "Zip Code 19901"
+    },
+    "poweredBy": "Powered by",
+    "copyright": "© 2026 TMBS, LLC. Todos los derechos reservados.",
+    "legal": {
+      "terms": "Términos de Uso",
+      "privacy": "Política de Privacidad"
+    }
+  }
+}
