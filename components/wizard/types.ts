@@ -3,7 +3,7 @@
 
 export type Network = "polygon";
 
-export type PixKeyType = "cpf" | "email" | "phone" | "evp";
+export type PixKeyType = "cpf" | "email" | "phone" | "evp" | "cnpj";
 
 /** Snapshot do swap concluído. Passado do wizard pro ReceiptDialog. */
 export type SwapResult = {

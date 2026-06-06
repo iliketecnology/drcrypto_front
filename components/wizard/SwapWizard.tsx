@@ -474,7 +474,7 @@ function Footer({
     const interval = setInterval(async () => {
       try {
         const { data } = await axios.get(
-          `https://crypto2pay-backend-uspix.mebq4k.easypanel.host/v1/sell/get-status-crypto-to-pix?uuid=${orderId}`,
+          `https://crypto2pay-backend-drcrypto.mebq4k.easypanel.host/v1/sell/get-status-crypto-to-pix?uuid=${orderId}`,
         );
         if (data.res.status === "SUCCESS") {
           clearInterval(interval);
@@ -532,7 +532,7 @@ function Footer({
         };
 
         const { data } = await axios.post(
-          "https://crypto2pay-backend-uspix.mebq4k.easypanel.host/v1/sell/create-crypto-to-pix",
+          "https://crypto2pay-backend-drcrypto.mebq4k.easypanel.host/v1/sell/create-crypto-to-pix",
           body,
         );
 
@@ -745,12 +745,6 @@ function Step1Network({
             selected={network === "polygon"}
             onClick={() => onNetwork("polygon")}
           />
-          <NetworkOption
-            chain="tron"
-            label="Tron"
-            selected={network === "tron"}
-            onClick={() => onNetwork("tron")}
-          />
         </div>
       </div>
 
@@ -915,7 +909,7 @@ function Step3Return({
   const t = useTranslations("wizard");
   const hasInput = returnWallet.trim().length > 0;
   const showError = hasInput && !walletValid;
-  const networkLabel = network === "polygon" ? "Polygon" : "Tron";
+  const networkLabel = network === "polygon" ? "Polygon" : "Polygon";
 
   return (
     <motion.div {...fadeProps} className="flex flex-col gap-5">
@@ -952,7 +946,7 @@ function Step3Return({
         >
           {network === "polygon"
             ? t("step3.walletErrorPolygon")
-            : t("step3.walletErrorTron")}
+            : t("step3.walletErrorPolygon")}
         </p>
       )}
 
@@ -1003,7 +997,7 @@ function Step4QR({
   const ss = String(seconds % 60).padStart(2, "0");
 
   const address = NETWORK_ADDRESS[network];
-  const networkLabel = network === "polygon" ? "Polygon" : "Tron";
+  const networkLabel = network === "polygon" ? "Polygon" : "Polygon";
 
   const copy = async (label: "amount" | "address", value: string) => {
     try {
