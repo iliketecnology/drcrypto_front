@@ -220,7 +220,9 @@ function ReceiptInner({
             </ReceiptBlock>
 
             <ReceiptBlock label={t("receipt.representative")}>
-              <strong style={{ color: "var(--color-ink-900)" }}>Dr. Crypto Pay</strong>
+              <strong style={{ color: "var(--color-ink-900)" }}>
+                Dr. Cripto Pay
+              </strong>
               {" · "}
               <a
                 href="mailto:tmbs@tmbs.tech"

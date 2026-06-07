@@ -19,6 +19,7 @@ import {
 import { QRCodeSVG } from "qrcode.react";
 import { useTranslations } from "next-intl";
 import axios from "axios";
+import { Logo } from "../ui/Logo";
 
 const easeOut = [0.16, 1, 0.3, 1] as const;
 const TOTAL_STEPS = 4;
@@ -379,18 +380,7 @@ function Header({ step, onClose }: { step: number; onClose: () => void }) {
       }}
     >
       <div className="flex items-center gap-3">
-        <span
-          aria-hidden
-          style={{
-            fontWeight: 900,
-            letterSpacing: "-0.04em",
-            fontSize: "1.25rem",
-            lineHeight: 1,
-          }}
-        >
-          <span style={{ color: "var(--color-ink-900)" }}>US</span>
-          <span style={{ color: "var(--color-green-500)" }}>PIX</span>
-        </span>
+        <Logo />
         <span
           className="mono-num text-[11px] tracking-wider font-bold uppercase"
           style={{ color: "var(--color-ink-500)" }}
