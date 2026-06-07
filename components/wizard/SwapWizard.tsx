@@ -385,7 +385,7 @@ function Header({ step, onClose }: { step: number; onClose: () => void }) {
           className="mono-num text-[11px] tracking-wider font-bold uppercase"
           style={{ color: "var(--color-ink-500)" }}
         >
-          · {t("stepLabel", { step, total: TOTAL_STEPS })}
+          {t("stepLabel", { step, total: TOTAL_STEPS })}
         </span>
       </div>
 
