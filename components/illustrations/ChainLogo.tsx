@@ -160,12 +160,12 @@ function SolanaLogo({ size, className }: { size: number; className?: string }) {
       className={className}
     >
       <defs>
-        <linearGradient id="usp-sol-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+        <linearGradient id="opr-sol-bg" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#9945FF" />
           <stop offset="100%" stopColor="#14F195" />
         </linearGradient>
       </defs>
-      <circle cx="32" cy="32" r="32" fill="url(#usp-sol-bg)" />
+      <circle cx="32" cy="32" r="32" fill="url(#opr-sol-bg)" />
       {/* 3 barras paralelas em diagonal · símbolo Solana 100% branco */}
       <g fill="white">
         <path d="M 19 24 L 41 24 L 45.5 19 L 23.5 19 Z" />

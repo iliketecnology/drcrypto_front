@@ -4,13 +4,13 @@
     x="90"
     y="116"
     text-anchor="middle"
-    textLength="142"
+    textLength="130"
     lengthAdjust="spacingAndGlyphs"
     font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, system-ui, sans-serif"
-    font-size="70"
+    font-size="84"
     font-weight="900"
     letter-spacing="-4"
   >
-    <tspan fill="#0b0e16">DR</tspan><tspan fill="#9d2bed">CP</tspan>
+    <tspan fill="#0b0e16">OP</tspan><tspan fill="#9d2bed">R</tspan>
   </text>
 </svg>

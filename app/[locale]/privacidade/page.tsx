@@ -11,7 +11,7 @@ export async function generateMetadata({
   const { locale } = await params;
   const doc = getLegalDoc(locale, 'privacy');
   return {
-    title: `${doc.title} · Dr. Crypto Pay`,
+    title: `${doc.title} · OprPay`,
     description: doc.intro,
   };
 }

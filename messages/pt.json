@@ -1,8 +1,8 @@
 {
   "meta": {
-    "title": "Dr. Crypto Pay · USDT para PIX instantâneo",
+    "title": "OprPay · USDT para PIX instantâneo",
     "description": "Receba seus USDT direto em PIX, instantâneo. Sem cadastro, sem KYC, sem burocracia. Rede Polygon suportada.",
-    "ogAlt": "Dr. Crypto Pay · USDT para PIX instantâneo"
+    "ogAlt": "OprPay · USDT para PIX instantâneo"
   },
   "header": {
     "nav": {
@@ -89,7 +89,7 @@
     }
   },
   "trust": {
-    "eyebrow": "Dr. Crypto Pay EM NÚMEROS",
+    "eyebrow": "OprPay EM NÚMEROS",
     "title": "Transações sem burocracia.",
     "metrics": {
       "speed": {
@@ -109,7 +109,7 @@
         "label": "Valor mínimo por operação"
       }
     },
-    "footnote": "Indicadores operacionais Dr. Crypto Pay. Tempo médio com base nos últimos 30 dias de transações."
+    "footnote": "Indicadores operacionais OprPay. Tempo médio com base nos últimos 30 dias de transações."
   },
   "networks": {
     "eyebrow": "REDES SUPORTADAS",
@@ -129,7 +129,7 @@
   "about": {
     "eyebrow": "QUEM SOMOS",
     "title": "Transformando o futuro dos pagamentos.",
-    "body": "No Dr. Crypto Pay você faz swap de USDT para PIX (BRL) de forma simples, rápida e segura. Envie pagamentos instantâneos para contas brasileiras sem burocracia.",
+    "body": "No OprPay você faz swap de USDT para PIX (BRL) de forma simples, rápida e segura. Envie pagamentos instantâneos para contas brasileiras sem burocracia.",
     "highlight": "Transacione no Brasil, sem cadastro, de forma fácil e instantânea."
   },
   "faq": {
@@ -158,7 +158,7 @@
       },
       "q6": {
         "question": "Como funciona a segurança?",
-        "answer": "Cada transação tem hash on-chain rastreável e ID interno único. A liquidação PIX usa a rede oficial brasileira de pagamentos. A camada de conversão cripto opera sob o Dr. Crypto Pay em conformidade com a legislação brasileira de prestação de serviços e Lei Geral de Proteção de Dados."
+        "answer": "Cada transação tem hash on-chain rastreável e ID interno único. A liquidação PIX usa a rede oficial brasileira de pagamentos. A camada de conversão cripto opera sob o OprPay em conformidade com a legislação brasileira de prestação de serviços e Lei Geral de Proteção de Dados."
       }
     }
   },

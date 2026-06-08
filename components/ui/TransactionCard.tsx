@@ -113,7 +113,7 @@ export function TransactionCard() {
           className="space-y-2 pt-3 border-t"
           style={{ borderColor: 'var(--color-ink-200)' }}
         >
-          <DetailRow label={t('sender')} value="Dr. Crypto Pay" />
+          <DetailRow label={t('sender')} value="OprPay" />
           <DetailRow label={t('beneficiary')} value="usuario@email.com" />
           <DetailRow label={t('txId')} value="E170288752026…30vvW30IkFVm" mono />
         </div>

@@ -1,4 +1,4 @@
-/** DR.CRIPTO design tokens — fonte única para JS/TS.
+/** OprPay design tokens — fonte única para JS/TS.
  * Espelha as CSS vars em `styles/globals.css`. Atualize os dois juntos.
  * Nota: a chave `green` é mantida (= escala de marca) mas os valores são violeta. */
 

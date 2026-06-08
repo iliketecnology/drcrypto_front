@@ -29,7 +29,7 @@ export function About() {
               'radial-gradient(circle, #9d2bed 0%, transparent 60%)',
             top: '-15%',
             left: '5%',
-            animation: 'usp-aurora-1 24s ease-in-out infinite',
+            animation: 'opr-aurora-1 24s ease-in-out infinite',
           }}
         />
         <div
@@ -41,7 +41,7 @@ export function About() {
               'radial-gradient(circle, #cf9bf5 0%, transparent 60%)',
             bottom: '-10%',
             right: '8%',
-            animation: 'usp-aurora-2 28s ease-in-out infinite',
+            animation: 'opr-aurora-2 28s ease-in-out infinite',
           }}
         />
         <div
@@ -53,7 +53,7 @@ export function About() {
               'radial-gradient(circle, #3b0764 0%, transparent 70%)',
             top: '35%',
             left: '50%',
-            animation: 'usp-aurora-3 32s ease-in-out infinite',
+            animation: 'opr-aurora-3 32s ease-in-out infinite',
           }}
         />
       </div>
@@ -222,15 +222,15 @@ export function About() {
       </div>
 
       <style>{`
-        @keyframes usp-aurora-1 {
+        @keyframes opr-aurora-1 {
           0%, 100% { transform: translate(0, 0) scale(1); }
           50% { transform: translate(80px, 40px) scale(1.1); }
         }
-        @keyframes usp-aurora-2 {
+        @keyframes opr-aurora-2 {
           0%, 100% { transform: translate(0, 0) scale(1); }
           50% { transform: translate(-60px, -30px) scale(0.95); }
         }
-        @keyframes usp-aurora-3 {
+        @keyframes opr-aurora-3 {
           0%, 100% { transform: translate(-50%, -50%) scale(1); }
           50% { transform: translate(-40%, -45%) scale(1.15); }
         }

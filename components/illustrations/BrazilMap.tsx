@@ -1,4 +1,4 @@
-/** Mapa do Brasil estilizado para o Hero Dr. Crypto Pay.
+/** Mapa do Brasil estilizado para o Hero OprPay.
  *
  * Composição:
  * - Outline simplificado do Brasil em path SVG (reconhecível, não preciso)
@@ -75,7 +75,7 @@ export function BrazilMap() {
       <defs>
         {/* Pattern de dots que preenche o território */}
         <pattern
-          id="usp-territory-dots"
+          id="opr-territory-dots"
           x="0"
           y="0"
           width="14"
@@ -86,25 +86,25 @@ export function BrazilMap() {
         </pattern>
 
         {/* ClipPath = forma do BR; dots só aparecem dentro */}
-        <clipPath id="usp-br-clip">
+        <clipPath id="opr-br-clip">
           <path d={BR_OUTLINE} />
         </clipPath>
 
         {/* Radial pra halo das cidades */}
-        <radialGradient id="usp-pulse" cx="50%" cy="50%" r="50%">
+        <radialGradient id="opr-pulse" cx="50%" cy="50%" r="50%">
           <stop offset="0%" stopColor="var(--color-green-500)" stopOpacity="0.85" />
           <stop offset="55%" stopColor="var(--color-green-500)" stopOpacity="0.18" />
           <stop offset="100%" stopColor="var(--color-green-500)" stopOpacity="0" />
         </radialGradient>
 
         {/* Gradient pra linhas de fluxo (efeito caminhando) */}
-        <linearGradient id="usp-flow" x1="0%" y1="0%" x2="100%" y2="0%">
+        <linearGradient id="opr-flow" x1="0%" y1="0%" x2="100%" y2="0%">
           <stop offset="0%" stopColor="var(--color-green-500)" stopOpacity="0" />
           <stop offset="50%" stopColor="var(--color-green-700)" stopOpacity="0.7" />
           <stop offset="100%" stopColor="var(--color-green-500)" stopOpacity="0" />
         </linearGradient>
 
-        <filter id="usp-glow" x="-50%" y="-50%" width="200%" height="200%">
+        <filter id="opr-glow" x="-50%" y="-50%" width="200%" height="200%">
           <feGaussianBlur stdDeviation="2.5" />
         </filter>
       </defs>
@@ -115,8 +115,8 @@ export function BrazilMap() {
         y="0"
         width="1000"
         height="1000"
-        fill="url(#usp-territory-dots)"
-        clipPath="url(#usp-br-clip)"
+        fill="url(#opr-territory-dots)"
+        clipPath="url(#opr-br-clip)"
       />
 
       {/* Outline do BR */}
@@ -158,7 +158,7 @@ export function BrazilMap() {
               <path
                 d={`M ${a.x} ${a.y} Q ${mx} ${my} ${b.x} ${b.y}`}
                 fill="none"
-                stroke="url(#usp-flow)"
+                stroke="url(#opr-flow)"
                 strokeWidth="1.6"
                 strokeDasharray="40 200"
                 strokeLinecap="round"
@@ -183,8 +183,8 @@ export function BrazilMap() {
             cx={city.x}
             cy={city.y}
             r={city.size * 3}
-            fill="url(#usp-pulse)"
-            filter="url(#usp-glow)"
+            fill="url(#opr-pulse)"
+            filter="url(#opr-glow)"
           >
             <animate
               attributeName="r"

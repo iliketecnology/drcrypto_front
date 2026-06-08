@@ -10,7 +10,7 @@ export function SealIcon() {
       aria-label="Selo Bacen"
     >
       <defs>
-        <linearGradient id="usp-seal-fill" x1="0%" y1="0%" x2="100%" y2="100%">
+        <linearGradient id="opr-seal-fill" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="var(--color-green-500)" />
           <stop offset="100%" stopColor="var(--color-green-700)" />
         </linearGradient>
@@ -29,7 +29,7 @@ export function SealIcon() {
       />
 
       {/* Disco interno */}
-      <circle cx="40" cy="40" r="30" fill="url(#usp-seal-fill)" />
+      <circle cx="40" cy="40" r="30" fill="url(#opr-seal-fill)" />
 
       {/* Texto curvado decorativo (em path) */}
       <g fill="white" opacity="0.9">

@@ -1,9 +1,9 @@
-# Dr. Crypto Pay · landing whitelabel USDT → PIX
+# OprPay · landing whitelabel USDT → PIX
 
-Frontend completo do Dr. Crypto Pay · Next.js 15 App Router, TS strict, Tailwind v4, next-intl PT/EN/ES.
+Frontend completo do OprPay · Next.js 15 App Router, TS strict, Tailwind v4, next-intl PT/EN/ES.
 
 Whitelabel derivado da base USPIX (mesma engine de swap), com identidade própria:
-marca **Dr. Crypto Pay**, paleta violeta e **rede única Polygon**.
+marca **OprPay**, paleta violeta e **rede única Polygon**.
 
 Entregue por **PSYCO** (chris@psyco.lol) para integração e operação pelo time técnico do cliente.
 
@@ -76,8 +76,8 @@ source/
 │   ├── en.json
 │   └── es.json
 ├── public/
-│   ├── og-wide.png                   # OG 1200×630  (TODO: trocar pela arte Dr. Crypto Pay)
-│   ├── og-square.png                 # OG 1200×1200 (TODO: trocar pela arte Dr. Crypto Pay)
+│   ├── og-wide.png                   # OG 1200×630  (TODO: trocar pela arte OprPay)
+│   ├── og-square.png                 # OG 1200×1200 (TODO: trocar pela arte OprPay)
 │   └── brand/tmbs-logo.png
 ├── styles/globals.css                # @theme tokens + classes de tipografia (.display-xl, .body-lg, .eyebrow…)
 ├── middleware.ts                     # next-intl middleware
@@ -140,14 +140,14 @@ o Tailwind v4 gera as classes `bg-green-500` etc. a partir desses nomes em todo 
 Tipografia escala em `clamp()` · `.display-xl` (hero), `.display-lg` (h2), `.body-lg`, `.body-md`, `.body-sm`, `.eyebrow`, `.mono-num` (números tabulares Geist Mono). Container central: `.container-app`.
 
 O logo no header/footer é um **wordmark de texto** (`components/ui/Logo.tsx`) — placeholder
-até a arte definitiva do medalhão DR.CRIPTO ser entregue tratada (sem fundo, versão clara).
+até a arte definitiva do medalhão OprPay ser entregue tratada (sem fundo, versão clara).
 
 ## SEO e OG
 
-- `metadataBase` em `https://drcryptopay.com` · **placeholder**, trocar pelo domínio real.
-- Title template `%s · Dr. Crypto Pay`
+- `metadataBase` em `https://oprpay.com` · **placeholder**, trocar pelo domínio real.
+- Title template `%s · OprPay`
 - OG wide + square em `/public/og-*.png` plugados em `app/layout.tsx` · **ainda são as
-  imagens herdadas — trocar pela arte Dr. Crypto Pay.**
+  imagens herdadas — trocar pela arte OprPay.**
 - Twitter card `summary_large_image`
 
 ## Deploy
@@ -172,12 +172,12 @@ Para deploy estático puro, considerar `output: 'export'` no `next.config.ts` (c
 Quando o backend de swap for plugado, as env vars típicas serão:
 
 ```bash
-NEXT_PUBLIC_SWAP_API_BASE=https://api.drcryptopay.com   # ajustar ao backend real
+NEXT_PUBLIC_SWAP_API_BASE=https://api.oprpay.com   # ajustar ao backend real
 NEXT_PUBLIC_RATE_PROVIDER=internal                       # ou "coingecko"
 ```
 
 > Nota: o `SwapWizard.tsx` ainda aponta para o endpoint da base original
-> (`crypto2pay-backend-uspix...`). Confirmar com o time de backend se o Dr. Crypto Pay
+> (`crypto2pay-backend-uspix...`). Confirmar com o time de backend se o OprPay
 > usa o mesmo backend ou terá endpoint próprio, e atualizar as URLs. Detalhes em `INTEGRATION.md`.
 
 ## Próximos passos pro time técnico
@@ -199,5 +199,5 @@ NEXT_PUBLIC_RATE_PROVIDER=internal                       # ou "coingecko"
 
 ## Licença
 
-Código entregue ao cliente sob acordo de cessão. Para uso interno e operação do produto Dr. Crypto Pay.
+Código entregue ao cliente sob acordo de cessão. Para uso interno e operação do produto OprPay.
 # drcrypto_front

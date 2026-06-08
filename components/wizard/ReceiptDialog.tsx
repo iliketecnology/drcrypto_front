@@ -85,7 +85,7 @@ function ReceiptInner({
       transition={{ duration: 0.25 }}
       role="dialog"
       aria-modal="true"
-      aria-labelledby="usp-receipt-title"
+      aria-labelledby="opr-receipt-title"
     >
       {/* Overlay com gradiente verde escuro · diferencia do overlay do wizard */}
       <motion.button
@@ -110,7 +110,7 @@ function ReceiptInner({
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 16, scale: 0.96 }}
         transition={{ duration: 0.55, ease: easeOut }}
-        className="relative z-10 w-full max-w-[440px] usp-receipt-card"
+        className="relative z-10 w-full max-w-[440px] opr-receipt-card"
       >
         {/* Header escuro institucional */}
         <div
@@ -129,7 +129,7 @@ function ReceiptInner({
           />
           <div className="relative flex items-center justify-between">
             <span
-              id="usp-receipt-title"
+              id="opr-receipt-title"
               className="text-[10.5px] font-bold tracking-[0.2em] uppercase"
               style={{ color: "var(--color-green-300)" }}
             >
@@ -221,7 +221,7 @@ function ReceiptInner({
 
             <ReceiptBlock label={t("receipt.representative")}>
               <strong style={{ color: "var(--color-ink-900)" }}>
-                Dr. Cripto Pay
+                OprPay
               </strong>
               {" · "}
               <a
@@ -285,20 +285,20 @@ function ReceiptInner({
       </motion.div>
 
       {/* Estilos do card animado · borda gradient verde rotacionando + glow pulsante.
-       * Técnica: @property pra animar a variável CSS --usp-angle no conic-gradient.
+       * Técnica: @property pra animar a variável CSS --opr-angle no conic-gradient.
        * background em duas camadas (padding-box pro interior glassmorph, border-box pro gradient). */}
       <style>{`
-        @property --usp-angle {
+        @property --opr-angle {
           syntax: '<angle>';
           inherits: false;
           initial-value: 0deg;
         }
-        .usp-receipt-card {
+        .opr-receipt-card {
           position: relative;
           border-radius: 24px;
           padding: 2px;
           background: conic-gradient(
-            from var(--usp-angle),
+            from var(--opr-angle),
             rgba(157, 43, 237, 0.95),
             rgba(104, 221, 189, 0.7),
             rgba(157, 43, 237, 0.95),
@@ -306,10 +306,10 @@ function ReceiptInner({
             rgba(157, 43, 237, 0.95)
           );
           animation:
-            usp-receipt-border-spin 5s linear infinite,
-            usp-receipt-glow-pulse 3.6s ease-in-out infinite;
+            opr-receipt-border-spin 5s linear infinite,
+            opr-receipt-glow-pulse 3.6s ease-in-out infinite;
         }
-        .usp-receipt-card::before {
+        .opr-receipt-card::before {
           content: '';
           position: absolute;
           inset: 2px;
@@ -320,23 +320,23 @@ function ReceiptInner({
           box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
           z-index: 0;
         }
-        .usp-receipt-card > * {
+        .opr-receipt-card > * {
           position: relative;
           z-index: 1;
         }
-        .usp-receipt-card > *:first-child {
+        .opr-receipt-card > *:first-child {
           border-top-left-radius: 22px;
           border-top-right-radius: 22px;
           overflow: hidden;
         }
-        .usp-receipt-card > *:last-child {
+        .opr-receipt-card > *:last-child {
           border-bottom-left-radius: 22px;
           border-bottom-right-radius: 22px;
         }
-        @keyframes usp-receipt-border-spin {
-          to { --usp-angle: 360deg; }
+        @keyframes opr-receipt-border-spin {
+          to { --opr-angle: 360deg; }
         }
-        @keyframes usp-receipt-glow-pulse {
+        @keyframes opr-receipt-glow-pulse {
           0%, 100% {
             box-shadow:
               0 0 24px rgba(157, 43, 237, 0.22),
@@ -351,7 +351,7 @@ function ReceiptInner({
           }
         }
         @media (prefers-reduced-motion: reduce) {
-          .usp-receipt-card {
+          .opr-receipt-card {
             animation: none;
             background: linear-gradient(135deg, rgba(157, 43, 237,0.85), rgba(91, 33, 182,0.85));
             box-shadow: 0 28px 70px rgba(0,30,15,0.5);

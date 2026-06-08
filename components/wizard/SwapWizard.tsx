@@ -254,7 +254,7 @@ export function SwapWizard({ isOpen, onClose, onComplete }: Props) {
           transition={{ duration: 0.2 }}
           role="dialog"
           aria-modal="true"
-          aria-labelledby="usp-wizard-title"
+          aria-labelledby="opr-wizard-title"
         >
           <motion.button
             type="button"
@@ -403,7 +403,7 @@ function Header({ step, onClose }: { step: number; onClose: () => void }) {
       </button>
 
       <style>{`
-        @keyframes usp-wiz-blink {
+        @keyframes opr-wiz-blink {
           0%, 100% { opacity: 1; }
           50% { opacity: 0.3; }
         }
@@ -605,7 +605,7 @@ function Footer({
                 height="14"
                 viewBox="0 0 14 14"
                 aria-hidden
-                style={{ animation: "usp-spin 0.7s linear infinite" }}
+                style={{ animation: "opr-spin 0.7s linear infinite" }}
               >
                 <circle
                   cx="7"
@@ -631,7 +631,7 @@ function Footer({
       </div>
 
       <style>{`
-        @keyframes usp-spin { to { transform: rotate(360deg); } }
+        @keyframes opr-spin { to { transform: rotate(360deg); } }
       `}</style>
     </div>
   );
@@ -1057,7 +1057,7 @@ function Step4QR({
               className="w-1.5 h-1.5 rounded-full"
               style={{
                 background: seconds < 60 ? "#dc2626" : "var(--color-green-700)",
-                animation: "usp-wiz-blink 1.4s infinite",
+                animation: "opr-wiz-blink 1.4s infinite",
               }}
               aria-hidden
             />
@@ -1274,7 +1274,7 @@ function StateIcon({ state }: { state: "pending" | "loading" | "done" }) {
           width="18"
           height="18"
           viewBox="0 0 18 18"
-          style={{ animation: "usp-spin 0.85s linear infinite" }}
+          style={{ animation: "opr-spin 0.85s linear infinite" }}
         >
           <circle
             cx="9"
@@ -1293,7 +1293,7 @@ function StateIcon({ state }: { state: "pending" | "loading" | "done" }) {
           />
         </svg>
         <style>{`
-          @keyframes usp-spin {
+          @keyframes opr-spin {
             to { transform: rotate(360deg); }
           }
         `}</style>
@@ -1323,7 +1323,7 @@ function StepTitle({ title, sub }: { title: string; sub: string }) {
   return (
     <div>
       <h3
-        id="usp-wizard-title"
+        id="opr-wizard-title"
         className="text-[19px] font-bold tracking-tight text-ink-900"
         style={{ letterSpacing: "-0.02em" }}
       >

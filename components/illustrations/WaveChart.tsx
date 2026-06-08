@@ -33,11 +33,11 @@ export function WaveChart() {
         aria-hidden
       >
         <defs>
-          <linearGradient id="usp-wave-fill" x1="0%" y1="0%" x2="0%" y2="100%">
+          <linearGradient id="opr-wave-fill" x1="0%" y1="0%" x2="0%" y2="100%">
             <stop offset="0%" stopColor="var(--color-green-300)" stopOpacity="0.45" />
             <stop offset="100%" stopColor="var(--color-green-300)" stopOpacity="0" />
           </linearGradient>
-          <linearGradient id="usp-wave-line" x1="0%" y1="0%" x2="100%" y2="0%">
+          <linearGradient id="opr-wave-line" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="var(--color-green-700)" />
             <stop offset="100%" stopColor="var(--color-green-500)" />
           </linearGradient>
@@ -53,7 +53,7 @@ export function WaveChart() {
         {/* Preenchimento gradient da onda */}
         <motion.path
           d={WAVE_PATH}
-          fill="url(#usp-wave-fill)"
+          fill="url(#opr-wave-fill)"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
@@ -64,7 +64,7 @@ export function WaveChart() {
         <motion.path
           d={LINE_PATH}
           fill="none"
-          stroke="url(#usp-wave-line)"
+          stroke="url(#opr-wave-line)"
           strokeWidth="2.5"
           strokeLinecap="round"
           initial={{ pathLength: 0 }}

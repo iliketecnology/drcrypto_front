@@ -13,7 +13,7 @@ import { useEffect, useState } from "react";
  * Retorna `null` enquanto carrega ou em caso de falha total · o consumer
  * deve usar fallback hardcoded nesse caso (ex: 5.45). */
 
-const CACHE_KEY = "drcryptopay:usdt-brl-rate";
+const CACHE_KEY = "oprpay:usdt-brl-rate";
 const CACHE_TTL_MS = 60_000;
 const REFRESH_MS = 90_000;
 const FALLBACK_RATE = 5.45;

@@ -94,7 +94,7 @@ export function TrustMetrics() {
               style={{
                 background: 'var(--color-green-300)',
                 boxShadow: '0 0 10px var(--color-green-300)',
-                animation: 'usp-live-blink 1.4s infinite',
+                animation: 'opr-live-blink 1.4s infinite',
               }}
             />
             <span
@@ -106,7 +106,7 @@ export function TrustMetrics() {
             </span>
           </div>
           <style>{`
-            @keyframes usp-live-blink {
+            @keyframes opr-live-blink {
               0%, 100% { opacity: 1; }
               50% { opacity: 0.35; }
             }

@@ -1,8 +1,8 @@
 {
   "meta": {
-    "title": "Dr. Crypto Pay · USDT a PIX al instante",
+    "title": "OprPay · USDT a PIX al instante",
     "description": "Recibe tus USDT directo en PIX, al instante. Sin registro, sin KYC, sin burocracia. Red Polygon compatible.",
-    "ogAlt": "Dr. Crypto Pay · USDT a PIX al instante"
+    "ogAlt": "OprPay · USDT a PIX al instante"
   },
   "header": {
     "nav": {
@@ -89,7 +89,7 @@
     }
   },
   "trust": {
-    "eyebrow": "Dr. Crypto Pay EN NÚMEROS",
+    "eyebrow": "OprPay EN NÚMEROS",
     "title": "Transacciones sin burocracia.",
     "metrics": {
       "speed": {
@@ -109,7 +109,7 @@
         "label": "Valor mínimo por operación"
       }
     },
-    "footnote": "Indicadores operacionales Dr. Crypto Pay. Tiempo promedio basado en los últimos 30 días de transacciones."
+    "footnote": "Indicadores operacionales OprPay. Tiempo promedio basado en los últimos 30 días de transacciones."
   },
   "networks": {
     "eyebrow": "REDES COMPATIBLES",
@@ -129,7 +129,7 @@
   "about": {
     "eyebrow": "QUIÉNES SOMOS",
     "title": "Transformando el futuro de los pagos.",
-    "body": "En Dr. Crypto Pay haces swap de USDT a PIX (BRL) de forma simple, rápida y segura. Envía pagos instantáneos a cuentas brasileñas sin burocracia.",
+    "body": "En OprPay haces swap de USDT a PIX (BRL) de forma simple, rápida y segura. Envía pagos instantáneos a cuentas brasileñas sin burocracia.",
     "highlight": "Transacciona en Brasil, sin registro, fácil e instantáneo."
   },
   "faq": {
@@ -158,7 +158,7 @@
       },
       "q6": {
         "question": "¿Cómo funciona la seguridad?",
-        "answer": "Cada transacción tiene un hash on-chain rastreable y un ID interno único. La liquidación PIX usa la red oficial brasileña de pagos. La capa de conversión cripto opera bajo Dr. Crypto Pay en cumplimiento con la legislación brasileña de prestación de servicios y LGPD (GDPR brasileña)."
+        "answer": "Cada transacción tiene un hash on-chain rastreable y un ID interno único. La liquidación PIX usa la red oficial brasileña de pagos. La capa de conversión cripto opera bajo OprPay en cumplimiento con la legislación brasileña de prestación de servicios y LGPD (GDPR brasileña)."
       }
     }
   },

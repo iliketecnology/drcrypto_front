@@ -33,7 +33,7 @@ export function Header() {
       "
     >
       <div className="container-app flex h-[72px] items-center justify-between gap-4">
-        <Link href="/" className="flex items-center shrink-0" aria-label="Dr. Crypto Pay home">
+        <Link href="/" className="flex items-center shrink-0" aria-label="OprPay home">
           <Logo />
         </Link>
 

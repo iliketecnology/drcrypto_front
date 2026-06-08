@@ -1,6 +1,6 @@
-# Integração Dr. Crypto Pay · guia técnico
+# Integração OprPay · guia técnico
 
-Documento pra o time técnico do cliente plugar o frontend Dr. Crypto Pay (entregue pela PSYCO) no backend real de swap USDT → PIX.
+Documento pra o time técnico do cliente plugar o frontend OprPay (entregue pela PSYCO) no backend real de swap USDT → PIX.
 
 Todo o fluxo de UI está pronto e funcional como mock. Os pontos abaixo são os hooks de integração · cada um lista o arquivo, a linha aproximada e o que precisa ser feito.
 
@@ -9,7 +9,7 @@ Todo o fluxo de UI está pronto e funcional como mock. Os pontos abaixo são os 
 
 > **Endpoint atual:** o `SwapWizard.tsx` ainda referencia o backend da base original
 > (`https://crypto2pay-backend-uspix.mebq4k.easypanel.host/...`). Confirmar se o
-> Dr. Crypto Pay reutiliza esse backend ou terá um próprio, e atualizar as URLs antes de produção.
+> OprPay reutiliza esse backend ou terá um próprio, e atualizar as URLs antes de produção.
 
 ---
 

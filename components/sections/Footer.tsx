@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import {
@@ -8,8 +7,8 @@ import {
   MailIcon,
 } from '@/components/illustrations/BrandLogos';
 
-/** Rodapé canônico Dr. Crypto Pay · entidade TMBS, LLC (Delaware).
- * Modelo definido pelo Thiago: bloco escuro, Dr. Crypto Pay em pill branca centralizada,
+/** Rodapé canônico OprPay · entidade TMBS, LLC (Delaware).
+ * Modelo definido pelo Thiago: bloco escuro, OprPay em pill branca centralizada,
  * endereço da LLC empilhado, ícones sociais e selo "Powered by TMBS". */
 export function Footer() {
   const tFooter = useTranslations('footer');
@@ -41,16 +40,7 @@ export function Footer() {
       />
 
       <div className="relative container-app py-24 flex flex-col items-center text-center">
-        {/* Medalhão DR.CRIPTO · acima do wordmark, centralizado, maior que no header */}
-        <Image
-          src="/brand/dr-cripto-mark.png"
-          alt=""
-          width={76}
-          height={76}
-          className="mb-5 select-none"
-        />
-
-        {/* Dr. Crypto Pay · wordmark direto sobre o fundo escuro (sem caixa) */}
+        {/* OprPay · wordmark direto sobre o fundo escuro (sem caixa) */}
         <span
           style={{
             fontWeight: 900,
@@ -60,8 +50,8 @@ export function Footer() {
             color: 'white',
           }}
         >
-          Dr.Crypto
-          <span style={{ color: 'var(--color-green-500)' }}> Pay</span>
+          Opr
+          <span style={{ color: 'var(--color-green-500)' }}>Pay</span>
         </span>
 
         {/* Endereço LLC */}
@@ -82,7 +72,7 @@ export function Footer() {
 
         {/* Ícones sociais */}
         <div className="mt-8 flex items-center gap-3">
-          {/* TODO: trocar pelas handles reais do DR.CRIPTO (aguardando Chris) */}
+          {/* TODO: trocar pelas handles reais do OprPay (aguardando Chris) */}
           <Social label="X" href="#">
             <XLogo size={14} />
           </Social>

@@ -76,13 +76,13 @@ export function StepQRMockup() {
           className="w-1.5 h-1.5 rounded-full"
           style={{
             background: 'var(--color-green-700)',
-            animation: 'usp-blink 1.4s infinite',
+            animation: 'opr-blink 1.4s infinite',
           }}
         />
         Expira em <span className="mono-num" style={{ marginLeft: 2 }}>{mm}:{ss}</span>
       </div>
       <style>{`
-        @keyframes usp-blink {
+        @keyframes opr-blink {
           0%, 100% { opacity: 1; }
           50% { opacity: 0.3; }
         }

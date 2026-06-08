@@ -34,7 +34,7 @@ export async function generateMetadata({
     description,
     openGraph: {
       type: 'website',
-      siteName: 'Dr. Crypto Pay',
+      siteName: 'OprPay',
       locale: OG_LOCALE[locale] ?? 'pt_BR',
       title,
       description,

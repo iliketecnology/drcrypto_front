@@ -18,8 +18,8 @@ const SITE_URL =
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   // Sem `template`: cada página (home localizada + legais) já entrega o title
-  // completo com o sufixo da marca, então o template duplicaria "Dr. Crypto Pay".
-  title: 'Dr. Crypto Pay',
+  // completo com o sufixo da marca, então o template duplicaria "OprPay".
+  title: 'OprPay',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

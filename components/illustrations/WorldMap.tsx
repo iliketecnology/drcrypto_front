@@ -150,22 +150,22 @@ export function WorldMap({
       preserveAspectRatio="xMidYMid meet"
     >
       <defs>
-        <radialGradient id="usp-cap-pulse" cx="50%" cy="50%" r="50%">
+        <radialGradient id="opr-cap-pulse" cx="50%" cy="50%" r="50%">
           <stop offset="0%" stopColor="var(--color-green-500)" stopOpacity="0.85" />
           <stop offset="55%" stopColor="var(--color-green-500)" stopOpacity="0.18" />
           <stop offset="100%" stopColor="var(--color-green-500)" stopOpacity="0" />
         </radialGradient>
-        <radialGradient id="usp-br-pulse" cx="50%" cy="50%" r="50%">
+        <radialGradient id="opr-br-pulse" cx="50%" cy="50%" r="50%">
           <stop offset="0%" stopColor="var(--color-green-700)" stopOpacity="0.95" />
           <stop offset="55%" stopColor="var(--color-green-700)" stopOpacity="0.22" />
           <stop offset="100%" stopColor="var(--color-green-700)" stopOpacity="0" />
         </radialGradient>
-        <linearGradient id="usp-inflow" x1="0%" y1="0%" x2="100%" y2="0%">
+        <linearGradient id="opr-inflow" x1="0%" y1="0%" x2="100%" y2="0%">
           <stop offset="0%" stopColor="var(--color-green-500)" stopOpacity="0" />
           <stop offset="50%" stopColor="var(--color-green-700)" stopOpacity="0.9" />
           <stop offset="100%" stopColor="var(--color-green-900)" stopOpacity="0" />
         </linearGradient>
-        <filter id="usp-map-glow" x="-50%" y="-50%" width="200%" height="200%">
+        <filter id="opr-map-glow" x="-50%" y="-50%" width="200%" height="200%">
           <feGaussianBlur stdDeviation="3" />
         </filter>
       </defs>
@@ -225,7 +225,7 @@ export function WorldMap({
               <path
                 d={d}
                 fill="none"
-                stroke="url(#usp-inflow)"
+                stroke="url(#opr-inflow)"
                 strokeWidth="1.5"
                 strokeDasharray="50 220"
                 strokeLinecap="round"
@@ -302,8 +302,8 @@ export function WorldMap({
             cx={cap.x}
             cy={cap.y}
             r={cap.primary ? 11 : 8}
-            fill="url(#usp-cap-pulse)"
-            filter="url(#usp-map-glow)"
+            fill="url(#opr-cap-pulse)"
+            filter="url(#opr-map-glow)"
           >
             <animate
               attributeName="r"
@@ -338,8 +338,8 @@ export function WorldMap({
             cx={c.x}
             cy={c.y}
             r={c.primary ? 8 : 6}
-            fill="url(#usp-br-pulse)"
-            filter="url(#usp-map-glow)"
+            fill="url(#opr-br-pulse)"
+            filter="url(#opr-map-glow)"
           >
             <animate
               attributeName="r"

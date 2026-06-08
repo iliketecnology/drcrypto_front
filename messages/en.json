@@ -1,13 +1,13 @@
 {
   "meta": {
-    "title": "Dr. Crypto Pay · USDT to PIX, instant",
+    "title": "OprPay · USDT to PIX, instant",
     "description": "Get your USDT straight to PIX, instantly. No signup, no KYC, no red tape. Polygon network supported.",
-    "ogAlt": "Dr. Crypto Pay · USDT to PIX, instant"
+    "ogAlt": "OprPay · USDT to PIX, instant"
   },
   "header": {
     "nav": {
       "how": "How it works",
-      "differentials": "Why Dr. Crypto Pay",
+      "differentials": "Why OprPay",
       "about": "About"
     },
     "languageLabel": "Language"
@@ -89,7 +89,7 @@
     }
   },
   "trust": {
-    "eyebrow": "Dr. Crypto Pay BY THE NUMBERS",
+    "eyebrow": "OprPay BY THE NUMBERS",
     "title": "Transactions without friction.",
     "metrics": {
       "speed": {
@@ -109,7 +109,7 @@
         "label": "Minimum per transaction"
       }
     },
-    "footnote": "Dr. Crypto Pay operational indicators. Average time based on the last 30 days of transactions."
+    "footnote": "OprPay operational indicators. Average time based on the last 30 days of transactions."
   },
   "networks": {
     "eyebrow": "SUPPORTED NETWORKS",
@@ -129,7 +129,7 @@
   "about": {
     "eyebrow": "WHO WE ARE",
     "title": "Transforming the future of payments.",
-    "body": "On Dr. Crypto Pay you swap USDT to PIX (BRL) the easy way, fast and secure. Send instant payments to Brazilian accounts without friction.",
+    "body": "On OprPay you swap USDT to PIX (BRL) the easy way, fast and secure. Send instant payments to Brazilian accounts without friction.",
     "highlight": "Transact in Brazil, no sign-up, easy and instant."
   },
   "faq": {
@@ -158,7 +158,7 @@
       },
       "q6": {
         "question": "How does the security work?",
-        "answer": "Every transaction has a traceable on-chain hash and unique internal ID. PIX settlement uses the official Brazilian payments network. The crypto conversion layer operates under Dr. Crypto Pay in compliance with Brazilian service provider law and LGPD (Brazilian GDPR)."
+        "answer": "Every transaction has a traceable on-chain hash and unique internal ID. PIX settlement uses the official Brazilian payments network. The crypto conversion layer operates under OprPay in compliance with Brazilian service provider law and LGPD (Brazilian GDPR)."
       }
     }
   },

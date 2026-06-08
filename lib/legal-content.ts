@@ -1,4 +1,4 @@
-/** Conteúdo legal da Dr. Crypto Pay · TMBS, LLC (Delaware).
+/** Conteúdo legal da OprPay · TMBS, LLC (Delaware).
  *
  * Mantido fora do bundle de translations (`messages/*.json`) porque é carregado
  * só nas páginas /termos e /privacidade — não vale a pena pagar o peso em toda
@@ -35,18 +35,18 @@ const TERMS_PT: LegalDoc = {
   title: 'Termos de Uso',
   lastUpdated: `Última atualização: ${LAST_UPDATED.pt}`,
   intro:
-    'Estes Termos regem o uso da plataforma Dr. Crypto Pay, serviço de conversão de USDT em reais via PIX. Ao iniciar uma transação, você concorda com as condições abaixo.',
+    'Estes Termos regem o uso da plataforma OprPay, serviço de conversão de USDT em reais via PIX. Ao iniciar uma transação, você concorda com as condições abaixo.',
   sections: [
     {
       h: '1. Identificação',
       p: [
-        'O Dr. Crypto Pay é operado por TMBS, LLC ("TMBS"), pessoa jurídica constituída no Estado de Delaware, Estados Unidos da América, com sede em 8 The Green, Ste R, Dover, State of Delaware, Zip Code 19901. Contato: tmbs@tmbs.tech.',
+        'O OprPay é operado por TMBS, LLC ("TMBS"), pessoa jurídica constituída no Estado de Delaware, Estados Unidos da América, com sede em 8 The Green, Ste R, Dover, State of Delaware, Zip Code 19901. Contato: tmbs@tmbs.tech.',
       ],
     },
     {
       h: '2. Objeto',
       p: [
-        'O Dr. Crypto Pay oferece serviço de conversão de criptoativos USDT (Tether USD) em reais brasileiros (BRL), com liquidação via PIX. Não custodiamos USDT, BRL ou qualquer outro ativo: a operação é executada de ponta a ponta no momento da transação.',
+        'O OprPay oferece serviço de conversão de criptoativos USDT (Tether USD) em reais brasileiros (BRL), com liquidação via PIX. Não custodiamos USDT, BRL ou qualquer outro ativo: a operação é executada de ponta a ponta no momento da transação.',
       ],
     },
     {
@@ -80,7 +80,7 @@ const TERMS_PT: LegalDoc = {
     {
       h: '7. Limitações de responsabilidade',
       p: [
-        'O Dr. Crypto Pay não se responsabiliza por: (i) erros de digitação, endereço de carteira ou rede selecionada pelo usuário; (ii) atrasos das redes blockchain públicas (Polygon) ou da rede PIX; (iii) bloqueios bancários, judiciais ou regulatórios alheios ao nosso controle; (iv) prejuízos decorrentes de oscilação cambial entre o início e a conclusão da operação.',
+        'O OprPay não se responsabiliza por: (i) erros de digitação, endereço de carteira ou rede selecionada pelo usuário; (ii) atrasos das redes blockchain públicas (Polygon) ou da rede PIX; (iii) bloqueios bancários, judiciais ou regulatórios alheios ao nosso controle; (iv) prejuízos decorrentes de oscilação cambial entre o início e a conclusão da operação.',
       ],
     },
     {
@@ -92,7 +92,7 @@ const TERMS_PT: LegalDoc = {
     {
       h: '9. Propriedade intelectual',
       p: [
-        'Todo o conteúdo, marca, código-fonte e interface do Dr. Crypto Pay é de propriedade da TMBS, LLC. É vedada a reprodução, modificação ou exploração comercial sem autorização expressa e por escrito.',
+        'Todo o conteúdo, marca, código-fonte e interface do OprPay é de propriedade da TMBS, LLC. É vedada a reprodução, modificação ou exploração comercial sem autorização expressa e por escrito.',
       ],
     },
     {
@@ -120,12 +120,12 @@ const PRIVACY_PT: LegalDoc = {
   title: 'Política de Privacidade',
   lastUpdated: `Última atualização: ${LAST_UPDATED.pt}`,
   intro:
-    'Esta Política explica como o Dr. Crypto Pay trata seus dados pessoais. Foi escrita em linguagem direta, sem floreios, para que você saiba exatamente o que coletamos, por quê, e por quanto tempo.',
+    'Esta Política explica como o OprPay trata seus dados pessoais. Foi escrita em linguagem direta, sem floreios, para que você saiba exatamente o que coletamos, por quê, e por quanto tempo.',
   sections: [
     {
       h: '1. Quem somos',
       p: [
-        'O Dr. Crypto Pay é operado por TMBS, LLC, com sede em 8 The Green, Ste R, Dover, State of Delaware, Zip Code 19901. Para questões sobre dados pessoais: tmbs@tmbs.tech.',
+        'O OprPay é operado por TMBS, LLC, com sede em 8 The Green, Ste R, Dover, State of Delaware, Zip Code 19901. Para questões sobre dados pessoais: tmbs@tmbs.tech.',
       ],
     },
     {
@@ -204,7 +204,7 @@ const PRIVACY_PT: LegalDoc = {
     {
       h: '10. Cookies',
       p: [
-        'O Dr. Crypto Pay não utiliza cookies de marketing nem trackers de terceiros. Usamos exclusivamente cookies técnicos essenciais ao funcionamento do site (preferência de idioma e sessão).',
+        'O OprPay não utiliza cookies de marketing nem trackers de terceiros. Usamos exclusivamente cookies técnicos essenciais ao funcionamento do site (preferência de idioma e sessão).',
       ],
     },
     {
@@ -238,18 +238,18 @@ const TERMS_EN: LegalDoc = {
   title: 'Terms of Use',
   lastUpdated: `Last updated: ${LAST_UPDATED.en}`,
   intro:
-    'These Terms govern your use of the Dr. Crypto Pay platform, a USDT-to-BRL conversion service settled via PIX. By initiating a transaction, you agree to the conditions below.',
+    'These Terms govern your use of the OprPay platform, a USDT-to-BRL conversion service settled via PIX. By initiating a transaction, you agree to the conditions below.',
   sections: [
     {
       h: '1. Identification',
       p: [
-        'Dr. Crypto Pay is operated by TMBS, LLC ("TMBS"), a limited liability company incorporated in the State of Delaware, United States of America, with its registered office at 8 The Green, Ste R, Dover, State of Delaware, Zip Code 19901. Contact: tmbs@tmbs.tech.',
+        'OprPay is operated by TMBS, LLC ("TMBS"), a limited liability company incorporated in the State of Delaware, United States of America, with its registered office at 8 The Green, Ste R, Dover, State of Delaware, Zip Code 19901. Contact: tmbs@tmbs.tech.',
       ],
     },
     {
       h: '2. Service description',
       p: [
-        'Dr. Crypto Pay converts USDT (Tether USD) into Brazilian reais (BRL), settled through PIX. We do not custody USDT, BRL or any other asset: every operation is executed end-to-end at transaction time.',
+        'OprPay converts USDT (Tether USD) into Brazilian reais (BRL), settled through PIX. We do not custody USDT, BRL or any other asset: every operation is executed end-to-end at transaction time.',
       ],
     },
     {
@@ -283,7 +283,7 @@ const TERMS_EN: LegalDoc = {
     {
       h: '7. Limitation of liability',
       p: [
-        'Dr. Crypto Pay is not liable for: (i) user typos, wrong wallet address or wrong network; (ii) public blockchain (Polygon) or PIX network delays; (iii) banking, judicial or regulatory blocks outside our control; (iv) losses due to FX fluctuation between the start and the completion of the operation.',
+        'OprPay is not liable for: (i) user typos, wrong wallet address or wrong network; (ii) public blockchain (Polygon) or PIX network delays; (iii) banking, judicial or regulatory blocks outside our control; (iv) losses due to FX fluctuation between the start and the completion of the operation.',
       ],
     },
     {
@@ -295,7 +295,7 @@ const TERMS_EN: LegalDoc = {
     {
       h: '9. Intellectual property',
       p: [
-        'All content, brand assets, source code and interface of Dr. Crypto Pay are owned by TMBS, LLC. Reproduction, modification or commercial exploitation without express written authorization is prohibited.',
+        'All content, brand assets, source code and interface of OprPay are owned by TMBS, LLC. Reproduction, modification or commercial exploitation without express written authorization is prohibited.',
       ],
     },
     {
@@ -323,12 +323,12 @@ const PRIVACY_EN: LegalDoc = {
   title: 'Privacy Policy',
   lastUpdated: `Last updated: ${LAST_UPDATED.en}`,
   intro:
-    'This Policy explains how Dr. Crypto Pay handles your personal data. It is written in plain language so you know exactly what we collect, why, and for how long.',
+    'This Policy explains how OprPay handles your personal data. It is written in plain language so you know exactly what we collect, why, and for how long.',
   sections: [
     {
       h: '1. Who we are',
       p: [
-        'Dr. Crypto Pay is operated by TMBS, LLC, with registered office at 8 The Green, Ste R, Dover, State of Delaware, Zip Code 19901. Data inquiries: tmbs@tmbs.tech.',
+        'OprPay is operated by TMBS, LLC, with registered office at 8 The Green, Ste R, Dover, State of Delaware, Zip Code 19901. Data inquiries: tmbs@tmbs.tech.',
       ],
     },
     {
@@ -400,7 +400,7 @@ const PRIVACY_EN: LegalDoc = {
     {
       h: '10. Cookies',
       p: [
-        'Dr. Crypto Pay does not use marketing cookies or third-party trackers. We only use technical cookies essential to site operation (language preference and session).',
+        'OprPay does not use marketing cookies or third-party trackers. We only use technical cookies essential to site operation (language preference and session).',
       ],
     },
     {
@@ -434,18 +434,18 @@ const TERMS_ES: LegalDoc = {
   title: 'Términos de Uso',
   lastUpdated: `Última actualización: ${LAST_UPDATED.es}`,
   intro:
-    'Estos Términos rigen el uso de la plataforma Dr. Crypto Pay, servicio de conversión de USDT a reales mediante PIX. Al iniciar una transacción, aceptas las condiciones siguientes.',
+    'Estos Términos rigen el uso de la plataforma OprPay, servicio de conversión de USDT a reales mediante PIX. Al iniciar una transacción, aceptas las condiciones siguientes.',
   sections: [
     {
       h: '1. Identificación',
       p: [
-        'Dr. Crypto Pay es operado por TMBS, LLC ("TMBS"), persona jurídica constituida en el Estado de Delaware, Estados Unidos de América, con sede en 8 The Green, Ste R, Dover, State of Delaware, Zip Code 19901. Contacto: tmbs@tmbs.tech.',
+        'OprPay es operado por TMBS, LLC ("TMBS"), persona jurídica constituida en el Estado de Delaware, Estados Unidos de América, con sede en 8 The Green, Ste R, Dover, State of Delaware, Zip Code 19901. Contacto: tmbs@tmbs.tech.',
       ],
     },
     {
       h: '2. Objeto',
       p: [
-        'Dr. Crypto Pay ofrece servicio de conversión de criptoactivos USDT (Tether USD) a reales brasileños (BRL), con liquidación vía PIX. No custodiamos USDT, BRL ni ningún otro activo: la operación se ejecuta de extremo a extremo en el momento de la transacción.',
+        'OprPay ofrece servicio de conversión de criptoactivos USDT (Tether USD) a reales brasileños (BRL), con liquidación vía PIX. No custodiamos USDT, BRL ni ningún otro activo: la operación se ejecuta de extremo a extremo en el momento de la transacción.',
       ],
     },
     {
@@ -479,7 +479,7 @@ const TERMS_ES: LegalDoc = {
     {
       h: '7. Limitaciones de responsabilidad',
       p: [
-        'Dr. Crypto Pay no se responsabiliza por: (i) errores de tipeo, dirección de billetera o red seleccionada por el usuario; (ii) retrasos de las redes blockchain públicas (Polygon) o de la red PIX; (iii) bloqueos bancarios, judiciales o regulatorios ajenos a nuestro control; (iv) pérdidas derivadas de oscilación cambial entre el inicio y la conclusión de la operación.',
+        'OprPay no se responsabiliza por: (i) errores de tipeo, dirección de billetera o red seleccionada por el usuario; (ii) retrasos de las redes blockchain públicas (Polygon) o de la red PIX; (iii) bloqueos bancarios, judiciales o regulatorios ajenos a nuestro control; (iv) pérdidas derivadas de oscilación cambial entre el inicio y la conclusión de la operación.',
       ],
     },
     {
@@ -491,7 +491,7 @@ const TERMS_ES: LegalDoc = {
     {
       h: '9. Propiedad intelectual',
       p: [
-        'Todo el contenido, marca, código fuente e interfaz de Dr. Crypto Pay es propiedad de TMBS, LLC. Está prohibida la reproducción, modificación o explotación comercial sin autorización expresa por escrito.',
+        'Todo el contenido, marca, código fuente e interfaz de OprPay es propiedad de TMBS, LLC. Está prohibida la reproducción, modificación o explotación comercial sin autorización expresa por escrito.',
       ],
     },
     {
@@ -519,12 +519,12 @@ const PRIVACY_ES: LegalDoc = {
   title: 'Política de Privacidad',
   lastUpdated: `Última actualización: ${LAST_UPDATED.es}`,
   intro:
-    'Esta Política explica cómo Dr. Crypto Pay trata tus datos personales. Está escrita en lenguaje directo para que sepas exactamente qué recopilamos, por qué y por cuánto tiempo.',
+    'Esta Política explica cómo OprPay trata tus datos personales. Está escrita en lenguaje directo para que sepas exactamente qué recopilamos, por qué y por cuánto tiempo.',
   sections: [
     {
       h: '1. Quiénes somos',
       p: [
-        'Dr. Crypto Pay es operado por TMBS, LLC, con sede en 8 The Green, Ste R, Dover, State of Delaware, Zip Code 19901. Contacto para temas de datos: tmbs@tmbs.tech.',
+        'OprPay es operado por TMBS, LLC, con sede en 8 The Green, Ste R, Dover, State of Delaware, Zip Code 19901. Contacto para temas de datos: tmbs@tmbs.tech.',
       ],
     },
     {
@@ -596,7 +596,7 @@ const PRIVACY_ES: LegalDoc = {
     {
       h: '10. Cookies',
       p: [
-        'Dr. Crypto Pay no utiliza cookies de marketing ni rastreadores de terceros. Usamos exclusivamente cookies técnicas esenciales al funcionamiento del sitio (preferencia de idioma y sesión).',
+        'OprPay no utiliza cookies de marketing ni rastreadores de terceros. Usamos exclusivamente cookies técnicas esenciales al funcionamiento del sitio (preferencia de idioma y sesión).',
       ],
     },
     {

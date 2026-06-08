@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 
 @theme {
-  /* DR.CRIPTO paleta violeta elétrica · nomes green-* mantidos = escala de marca (whitelabel) */
+  /* OprPay paleta violeta elétrica · nomes green-* mantidos = escala de marca (whitelabel) */
   --color-green-900: #3b0764;
   --color-green-700: #7c2fd6;
   --color-green-500: #9d2bed;
@@ -30,7 +30,7 @@
   --shadow-lift: 0 16px 48px rgba(91, 33, 182, 0.12);
   --shadow-pop: 0 2px 8px rgba(91, 33, 182, 0.05);
 
-  /* Tipo · seguindo escala Dr. Crypto Pay */
+  /* Tipo · seguindo escala OprPay */
   --font-sans: var(--font-geist-sans, ui-sans-serif, system-ui, sans-serif);
   --font-mono: var(--font-geist-mono, ui-monospace, monospace);
 }
@@ -142,7 +142,7 @@ body::before {
   box-shadow: var(--shadow-lift);
 }
 
-/* Container padrão Dr. Crypto Pay */
+/* Container padrão OprPay */
 .container-app {
   width: 100%;
   max-width: 1280px;
