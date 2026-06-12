@@ -44,14 +44,14 @@ export async function generateMetadata({
       description,
       images: [
         {
-          url: "/og-wide_new.jpg",
+          url: "/og-wide.jpg",
           width: 1200,
           height: 630,
           alt: ogAlt,
           type: "image/jpeg",
         },
         {
-          url: "/og-square_new.jpg",
+          url: "/og-square.jpg",
           width: 1200,
           height: 1200,
           alt: ogAlt,
