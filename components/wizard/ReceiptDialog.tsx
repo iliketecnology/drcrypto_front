@@ -205,11 +205,11 @@ function ReceiptInner({
             style={{ borderColor: "rgba(0,0,0,0.08)" }}
           >
             <ReceiptBlock label={t("receipt.sender")}>
-              Virtual
+              VIRTUAL TOKENIZADORA SOCIEDADE PRESTADORA DE SERVICOS DE ATIVOS
+              VIRTUAIS LTDA - ME - CNPJ
               <br />
-              <span className="mono-num">CNPJ: 32.545.471/0001-96</span>
+              <span className="mono-num">CNPJ: 64.607.607/0001-17</span>
             </ReceiptBlock>
-
             <ReceiptBlock label={t("receipt.beneficiary")}>
               {beneficiary}
               <br />
@@ -220,23 +220,7 @@ function ReceiptInner({
             </ReceiptBlock>
 
             <ReceiptBlock label={t("receipt.representative")}>
-              <strong style={{ color: "var(--color-ink-900)" }}>
-                OprPay
-              </strong>
-              {" · "}
-              <a
-                href="mailto:tmbs@tmbs.tech"
-                style={{ color: "var(--color-green-700)" }}
-                className="underline underline-offset-2"
-              >
-                tmbs@tmbs.tech
-              </a>
-              <br />
-              <span className="mono-num">+1 (872) 359-9292</span>
-              {" · "}
-              TMBS, LLC.
-              <br />8 The Green, Ste R, Dover · State of Delaware ·{" "}
-              <span className="mono-num">19901</span>
+              <strong style={{ color: "var(--color-ink-900)" }}>OprPay</strong>
             </ReceiptBlock>
           </div>
           {/* 
