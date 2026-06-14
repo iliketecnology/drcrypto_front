@@ -675,7 +675,7 @@ function Step1Network({
   const usdtNumber = parseUSD(amountUSDT);
 
   if (network === "polygon") {
-    markup = 1 - 1.5 / 100;
+    markup = 1 - 1.7 / 100;
     rate = Number(Number(rate * markup).toFixed(4));
   }
 
@@ -690,7 +690,7 @@ function Step1Network({
     let markup = 0;
 
     if (network === "polygon") {
-      markup = 1 - 1.5 / 100;
+      markup = 1 - 1.7 / 100;
       rate = Number(Number(rate * markup).toFixed(4));
     }
 
