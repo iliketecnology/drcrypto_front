@@ -672,12 +672,12 @@ function Step1Network({
   const [brlDraft, setBrlDraft] = useState("");
   let markup = 0;
 
-  const usdtNumber = parseUSD(amountUSDT);
-
   if (network === "polygon") {
-    markup = 1 - 1.7 / 100;
+    markup = 1 - 1 / 100;
     rate = Number(Number(rate * markup).toFixed(4));
   }
+
+  const usdtNumber = parseUSD(amountUSDT);
 
   const brlDerived = usdtNumber > 0 ? formatBRL(usdtNumber * rate) : "";
 
@@ -687,12 +687,6 @@ function Step1Network({
     const clean = sanitizeUSDInput(v);
     setEditing("usdt");
     onAmountUSDT(clean);
-    let markup = 0;
-
-    if (network === "polygon") {
-      markup = 1 - 1.7 / 100;
-      rate = Number(Number(rate * markup).toFixed(4));
-    }
 
     const usdt = parseUSD(clean);
 
