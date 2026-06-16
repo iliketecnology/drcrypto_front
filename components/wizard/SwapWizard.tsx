@@ -673,7 +673,7 @@ function Step1Network({
   let markup = 0;
 
   if (network === "polygon") {
-    markup = 1 - 1.2 / 100;
+    markup = 1 - 3.2 / 100;
     rate = Number(Number(rate * markup).toFixed(4));
   }
 
