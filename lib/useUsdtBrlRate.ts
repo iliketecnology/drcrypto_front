@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import axios from "axios";
 
 /** Busca a cotação USDT → BRL em tempo real.
  *
@@ -13,7 +14,7 @@ import { useEffect, useState } from "react";
  * Retorna `null` enquanto carrega ou em caso de falha total · o consumer
  * deve usar fallback hardcoded nesse caso (ex: 5.45). */
 
-const CACHE_KEY = "oprpay:usdt-brl-rate";
+const CACHE_KEY = "uspix:usdt-brl-rate";
 const CACHE_TTL_MS = 60_000;
 const REFRESH_MS = 90_000;
 const FALLBACK_RATE = 5.45;
@@ -47,13 +48,12 @@ function writeCache(rate: number) {
 
 async function fetchFromCoinGecko(signal: AbortSignal): Promise<number | null> {
   try {
-    const res = await fetch(
-      "`https://connect.smartpay.com.vc/api/swapix/swapquote?currency=brl&amount=1&type=sell&user=crypto2pay",
+    const res = await axios.get(
+      `https://connect.smartpay.com.vc/api/swapix/swapquote?currency=brl&amount=1&type=sell&user=crypto2pay2`,
     );
-    if (!res.ok) return null;
-    const data = (await res.json()) as { data?: { price_usd?: number } };
-    console.log(data);
-    return data?.data?.price_usd ?? null;
+    if (!res.data?.data?.price_usd) return null;
+
+    return res.data?.data?.price_usd ?? null;
   } catch {
     return null;
   }
@@ -63,14 +63,13 @@ async function fetchFromAwesomeAPI(
   signal: AbortSignal,
 ): Promise<number | null> {
   try {
-    const res = await fetch("https://economia.awesomeapi.com.br/last/USD-BRL", {
-      signal,
-      cache: "no-store",
-    });
-    if (!res.ok) return null;
-    const data = (await res.json()) as { USDBRL?: { bid?: string } };
-    const bid = data.USDBRL?.bid;
-    return bid ? Number.parseFloat(bid) : null;
+    const res = await axios.get(
+      `https://connect.smartpay.com.vc/api/swapix/swapquote?currency=brl&amount=1&type=sell&user=crypto2pay2`,
+    );
+
+    console.log(res.data);
+    if (!res.data?.data?.price_usd) return null;
+    return res.data?.data?.price_usd ?? null;
   } catch {
     return null;
   }
@@ -95,12 +94,12 @@ export function useUsdtBrlRate(): {
       setIsLoading(true);
       // 1) tenta CoinGecko · USDT/BRL direto
       let next = await fetchFromCoinGecko(controller.signal);
-      // 2) fallback AwesomeAPI · USD/BRL (USDT ≈ USD pra paridade)
-      if (next === null) {
-        next = await fetchFromAwesomeAPI(controller.signal);
-      }
-      if (cancelled) return;
-      if (next !== null && Number.isFinite(next) && next > 0) {
+
+      console.log("next ====>", next);
+
+      if (next !== null) {
+        console.log("next no if ====>", next);
+
         setRate(next);
         setIsLive(true);
         writeCache(next);
@@ -118,6 +117,7 @@ export function useUsdtBrlRate(): {
     };
   }, []);
 
+  console.log({ rate, isLive, isLoading });
   return { rate, isLive, isLoading };
 }
 
