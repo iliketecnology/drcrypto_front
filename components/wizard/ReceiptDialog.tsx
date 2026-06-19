@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { useTranslations } from "next-intl";
 import { LIQUIDITY_FEE, type SwapResult } from "./types";
+import { VpnPromo } from "./VpnPromo";
 
 const easeOut = [0.16, 1, 0.3, 1] as const;
 
@@ -223,7 +224,9 @@ function ReceiptInner({
               <strong style={{ color: "var(--color-ink-900)" }}>OprPay</strong>
             </ReceiptBlock>
           </div>
-          {/* 
+
+          <VpnPromo />
+          {/*
           <button
             type="button"
             onClick={() => setSent(true)}

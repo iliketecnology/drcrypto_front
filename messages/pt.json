@@ -228,6 +228,8 @@
       "beneficiary": "Beneficiário",
       "txId": "ID Transação:",
       "representative": "Representante",
+      "vpnPromo": "Sua próxima transação ainda mais segura, baixe agora.",
+      "vpnCta": "Clique aqui",
       "close": "Fechar"
     }
   },
