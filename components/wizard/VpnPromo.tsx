@@ -161,7 +161,7 @@ export function VpnPromo() {
 
         <p
           aria-label={headline}
-          className="text-[11px] leading-snug font-semibold whitespace-nowrap"
+          className="text-[13px] leading-snug font-semibold whitespace-nowrap"
           style={{
             color: "var(--color-ink-900)",
             fontFamily: "ui-monospace, 'JetBrains Mono', 'Menlo', monospace",
