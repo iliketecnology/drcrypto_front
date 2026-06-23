@@ -97,7 +97,7 @@
         "label": "Average time from QR paid to PIX received"
       },
       "max": {
-        "value": "R$ 250K",
+        "value": "R$ 90K",
         "label": "Maximum per transaction"
       },
       "unlimited": {
@@ -150,7 +150,7 @@
       },
       "q4": {
         "question": "Is there a per-transaction limit?",
-        "answer": "Up to R$ 250,000.00 per transaction."
+        "answer": "Up to R$ 99,000.00 per transaction."
       },
       "q5": {
         "question": "What if PIX doesn't arrive?",
@@ -182,7 +182,7 @@
       "networkLabel": "USDT network",
       "youSend": "YOU SEND · USDT",
       "youReceive": "YOU RECEIVE · BRL",
-      "hint": "Minimum: 10 USDT · Maximum: R$ 250,000.00 per transaction."
+      "hint": "Minimum: 10 USDT · Maximum: R$ 99,000.00 per transaction."
     },
     "step2": {
       "title": "Where we send the PIX",
