@@ -25,6 +25,10 @@ const easeOut = [0.16, 1, 0.3, 1] as const;
 const TOTAL_STEPS = 4;
 const PIX_EXPIRY_SECONDS = 15 * 60;
 
+/** Mínimo em USDT e teto em BRL por transação (limite regulatório). */
+const MIN_USDT = 10;
+const MAX_BRL = 99_000;
+
 const PIX_KEY_OPTIONS: Array<{
   id: PixKeyType;
   label: string;
@@ -201,8 +205,11 @@ export function SwapWizard({ isOpen, onClose, onComplete }: Props) {
   const walletValid = isValidWallet(state.network, state.returnWallet);
   const emailValid = /\S+@\S+\.\S+/.test(state.receiptEmail.trim());
 
+  const amountBrlNumber = parsePtBR(state.amountBRL);
+
   const canAdvance = (() => {
-    if (state.step === 1) return amountNumber >= 10;
+    if (state.step === 1)
+      return amountNumber >= MIN_USDT && amountBrlNumber <= MAX_BRL;
     if (state.step === 2) return state.pixKey.trim().length >= 4;
     if (state.step === 3) return walletValid && emailValid;
     if (state.step === 4) return true;
@@ -295,6 +302,7 @@ export function SwapWizard({ isOpen, onClose, onComplete }: Props) {
                     key="s1"
                     network={state.network}
                     amountUSDT={state.amountUSDT}
+                    overLimit={amountBrlNumber > MAX_BRL}
                     rate={rate}
                     onNetwork={(v) => setState((s) => ({ ...s, network: v }))}
                     onAmountUSDT={(v) =>
@@ -653,6 +661,7 @@ const fadeProps = {
 function Step1Network({
   network,
   amountUSDT,
+  overLimit,
   rate,
   onNetwork,
   onAmountUSDT,
@@ -661,6 +670,7 @@ function Step1Network({
 }: {
   network: Network;
   amountUSDT: string;
+  overLimit: boolean;
   rate: number;
   onNetwork: (v: Network) => void;
   onAmountUSDT: (v: string) => void;
@@ -797,7 +807,16 @@ function Step1Network({
         </FieldShell>
       </div>
 
-      <Hint>{t("step1.hint")}</Hint>
+      {overLimit ? (
+        <p
+          className="text-[11.5px] leading-relaxed font-semibold"
+          style={{ color: "var(--color-red-600, #dc2626)" }}
+        >
+          {t("step1.overLimit")}
+        </p>
+      ) : (
+        <Hint>{t("step1.hint")}</Hint>
+      )}
     </motion.div>
   );
 }

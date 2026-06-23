@@ -182,7 +182,8 @@
       "networkLabel": "USDT network",
       "youSend": "YOU SEND · USDT",
       "youReceive": "YOU RECEIVE · BRL",
-      "hint": "Minimum: 10 USDT · Maximum: R$ 99,000.00 per transaction."
+      "hint": "Minimum: 10 USDT · Maximum: R$ 99,000.00 per transaction.",
+      "overLimit": "The maximum is R$ 99,000.00 per transaction. Lower the amount to continue."
     },
     "step2": {
       "title": "Where we send the PIX",
