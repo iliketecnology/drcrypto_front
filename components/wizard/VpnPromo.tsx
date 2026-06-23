@@ -19,7 +19,9 @@ const VPN = {
 const VPN_URL = "https://vpn.vu/?ref=oprpay";
 
 /** Glyphs do embaralhamento · mix de hex/símbolos pra dar leitura "cripto/terminal". */
-const SCRAMBLE_GLYPHS = "ABCDEF0123456789!<>-_\\/[]{}=+*?#§%&";
+// Sem `-` `/` `\`: esses são oportunidades de quebra de linha (soft-wrap) e fariam
+// o texto pular de linha durante o embaralho quando o headline quebra (mobile).
+const SCRAMBLE_GLYPHS = "ABCDEF0123456789!<>_[]{}=+*?#§%&";
 
 /**
  * Revela `text` caractere a caractere ("descriptografando"): os ainda-não-revelados
@@ -40,7 +42,9 @@ function useScramble(
       setOut(text);
       return;
     }
-    if (!start || startedRef.current) return;
+    if (!start) return;
+    // Re-roda o embaralho sempre que `text` muda (ex.: troca de idioma i18n),
+    // pra o headline acompanhar a tradução em vez de ficar preso no 1º render.
     startedRef.current = true;
 
     let tick = 0;
@@ -151,7 +155,7 @@ export function VpnPromo() {
           <div
             className="flex items-center gap-2.5 shrink-0"
             style={{ color: VPN.brand }}
-            aria-label="Disponível para Windows, macOS e Android"
+            aria-label="Disponível para Windows, Mac e Android"
           >
             <WindowsIcon />
             <AppleIcon />
@@ -161,11 +165,13 @@ export function VpnPromo() {
 
         <p
           aria-label={headline}
-          className="text-[13px] leading-snug font-semibold whitespace-nowrap"
+          className="leading-snug font-semibold"
           style={{
             color: "var(--color-ink-900)",
             fontFamily: "ui-monospace, 'JetBrains Mono', 'Menlo', monospace",
             letterSpacing: "-0.02em",
+            // Fonte fluida + sem nowrap: encolhe e quebra pra nunca vazar o card.
+            fontSize: "clamp(10.5px, 3vw, 13px)",
           }}
         >
           <span aria-hidden>{scrambled || (reduced ? headline : "")}</span>
