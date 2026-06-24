@@ -29,6 +29,10 @@ const PIX_EXPIRY_SECONDS = 15 * 60;
 const MIN_USDT = 10;
 const MAX_BRL = 99_000;
 
+/** WhatsApp do atendimento (TMBS) — destino do deep-link de recuperação pós-timeout (hash).
+ * Mesmo número do rodapé do site. Ver ExpiredHashFlow. */
+const SUPPORT_WHATSAPP = "5511974101010";
+
 const PIX_KEY_OPTIONS: Array<{
   id: PixKeyType;
   label: string;
@@ -53,6 +57,8 @@ type Props = {
 type WizardState = {
   step: 1 | 2 | 3 | 4;
   verifying: boolean;
+  /** O timer de 15 min zerou sem o pagamento ser detectado → mostra o fluxo de recuperação (hash). */
+  expired: boolean;
   network: Network;
   amountUSDT: string;
   amountBRL: string;
@@ -71,6 +77,7 @@ type WizardState = {
 const INITIAL_STATE: WizardState = {
   step: 1,
   verifying: false,
+  expired: false,
   network: "polygon",
   amountUSDT: "",
   pixKeyType: "cpf",
@@ -348,6 +355,10 @@ export function SwapWizard({ isOpen, onClose, onComplete }: Props) {
                     address_send={state.address_send}
                     order_id={state.order_id}
                     verifying={state.verifying}
+                    expired={state.expired}
+                    onExpire={() => setState((s) => ({ ...s, expired: true }))}
+                    onClose={onClose}
+                    onRestart={reset}
                     onSimulatePaid={() => {
                       setState((s) => ({ ...s, verifying: false }));
                       handleComplete();
@@ -357,7 +368,7 @@ export function SwapWizard({ isOpen, onClose, onComplete }: Props) {
               </AnimatePresence>
             </div>
 
-            {!state.verifying && (
+            {!state.verifying && !state.expired && (
               <Footer
                 state={state}
                 setState={setState}
@@ -603,7 +614,7 @@ function Footer({
                 "linear-gradient(135deg, var(--color-green-700) 0%, var(--color-green-900) 100%)",
               boxShadow:
                 canAdvance && !submitting
-                  ? "0 8px 20px rgba(0,82,39,0.22)"
+                  ? "0 8px 20px color-mix(in srgb, var(--color-green-900) 22%, transparent)"
                   : "none",
             }}
           >
@@ -980,6 +991,10 @@ function Step4QR({
   address_send,
   order_id,
   verifying,
+  expired,
+  onExpire,
+  onClose,
+  onRestart,
   onSimulatePaid,
 }: {
   amount: string;
@@ -987,6 +1002,10 @@ function Step4QR({
   address_send: string;
   order_id: string;
   verifying: boolean;
+  expired: boolean;
+  onExpire: () => void;
+  onClose: () => void;
+  onRestart: () => void;
   onSimulatePaid: () => void;
 }) {
   const t = useTranslations("wizard");
@@ -998,6 +1017,12 @@ function Step4QR({
     const t = setInterval(() => setSeconds((s) => (s > 0 ? s - 1 : 0)), 1000);
     return () => clearInterval(t);
   }, [verifying]);
+
+  // Zerou sem o pagamento ser detectado → dispara o fluxo de recuperação (hash) UMA vez.
+  // Se o SUCCESS chegar atrasado pelo polling, `verifying` tem precedência abaixo e mostra o comprovante.
+  useEffect(() => {
+    if (seconds === 0 && !verifying && !expired) onExpire();
+  }, [seconds, verifying, expired, onExpire]);
 
   const mm = String(Math.floor(seconds / 60)).padStart(2, "0");
   const ss = String(seconds % 60).padStart(2, "0");
@@ -1019,6 +1044,17 @@ function Step4QR({
     return <VerifyingFlow onComplete={onSimulatePaid} />;
   }
 
+  if (expired || seconds === 0) {
+    return (
+      <ExpiredHashFlow
+        orderId={order_id}
+        amount={amount}
+        onClose={onClose}
+        onRestart={onRestart}
+      />
+    );
+  }
+
   return (
     <motion.div {...fadeProps} className="flex flex-col gap-4">
       <StepTitle
@@ -1031,7 +1067,7 @@ function Step4QR({
       <div className="flex flex-col items-center sm:items-start sm:grid sm:grid-cols-[140px_1fr] gap-4 sm:gap-5">
         <div
           className="relative w-[140px] h-[140px] rounded-2xl bg-white grid place-items-center p-2.5 shrink-0"
-          style={{ boxShadow: "0 8px 24px rgba(0,82,39,0.12)" }}
+          style={{ boxShadow: "0 8px 24px color-mix(in srgb, var(--color-green-900) 12%, transparent)" }}
         >
           <div
             className="grid"
@@ -1099,6 +1135,291 @@ function Step4QR({
         </div>
       </div>
     </motion.div>
+  );
+}
+
+/** Recuperação pós-timeout (pedido do Thiago/Moya): quando os 15 min zeram sem o pagamento
+ * cair, em vez de só travar no 00:00, perguntamos se a pessoa pagou. Se sim, ela cola a hash
+ * (TXID) e a gente abre o WhatsApp do atendimento JÁ com a hash — o time confirma manualmente e
+ * libera o PIX. Se não, encerra com leveza. Reaproveitável nos whitelabels (oprpay/uspix). */
+export type ExpiredPhase = "ask" | "hash" | "sent" | "restart" | "thanks";
+
+export function ExpiredHashFlow({
+  orderId,
+  amount,
+  onClose,
+  onRestart,
+  initialPhase = "ask",
+}: {
+  orderId: string;
+  amount: string;
+  onClose: () => void;
+  /** Recomeça uma nova operação (reseta o wizard pro passo 1). */
+  onRestart: () => void;
+  /** Só pra página de preview — em produção sempre começa em "ask". */
+  initialPhase?: ExpiredPhase;
+}) {
+  const t = useTranslations("wizard");
+  const [phase, setPhase] = useState<ExpiredPhase>(initialPhase);
+  const [hash, setHash] = useState("");
+
+  const sendHash = () => {
+    if (!hash.trim()) return;
+    const msg = t("expired.waMessage", {
+      hash: hash.trim(),
+      order: orderId,
+      amount,
+    });
+    window.open(
+      `https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(msg)}`,
+      "_blank",
+      "noopener,noreferrer",
+    );
+    setPhase("sent");
+  };
+
+  return (
+    <motion.div {...fadeProps} className="flex flex-col gap-5 pb-2">
+      {phase === "ask" && (
+        <>
+          <div className="flex flex-col items-center text-center gap-3 pt-1">
+            <ExpiredClockIcon />
+            <StepTitle title={t("expired.title")} sub={t("expired.askSub")} />
+          </div>
+          <div className="flex flex-col gap-2.5">
+            <p className="text-center text-[13px] font-semibold text-ink-900">
+              {t("expired.askTitle")}
+            </p>
+            <button
+              type="button"
+              onClick={() => setPhase("hash")}
+              className="
+                w-full inline-flex items-center justify-center
+                px-6 py-3.5 rounded-2xl text-white font-semibold tracking-tight text-[14px]
+                transition-all duration-300
+              "
+              style={{
+                background:
+                  "linear-gradient(135deg, var(--color-green-700) 0%, var(--color-green-900) 100%)",
+                boxShadow: "0 8px 20px color-mix(in srgb, var(--color-green-900) 22%, transparent)",
+              }}
+            >
+              {t("expired.yes")}
+            </button>
+            <button
+              type="button"
+              onClick={() => setPhase("restart")}
+              className="
+                w-full px-6 py-3 rounded-2xl text-[14px] font-semibold tracking-tight
+                text-ink-700 transition
+              "
+              style={{
+                background: "var(--color-off-white)",
+                border: "1px solid var(--color-ink-200)",
+              }}
+            >
+              {t("expired.no")}
+            </button>
+          </div>
+        </>
+      )}
+
+      {phase === "hash" && (
+        <>
+          <StepTitle
+            title={t("expired.hashTitle")}
+            sub={t("expired.hashSub")}
+          />
+          <FieldShell label={t("expired.hashLabel")}>
+            <input
+              value={hash}
+              onChange={(e) => setHash(e.target.value.trim())}
+              placeholder={t("expired.hashPlaceholder")}
+              className="
+                w-full bg-transparent outline-none mono-num
+                text-[13px] font-medium text-ink-900
+                placeholder:text-ink-300
+              "
+              aria-label={t("expired.hashLabel")}
+            />
+          </FieldShell>
+          <button
+            type="button"
+            onClick={sendHash}
+            disabled={!hash.trim()}
+            className="
+              w-full inline-flex items-center justify-center gap-2
+              px-6 py-3.5 rounded-2xl text-white font-semibold tracking-tight text-[14px]
+              transition-all duration-300
+              disabled:opacity-40 disabled:cursor-not-allowed
+            "
+            style={{
+              background:
+                "linear-gradient(135deg, var(--color-green-700) 0%, var(--color-green-900) 100%)",
+              boxShadow: hash.trim() ? "0 8px 20px color-mix(in srgb, var(--color-green-900) 22%, transparent)" : "none",
+            }}
+          >
+            <WhatsAppGlyph />
+            {t("expired.sendHash")}
+          </button>
+          <button
+            type="button"
+            onClick={() => setPhase("ask")}
+            className="text-[13px] font-semibold text-ink-500 hover:text-ink-900 transition self-center"
+          >
+            ← {t("back")}
+          </button>
+        </>
+      )}
+
+      {phase === "sent" && (
+        <div className="flex flex-col items-center text-center gap-3 py-2">
+          <SuccessCheck />
+          <StepTitle title={t("expired.sentTitle")} sub={t("expired.sentSub")} />
+          <button
+            type="button"
+            onClick={onClose}
+            className="
+              mt-1 px-6 py-3 rounded-2xl text-[14px] font-semibold tracking-tight
+              text-ink-700 transition
+            "
+            style={{
+              background: "var(--color-off-white)",
+              border: "1px solid var(--color-ink-200)",
+            }}
+          >
+            {t("expired.close")}
+          </button>
+        </div>
+      )}
+
+      {phase === "restart" && (
+        <div className="flex flex-col items-center text-center gap-4 py-3">
+          <StepTitle
+            title={t("expired.restartTitle")}
+            sub={t("expired.restartSub")}
+          />
+          {/* Sim em destaque; "Não, obrigado" como link de texto abaixo. */}
+          <button
+            type="button"
+            onClick={onRestart}
+            className="
+              w-full inline-flex items-center justify-center
+              px-6 py-3.5 rounded-2xl text-white font-semibold tracking-tight text-[14px]
+              transition-all duration-300
+            "
+            style={{
+              background:
+                "linear-gradient(135deg, var(--color-green-700) 0%, var(--color-green-900) 100%)",
+              boxShadow: "0 8px 20px color-mix(in srgb, var(--color-green-900) 22%, transparent)",
+            }}
+          >
+            {t("expired.restartYes")}
+          </button>
+          <button
+            type="button"
+            onClick={() => setPhase("thanks")}
+            className="
+              text-[13px] font-medium text-ink-500 hover:text-ink-900
+              underline underline-offset-2 transition
+            "
+          >
+            {t("expired.restartNo")}
+          </button>
+        </div>
+      )}
+
+      {phase === "thanks" && (
+        <div className="flex flex-col items-center text-center gap-3 py-3">
+          <HeartIcon />
+          <StepTitle
+            title={t("expired.thanksTitle")}
+            sub={t("expired.thanksSub")}
+          />
+          <button
+            type="button"
+            onClick={onClose}
+            className="
+              mt-1 px-6 py-3 rounded-2xl text-[14px] font-semibold tracking-tight
+              text-ink-700 transition
+            "
+            style={{
+              background: "var(--color-off-white)",
+              border: "1px solid var(--color-ink-200)",
+            }}
+          >
+            {t("expired.close")}
+          </button>
+        </div>
+      )}
+    </motion.div>
+  );
+}
+
+function HeartIcon() {
+  return (
+    <motion.span
+      initial={{ scale: 0.6, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{ duration: 0.35, ease: easeOut }}
+      className="w-12 h-12 rounded-full grid place-items-center"
+      style={{ background: "var(--color-green-100)" }}
+      aria-hidden
+    >
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path
+          d="M12 20s-6.5-4.35-9-8.5C1.5 8.5 3 5.5 6 5.5c1.8 0 3 1 4 2.2 1-1.2 2.2-2.2 4-2.2 3 0 4.5 3 3 6-2.5 4.15-9 8.5-9 8.5Z"
+          fill="var(--color-green-700)"
+        />
+      </svg>
+    </motion.span>
+  );
+}
+
+function ExpiredClockIcon() {
+  return (
+    <span
+      className="w-12 h-12 rounded-full grid place-items-center"
+      style={{ background: "rgba(220, 38, 38, 0.1)" }}
+      aria-hidden
+    >
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="13" r="8" stroke="#dc2626" strokeWidth="1.8" />
+        <path
+          d="M12 9.5V13l2.5 1.5M9 3h6"
+          stroke="#dc2626"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+        />
+      </svg>
+    </span>
+  );
+}
+
+function SuccessCheck() {
+  return (
+    <motion.span
+      initial={{ scale: 0.6, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{ duration: 0.35, ease: easeOut }}
+      className="w-12 h-12 rounded-full grid place-items-center text-white text-lg font-bold"
+      style={{
+        background:
+          "linear-gradient(135deg, var(--color-green-500), var(--color-green-700))",
+        boxShadow: "0 0 0 5px rgba(3, 187, 133, 0.15)",
+      }}
+      aria-hidden
+    >
+      ✓
+    </motion.span>
+  );
+}
+
+function WhatsAppGlyph() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+      <path d="M12.04 2c-5.46 0-9.9 4.44-9.9 9.9 0 1.75.46 3.45 1.32 4.95L2 22l5.3-1.39c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.9-4.44 9.9-9.9S17.5 2 12.04 2Zm0 18.13c-1.48 0-2.93-.4-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.39c0-4.54 3.7-8.23 8.24-8.23 4.54 0 8.23 3.69 8.23 8.23 0 4.54-3.69 8.24-8.23 8.24Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.25-.64.8-.79.97-.14.16-.29.18-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.39.11-.51.11-.11.25-.29.37-.43.13-.14.17-.25.25-.41.08-.16.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.48c-.16 0-.43.06-.65.31-.23.25-.86.84-.86 2.05 0 1.21.88 2.38 1 2.54.12.16 1.73 2.64 4.19 3.7.59.25 1.04.4 1.4.52.59.19 1.12.16 1.54.1.47-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.14-1.18-.06-.11-.22-.17-.47-.29Z" />
+    </svg>
   );
 }
 
