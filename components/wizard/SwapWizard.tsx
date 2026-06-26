@@ -1014,9 +1014,22 @@ function Step4QR({
 
   useEffect(() => {
     if (verifying) return;
-    const t = setInterval(() => setSeconds((s) => (s > 0 ? s - 1 : 0)), 1000);
-    return () => clearInterval(t);
-  }, [verifying]);
+    // Use Date.now() so the timer stays accurate when the tab loses focus.
+    // Browsers throttle setInterval to 1-60s on hidden tabs; counting ticks drifts badly.
+    const deadlineAt = Date.now() + seconds * 1000;
+    const tick = () => {
+      const remaining = Math.max(0, Math.ceil((deadlineAt - Date.now()) / 1000));
+      setSeconds(remaining);
+    };
+    const t = setInterval(tick, 500);
+    // Re-sync immediately when the tab becomes visible again.
+    const onVisibility = () => { if (!document.hidden) tick(); };
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      clearInterval(t);
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+  }, [verifying]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Zerou sem o pagamento ser detectado → dispara o fluxo de recuperação (hash) UMA vez.
   // Se o SUCCESS chegar atrasado pelo polling, `verifying` tem precedência abaixo e mostra o comprovante.
