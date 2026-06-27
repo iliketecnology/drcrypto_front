@@ -1,25 +1,47 @@
 'use client';
 
-import dynamic from 'next/dynamic';
 import { useTranslations } from 'next-intl';
 import { motion } from 'motion/react';
 import { TransactionCard } from '@/components/ui/TransactionCard';
 import { USDTLogo, PIXLogo } from '@/components/illustrations/BrandLogos';
-import { CTAButton } from '@/components/wizard/CTAButton';
-
-// Globo 3D só no client (R3F não faz SSR). Variante 'light' pro fundo branco.
-const GlobeWireframe = dynamic(
-  () =>
-    import('@/components/illustrations/GlobeWireframe').then(
-      (m) => m.GlobeWireframe,
-    ),
-  { ssr: false },
-);
+import { GlobeWireframe } from '@/components/illustrations/GlobeWireframe';
+import { useSwapWizard } from '@/components/wizard/SwapWizardProvider';
+import type { PaymentMode } from '@/components/wizard/types';
 
 const easeOut = [0.16, 1, 0.3, 1] as const;
 
+type PaymentCard = {
+  mode: PaymentMode;
+  icon: string;
+  label: string;
+  description: string;
+  badge?: string;
+};
+
+const PAYMENT_CARDS: PaymentCard[] = [
+  {
+    mode: 'pix',
+    icon: '🔑',
+    label: 'USDT → PIX (BRL)',
+    description: 'Informe a chave PIX do destinatário.',
+  },
+  {
+    mode: 'boleto',
+    icon: '🧾',
+    label: 'USDT → Boleto',
+    description: 'Escaneie o código de barras ou digite.',
+  },
+  {
+    mode: 'qr',
+    icon: '📷',
+    label: 'USDT → QR Code',
+    description: 'Escaneie o QR Code do PIX ou cole o código.',
+  },
+];
+
 export function Hero() {
   const t = useTranslations('hero');
+  const { openWithMode } = useSwapWizard();
 
   return (
     <section className="relative isolate overflow-hidden">
@@ -46,9 +68,9 @@ export function Hero() {
         }}
       />
 
-      {/* Globo 3D wireframe · atmosfera à direita, sangra pra fora da borda.
+      {/* Globo wireframe 3D · atmosfera à direita, sangra pra fora da borda.
           Concentrado no lado direito (atrás do card) pra deixar o texto à
-          esquerda limpo. maskImage radial do próprio globo esmaece as bordas. */}
+          esquerda limpo. maskImage radial (no próprio Canvas) esmaece as bordas. */}
       <div
         aria-hidden
         className="
@@ -72,7 +94,7 @@ export function Hero() {
         }}
       />
 
-      <div className="container-app relative pt-24 pb-16 md:pt-32 md:pb-24 lg:pt-36 lg:pb-28 lg:min-h-[80vh]">
+      <div className="container-app relative flex flex-col justify-center min-h-[100dvh] pt-24 pb-16 sm:block sm:min-h-0 md:pt-32 md:pb-24 lg:pt-36 lg:pb-28 lg:min-h-[80vh]">
         <div className="relative grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           {/* Coluna principal · texto */}
           <div className="lg:col-span-8 flex flex-col items-start text-left">
@@ -85,8 +107,8 @@ export function Hero() {
                 px-3.5 py-1.5 rounded-full
               "
               style={{
-                background: 'rgba(157, 43, 237, 0.08)',
-                border: '1px solid rgba(157, 43, 237, 0.18)',
+                background: 'rgba(0, 99, 229, 0.08)',
+                border: '1px solid rgba(0, 99, 229, 0.18)',
                 color: 'var(--color-green-900)',
               }}
             >
@@ -131,46 +153,67 @@ export function Hero() {
               {t('sub')}
             </motion.p>
 
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: easeOut, delay: 0.65 }}
-              className="mt-10 flex flex-wrap items-center gap-4"
-            >
-              <CTAButton size="lg">{t('cta')}</CTAButton>
-
-              <div
-                className="
-                  inline-flex items-center gap-3 rounded-full
-                  bg-white/85 border border-ink-200
-                  shadow-soft px-4 py-2.5
-                  backdrop-blur-sm
-                "
-              >
-                <span className="inline-flex items-center gap-2 text-[14px] font-semibold tracking-tight text-ink-900">
-                  <USDTLogo size={22} />
-                  USDT
-                </span>
-                <span
-                  className="text-base"
-                  style={{ color: 'var(--color-green-500)' }}
-                  aria-hidden
+            {/* Cards de modalidade de pagamento */}
+            <div className="mt-8 sm:mt-10 w-full flex flex-col items-stretch gap-2.5 sm:grid sm:grid-cols-3 sm:gap-3">
+              {PAYMENT_CARDS.map((card, i) => (
+                /* Animação de entrada em cascata (stagger). SÓ opacity:
+                   animar transform/y quebraria a composição do backdrop-filter
+                   (o glass "saltaria" pra opaco). O translateZ(0) do CSS fica. */
+                <motion.button
+                  key={card.mode}
+                  type="button"
+                  onClick={() => openWithMode(card.mode)}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.5, ease: easeOut, delay: 0.7 + i * 0.13 }}
+                  className="
+                    pay-glass-blue group flex items-center gap-3 text-left
+                    sm:flex-col sm:items-start sm:gap-0
+                    rounded-full sm:rounded-2xl
+                    px-5 py-4 sm:p-5 sm:min-h-[124px]
+                    text-white transition-shadow duration-300
+                  "
                 >
-                  →
-                </span>
-                <span className="inline-flex items-center gap-2 text-[14px] font-semibold tracking-tight text-ink-900">
-                  <PIXLogo size={22} />
-                  PIX
-                </span>
-              </div>
-            </motion.div>
+                  <span className="relative z-10 flex flex-col min-w-0 sm:w-full">
+                    <span
+                      className="text-[15px] sm:text-[14px] font-bold tracking-tight whitespace-nowrap"
+                      style={{ textShadow: '0 1px 10px rgba(2,12,40,0.55)' }}
+                    >
+                      {card.label}
+                    </span>
+                    <span
+                      className="hidden sm:block text-[11px] mt-1 leading-snug text-white/75"
+                      style={{ textShadow: '0 1px 8px rgba(2,12,40,0.5)' }}
+                    >
+                      {card.description}
+                    </span>
+                  </span>
+                  <span
+                    className="relative z-10 ml-auto shrink-0 grid place-items-center rounded-full transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 sm:ml-0 sm:mt-auto sm:self-end"
+                    style={{
+                      width: 34,
+                      height: 34,
+                      background: '#ffffff',
+                      color: 'var(--color-green-500)',
+                      boxShadow:
+                        '0 0 14px rgba(255,255,255,0.6), 0 0 6px rgba(207,155,245,0.7)',
+                    }}
+                    aria-hidden
+                  >
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M7 17 L17 7 M8 7 H17 V16" />
+                    </svg>
+                  </span>
+                </motion.button>
+              ))}
+            </div>
 
             {/* Prova institucional · 3 badges curtos */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.85 }}
-              className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3"
+              className="mt-10 hidden sm:flex flex-wrap items-center gap-x-6 gap-y-3"
             >
               <span className="inline-flex items-center gap-2 text-[12px] font-semibold tracking-tight text-ink-700">
                 <USDTLogo size={18} />

@@ -5,6 +5,9 @@ export type Network = "polygon";
 
 export type PixKeyType = "cpf" | "email" | "phone" | "evp" | "cnpj";
 
+/** Modalidade de pagamento destino. */
+export type PaymentMode = "pix" | "boleto" | "qr";
+
 /** Snapshot do swap concluído. Passado do wizard pro ReceiptDialog. */
 export type SwapResult = {
   amountUSDT: string;
@@ -18,6 +21,9 @@ export type SwapResult = {
   completedAt: number;
   endtoend: string;
   beneficiary: string;
+  paymentMode: PaymentMode;
+  boletoCode?: string;
+  pixQrRaw?: string;
 
   /** Cotação USD→BRL travada no momento da geração do QR (R$ por 1 USDT). */
   rate: number;

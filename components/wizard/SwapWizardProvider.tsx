@@ -3,11 +3,12 @@
 import { createContext, useCallback, useContext, useState } from "react";
 import { SwapWizard } from "./SwapWizard";
 import { ReceiptDialog } from "./ReceiptDialog";
-import type { SwapResult } from "./types";
+import type { PaymentMode, SwapResult } from "./types";
 
 type Ctx = {
   isOpen: boolean;
   open: () => void;
+  openWithMode: (mode: PaymentMode) => void;
   close: () => void;
   openReceipt: (data: SwapResult) => void;
 };
@@ -20,10 +21,12 @@ export function SwapWizardProvider({
   children: React.ReactNode;
 }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [mode, setMode] = useState<PaymentMode>("pix");
   const [receiptData, setReceiptData] = useState<SwapResult | null>(null);
   const [receiptOpen, setReceiptOpen] = useState(false);
 
-  const open = useCallback(() => setIsOpen(true), []);
+  const open = useCallback(() => { setMode("pix"); setIsOpen(true); }, []);
+  const openWithMode = useCallback((m: PaymentMode) => { setMode(m); setIsOpen(true); }, []);
   const close = useCallback(() => setIsOpen(false), []);
 
   const openReceipt = useCallback((data: SwapResult) => {
@@ -38,9 +41,9 @@ export function SwapWizardProvider({
   }, []);
 
   return (
-    <SwapWizardContext.Provider value={{ isOpen, open, close, openReceipt }}>
+    <SwapWizardContext.Provider value={{ isOpen, open, openWithMode, close, openReceipt }}>
       {children}
-      <SwapWizard isOpen={isOpen} onClose={close} onComplete={openReceipt} />
+      <SwapWizard isOpen={isOpen} mode={mode} onClose={close} onComplete={openReceipt} />
       <ReceiptDialog
         isOpen={receiptOpen}
         data={receiptData}
