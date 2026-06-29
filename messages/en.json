@@ -182,8 +182,7 @@
       "networkLabel": "USDT network",
       "youSend": "YOU SEND · USDT",
       "youReceive": "YOU RECEIVE · BRL",
-      "hint": "Minimum: 10 USDT · Maximum: R$ 99,000.00 per transaction.",
-      "overLimit": "The maximum is R$ 99,000.00 per transaction. Lower the amount to continue."
+      "hint": "Minimum: 10 USDT · Maximum: R$ 99,000.00 per transaction."
     },
     "step2": {
       "title": "Where we send the PIX",
@@ -232,28 +231,6 @@
       "vpnPromo": "Speed, security and freedom to browse.",
       "vpnCta": "Click here",
       "close": "Close"
-    },
-    "expired": {
-      "title": "Time expired",
-      "askTitle": "Did you make the payment?",
-      "askSub": "No worries. If you already sent the USDT, we'll locate your transaction and finish the PIX manually.",
-      "yes": "Yes, I paid",
-      "no": "Not yet",
-      "hashTitle": "Enter the transaction hash",
-      "hashSub": "Paste the transaction hash (TXID). We'll open WhatsApp support with it to confirm and release your PIX.",
-      "hashLabel": "Transaction hash / TXID",
-      "hashPlaceholder": "0x... or transaction ID",
-      "sendHash": "Send hash on WhatsApp",
-      "waMessage": "Hi! I made the payment but the 15-min window expired. Here's the transaction hash to confirm: {hash} · Order: {order} · Amount: {amount} USDT",
-      "sentTitle": "Receipt sent",
-      "sentSub": "We opened WhatsApp support with your hash. Once we confirm the payment, your PIX is released (15 min to 2h).",
-      "close": "Close",
-      "restartTitle": "Want to start another transaction?",
-      "restartSub": "Whenever you're ready to pay, we'll set everything up again in a second.",
-      "restartYes": "Yes, let's go",
-      "restartNo": "No, thanks",
-      "thanksTitle": "Thank you!",
-      "thanksSub": "It was a pleasure. Whenever you want to swap USDT for PIX, just come back. See you soon!"
     }
   },
   "footer": {

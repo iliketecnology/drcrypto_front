@@ -182,8 +182,7 @@
       "networkLabel": "Rede USDT",
       "youSend": "VOCÊ ENVIA · USDT",
       "youReceive": "VOCÊ RECEBE · BRL",
-      "hint": "Mínimo: 10 USDT · Máximo: R$ 99.000,00 por transação.",
-      "overLimit": "O valor máximo é de R$ 99.000,00 por transação. Reduza o valor para continuar."
+      "hint": "Mínimo: 10 USDT · Máximo: R$ 99.000,00 por transação."
     },
     "step2": {
       "title": "Pra onde mandamos o PIX",
@@ -232,28 +231,6 @@
       "vpnPromo": "Velocidade, segurança e liberdade para navegar.",
       "vpnCta": "Clique aqui",
       "close": "Fechar"
-    },
-    "expired": {
-      "title": "O tempo expirou",
-      "askTitle": "Você efetuou o pagamento?",
-      "askSub": "Sem estresse. Se você já enviou o USDT, a gente localiza sua transação e finaliza o PIX na mão.",
-      "yes": "Sim, já paguei",
-      "no": "Ainda não paguei",
-      "hashTitle": "Informe a hash da transação",
-      "hashSub": "Cole a hash (TXID) do envio. Vamos abrir o WhatsApp do suporte já com ela pra confirmar e liberar seu PIX.",
-      "hashLabel": "Hash / TXID da transação",
-      "hashPlaceholder": "0x... ou ID da transação",
-      "sendHash": "Enviar hash no WhatsApp",
-      "waMessage": "Olá! Fiz o pagamento mas o tempo de 15 min expirou. Segue a hash da transação pra confirmar: {hash} · Pedido: {order} · Valor: {amount} USDT",
-      "sentTitle": "Comprovante enviado",
-      "sentSub": "Abrimos o WhatsApp do suporte com a sua hash. Assim que confirmarmos o pagamento, seu PIX é liberado (de 15 min a 2h).",
-      "close": "Fechar",
-      "restartTitle": "Vamos iniciar outra operação?",
-      "restartSub": "Quando você estiver pronto pra pagar, a gente gera tudo de novo num instante.",
-      "restartYes": "Sim, bora",
-      "restartNo": "Não, obrigado",
-      "thanksTitle": "Obrigado!",
-      "thanksSub": "Foi um prazer. Quando quiser trocar USDT por PIX, é só voltar aqui. Até a próxima!"
     }
   },
   "footer": {
