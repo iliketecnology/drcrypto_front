@@ -14,8 +14,11 @@ import {
   isValidWallet,
   type Network,
   type PixKeyType,
+  type PaymentMode,
   type SwapResult,
 } from "./types";
+import { CameraScanner } from "./CameraScanner";
+import { parsePixQr } from "@/lib/pixEmvParser";
 import { QRCodeSVG } from "qrcode.react";
 import { useTranslations } from "next-intl";
 import axios from "axios";
@@ -24,6 +27,14 @@ import { Logo } from "../ui/Logo";
 const easeOut = [0.16, 1, 0.3, 1] as const;
 const TOTAL_STEPS = 4;
 const PIX_EXPIRY_SECONDS = 15 * 60;
+
+/** Mínimo em USDT e teto em BRL por transação (limite regulatório). */
+const MIN_USDT = 10;
+const MAX_BRL = 99_000;
+
+/** WhatsApp do atendimento (TMBS) — destino do deep-link de recuperação pós-timeout (hash).
+ * Mesmo número do rodapé do site. Ver ExpiredHashFlow. */
+const SUPPORT_WHATSAPP = "5511974101010";
 
 const PIX_KEY_OPTIONS: Array<{
   id: PixKeyType;
@@ -42,6 +53,7 @@ const PIX_KEY_OPTIONS: Array<{
 
 type Props = {
   isOpen: boolean;
+  mode: PaymentMode;
   onClose: () => void;
   onComplete: (result: SwapResult) => void;
 };
@@ -49,6 +61,8 @@ type Props = {
 type WizardState = {
   step: 1 | 2 | 3 | 4;
   verifying: boolean;
+  /** O timer de 15 min zerou sem o pagamento ser detectado → mostra o fluxo de recuperação (hash). */
+  expired: boolean;
   network: Network;
   amountUSDT: string;
   amountBRL: string;
@@ -62,11 +76,18 @@ type WizardState = {
   order_id: string;
   beneficiary: string;
   rate: number;
+  /** Boleto: código de barras digitado (44, 47 ou 48 dígitos numéricos). */
+  boletoCode: string;
+  /** PIX QR: payload EMV completo colado/scaneado pelo usuário. */
+  pixQrRaw: string;
+  /** true quando o QR escaneado já continha valor embutido no campo 54. */
+  pixQrHasAmount: boolean;
 };
 
 const INITIAL_STATE: WizardState = {
   step: 1,
   verifying: false,
+  expired: false,
   network: "polygon",
   amountUSDT: "",
   pixKeyType: "cpf",
@@ -80,6 +101,9 @@ const INITIAL_STATE: WizardState = {
   order_id: "string",
   beneficiary: "",
   rate: 0,
+  boletoCode: "",
+  pixQrRaw: "",
+  pixQrHasAmount: false,
 };
 
 /** Parse de número PT-BR (1.234,56 → 1234.56). */
@@ -169,7 +193,29 @@ function truncateAddress(address: string): string {
   return `${address.slice(0, 14)}…${address.slice(-8)}`;
 }
 
-export function SwapWizard({ isOpen, onClose, onComplete }: Props) {
+/** Valida código de boleto: 44 dígitos (código de barras) ou 47/48 (linha digitável). */
+function isValidBoletoCode(code: string): boolean {
+  const digits = code.replace(/\D/g, "");
+  return digits.length === 44 || digits.length === 47 || digits.length === 48;
+}
+
+/** Tenta extrair valor do boleto bancário (código de barras 44 dígitos, posições 9-18). */
+function extractBoletoAmount(code: string): string {
+  const digits = code.replace(/\D/g, "");
+  if (digits.length !== 44) return "";
+  const raw = digits.slice(9, 19);
+  const cents = parseInt(raw, 10);
+  if (isNaN(cents) || cents === 0) return "";
+  return (cents / 100).toFixed(2).replace(".", ",");
+}
+
+/** Valida payload EMV de PIX (copia-e-cola): começa com "00020126" e tem tamanho razoável. */
+function isValidPixQr(raw: string): boolean {
+  const t = raw.trim();
+  return t.length >= 50 && t.toUpperCase().startsWith("000201");
+}
+
+export function SwapWizard({ isOpen, mode, onClose, onComplete }: Props) {
   const [state, setState] = useState<WizardState>(INITIAL_STATE);
 
   const { rate } = useUsdtBrlRate();
@@ -201,9 +247,26 @@ export function SwapWizard({ isOpen, onClose, onComplete }: Props) {
   const walletValid = isValidWallet(state.network, state.returnWallet);
   const emailValid = /\S+@\S+\.\S+/.test(state.receiptEmail.trim());
 
+  const amountBrlNumber = parsePtBR(state.amountBRL);
+
   const canAdvance = (() => {
-    if (state.step === 1) return amountNumber >= 10;
-    if (state.step === 2) return state.pixKey.trim().length >= 4;
+    if (mode === "boleto") {
+      if (state.step === 1) return isValidBoletoCode(state.boletoCode);
+      if (state.step === 2)
+        return amountNumber >= MIN_USDT && amountBrlNumber <= MAX_BRL;
+    } else if (mode === "qr") {
+      if (state.step === 1)
+        // payload EMV válido (chave pode estar em campo não-padrão em alguns bancos)
+        return isValidPixQr(state.pixQrRaw);
+      if (state.step === 2)
+        // valor confirmado (pode ter vindo do QR ou digitado)
+        return amountNumber >= MIN_USDT && amountBrlNumber <= MAX_BRL;
+    } else {
+      // modo pix
+      if (state.step === 1)
+        return amountNumber >= MIN_USDT && amountBrlNumber <= MAX_BRL;
+      if (state.step === 2) return state.pixKey.trim().length >= 4;
+    }
     if (state.step === 3) return walletValid && emailValid;
     if (state.step === 4) return true;
     return false;
@@ -240,6 +303,9 @@ export function SwapWizard({ isOpen, onClose, onComplete }: Props) {
       endtoend: state.endtoend,
       completedAt: Date.now(),
       rate: state.rate,
+      paymentMode: mode,
+      boletoCode: state.boletoCode || undefined,
+      pixQrRaw: state.pixQrRaw || undefined,
     });
   };
 
@@ -290,11 +356,27 @@ export function SwapWizard({ isOpen, onClose, onComplete }: Props) {
 
             <div className="px-8 sm:px-10 pb-2 pt-6">
               <AnimatePresence mode="wait">
-                {state.step === 1 && (
+                {/* Boleto: step 1 = barcode, step 2 = amount+network */}
+                {mode === "boleto" && state.step === 1 && (
+                  <Step1Boleto
+                    key="s1b"
+                    boletoCode={state.boletoCode}
+                    onBoletoCode={(v) => {
+                      const extracted = extractBoletoAmount(v);
+                      setState((s) => ({
+                        ...s,
+                        boletoCode: v,
+                        ...(extracted ? { amountBRL: extracted } : {}),
+                      }));
+                    }}
+                  />
+                )}
+                {mode === "boleto" && state.step === 2 && (
                   <Step1Network
-                    key="s1"
+                    key="s2b"
                     network={state.network}
                     amountUSDT={state.amountUSDT}
+                    overLimit={amountBrlNumber > MAX_BRL}
                     rate={rate}
                     onNetwork={(v) => setState((s) => ({ ...s, network: v }))}
                     onAmountUSDT={(v) =>
@@ -306,7 +388,60 @@ export function SwapWizard({ isOpen, onClose, onComplete }: Props) {
                     onRate={(v) => setState((s) => ({ ...s, rate: v }))}
                   />
                 )}
-                {state.step === 2 && (
+                {/* PIX: step 1 = amount+network */}
+                {mode === "pix" && state.step === 1 && (
+                  <Step1Network
+                    key="s1"
+                    network={state.network}
+                    amountUSDT={state.amountUSDT}
+                    overLimit={amountBrlNumber > MAX_BRL}
+                    rate={rate}
+                    onNetwork={(v) => setState((s) => ({ ...s, network: v }))}
+                    onAmountUSDT={(v) =>
+                      setState((s) => ({ ...s, amountUSDT: v }))
+                    }
+                    onAmountBRL={(v) =>
+                      setState((s) => ({ ...s, amountBRL: v }))
+                    }
+                    onRate={(v) => setState((s) => ({ ...s, rate: v }))}
+                  />
+                )}
+                {/* QR: step 1 = scanner, step 2 = confirmação/entrada de valor */}
+                {mode === "qr" && state.step === 1 && (
+                  <Step1PixQR
+                    key="s1qr"
+                    pixQrRaw={state.pixQrRaw}
+                    onScan={(raw, parsed) => {
+                      const hasAmt = !!parsed.amount;
+                      setState((s) => ({
+                        ...s,
+                        pixQrRaw: raw,
+                        pixKey: parsed.pixKey ?? s.pixKey,
+                        beneficiary: parsed.merchantName ?? s.beneficiary,
+                        pixQrHasAmount: hasAmt,
+                        amountBRL: hasAmt ? parsed.amount!.replace(".", ",") : s.amountBRL,
+                      }));
+                    }}
+                  />
+                )}
+                {mode === "qr" && state.step === 2 && (
+                  <Step2PixQRConfirm
+                    key="s2qr"
+                    beneficiary={state.beneficiary}
+                    hasAmount={state.pixQrHasAmount}
+                    amountBRL={state.amountBRL}
+                    amountUSDT={state.amountUSDT}
+                    overLimit={amountBrlNumber > MAX_BRL}
+                    rate={rate}
+                    network={state.network}
+                    onAmountBRL={(v) => setState((s) => ({ ...s, amountBRL: v }))}
+                    onAmountUSDT={(v) => setState((s) => ({ ...s, amountUSDT: v }))}
+                    onRate={(v) => setState((s) => ({ ...s, rate: v }))}
+                    onNetwork={(v) => setState((s) => ({ ...s, network: v }))}
+                  />
+                )}
+                {/* PIX key: step 2 */}
+                {mode === "pix" && state.step === 2 && (
                   <Step2Pix
                     key="s2"
                     pixKeyType={state.pixKeyType}
@@ -340,6 +475,10 @@ export function SwapWizard({ isOpen, onClose, onComplete }: Props) {
                     address_send={state.address_send}
                     order_id={state.order_id}
                     verifying={state.verifying}
+                    expired={state.expired}
+                    onExpire={() => setState((s) => ({ ...s, expired: true }))}
+                    onClose={onClose}
+                    onRestart={reset}
                     onSimulatePaid={() => {
                       setState((s) => ({ ...s, verifying: false }));
                       handleComplete();
@@ -349,7 +488,7 @@ export function SwapWizard({ isOpen, onClose, onComplete }: Props) {
               </AnimatePresence>
             </div>
 
-            {!state.verifying && (
+            {!state.verifying && !state.expired && (
               <Footer
                 state={state}
                 setState={setState}
@@ -357,6 +496,7 @@ export function SwapWizard({ isOpen, onClose, onComplete }: Props) {
                 canAdvance={canAdvance}
                 onBack={goBack}
                 onNext={goNext}
+                mode={mode}
               />
             )}
           </motion.div>
@@ -430,6 +570,8 @@ function ProgressBar({ step }: { step: number }) {
   );
 }
 
+const BASE_API = "https://crypto2pay-backend-drcrypto.mebq4k.easypanel.host/v1/sell";
+
 function Footer({
   step,
   setState,
@@ -437,6 +579,7 @@ function Footer({
   onBack,
   onNext,
   state,
+  mode,
 }: {
   step: number;
   setState: React.Dispatch<React.SetStateAction<WizardState>>;
@@ -444,6 +587,7 @@ function Footer({
   onBack: () => void;
   onNext: () => void;
   state: WizardState;
+  mode: PaymentMode;
 }) {
   const t = useTranslations("wizard");
   // Loading enquanto o POST de criação do swap roda (~5s) + erro inline.
@@ -496,35 +640,58 @@ function Footer({
 
   const handleNext = async () => {
     if (step === 3) {
-      if (submitLock.current) return; // já tem um POST em voo · ignora cliques extras
+      if (submitLock.current) return;
       submitLock.current = true;
       setSubmitting(true);
       setSubmitError(null);
 
-      let keyType = state.pixKeyType;
-      if (keyType === "cpf") {
-        const d = state.pixKey.replace(/\D/g, "");
-        if (d.length > 11) {
-          keyType = "cnpj";
-        }
-      }
-      try {
-        const params = new URLSearchParams(window.location.search);
-        const referral = params.get("ref") || "";
-        const body = {
-          network: state.network.toUpperCase(),
-          key: cleanPixKey(state.pixKeyType, state.pixKey),
-          walletRet: state.returnWallet,
-          email: state.receiptEmail,
-          amount: parsePtBR(state.amountBRL),
-          typeKey: keyType.toUpperCase(),
-          referal_code: referral,
-        };
+      const params = new URLSearchParams(window.location.search);
+      const referral = params.get("ref") || "";
 
-        const { data } = await axios.post(
-          "https://crypto2pay-backend-drcrypto.mebq4k.easypanel.host/v1/sell/create-crypto-to-pix",
-          body,
-        );
+      try {
+        let endpoint: string;
+        let body: Record<string, unknown>;
+
+        if (mode === "boleto") {
+          endpoint = `${BASE_API}/create-crypto-to-boleto`;
+          body = {
+            network: state.network.toUpperCase(),
+            boletoCode: state.boletoCode.replace(/\D/g, ""),
+            walletRet: state.returnWallet,
+            email: state.receiptEmail,
+            amount: parsePtBR(state.amountBRL),
+            referal_code: referral,
+          };
+        } else if (mode === "qr") {
+          endpoint = `${BASE_API}/create-crypto-to-pix-qr`;
+          body = {
+            network: state.network.toUpperCase(),
+            pixQrPayload: state.pixQrRaw.trim(),
+            walletRet: state.returnWallet,
+            email: state.receiptEmail,
+            amount: parsePtBR(state.amountBRL),
+            referal_code: referral,
+          };
+        } else {
+          // modo pix (padrão)
+          let keyType = state.pixKeyType;
+          if (keyType === "cpf") {
+            const d = state.pixKey.replace(/\D/g, "");
+            if (d.length > 11) keyType = "cnpj";
+          }
+          endpoint = `${BASE_API}/create-crypto-to-pix`;
+          body = {
+            network: state.network.toUpperCase(),
+            key: cleanPixKey(state.pixKeyType, state.pixKey),
+            walletRet: state.returnWallet,
+            email: state.receiptEmail,
+            amount: parsePtBR(state.amountBRL),
+            typeKey: keyType.toUpperCase(),
+            referal_code: referral,
+          };
+        }
+
+        const { data } = await axios.post(endpoint, body);
 
         setState((prev) => ({
           ...prev,
@@ -534,9 +701,8 @@ function Footer({
         }));
         GetStatusOrder(data.data.res.uuid);
       } catch (error) {
-        // Backend responde 402 quando a chave PIX é inválida · mostramos erro genérico inline.
         console.error("Erro ao gerar QR", error);
-        submitLock.current = false; // libera pra nova tentativa
+        submitLock.current = false;
         setSubmitting(false);
         setSubmitError(t("pixInvalid"));
         return;
@@ -595,7 +761,7 @@ function Footer({
                 "linear-gradient(135deg, var(--color-green-700) 0%, var(--color-green-900) 100%)",
               boxShadow:
                 canAdvance && !submitting
-                  ? "0 8px 20px rgba(0,82,39,0.22)"
+                  ? "0 8px 20px color-mix(in srgb, var(--color-green-900) 22%, transparent)"
                   : "none",
             }}
           >
@@ -640,7 +806,9 @@ function Footer({
 /* ====================== Steps ====================== */
 
 const fadeProps = {
-  initial: { opacity: 0, y: 8 },
+  // initial:false → abre já no estado final, sem animação de entrada
+  // (a entrada animada causava um "pulinho" na abertura do modal).
+  initial: false as const,
   animate: { opacity: 1, y: 0 },
   exit: { opacity: 0, y: -6 },
   transition: { duration: 0.3, ease: easeOut },
@@ -653,19 +821,25 @@ const fadeProps = {
 function Step1Network({
   network,
   amountUSDT,
+  overLimit,
   rate,
   onNetwork,
   onAmountUSDT,
   onAmountBRL,
   onRate,
+  headerOverride,
+  subOverride,
 }: {
   network: Network;
   amountUSDT: string;
+  overLimit: boolean;
   rate: number;
   onNetwork: (v: Network) => void;
   onAmountUSDT: (v: string) => void;
   onAmountBRL: (v: string) => void;
   onRate: (v: number) => void;
+  headerOverride?: string;
+  subOverride?: string;
 }) {
   const t = useTranslations("wizard");
   const [editing, setEditing] = useState<"usdt" | "brl" | null>(null);
@@ -673,7 +847,7 @@ function Step1Network({
   let markup = 0;
 
   if (network === "polygon") {
-    markup = 1 - 3.4 / 100;
+    markup = 1 - 3.99 / 100;
     rate = Number(Number(rate * markup).toFixed(4));
   }
 
@@ -721,7 +895,7 @@ function Step1Network({
 
   return (
     <motion.div {...fadeProps} className="flex flex-col gap-5">
-      <StepTitle title={t("step1.title")} sub={t("step1.sub")} />
+      <StepTitle title={headerOverride ?? t("step1.title")} sub={subOverride ?? t("step1.sub")} />
 
       <div className="flex flex-col gap-2">
         <Label>{t("step1.networkLabel")}</Label>
@@ -797,10 +971,405 @@ function Step1Network({
         </FieldShell>
       </div>
 
-      <Hint>{t("step1.hint")}</Hint>
+      {overLimit ? (
+        <p
+          className="text-[11.5px] leading-relaxed font-semibold"
+          style={{ color: "var(--color-red-600, #dc2626)" }}
+        >
+          {t("step1.overLimit")}
+        </p>
+      ) : (
+        <Hint>{t("step1.hint")}</Hint>
+      )}
     </motion.div>
   );
 }
+
+/* ====================== Step 1 Boleto ====================== */
+
+function Step1Boleto({
+  boletoCode,
+  onBoletoCode,
+}: {
+  boletoCode: string;
+  onBoletoCode: (v: string) => void;
+}) {
+  const [scanning, setScanning] = useState(false);
+  const digits = boletoCode.replace(/\D/g, "");
+  const valid = isValidBoletoCode(digits);
+
+  function handleChange(raw: string) {
+    onBoletoCode(raw.replace(/\D/g, ""));
+  }
+
+  function displayCode(d: string) {
+    if (d.length <= 10) return d;
+    if (d.length === 44)
+      return `${d.slice(0, 10)}.${d.slice(10, 20)} ${d.slice(20, 31)}.${d.slice(31, 41)} ${d.slice(41)}`;
+    return d.replace(/(.{10})/g, "$1 ").trim();
+  }
+
+  return (
+    <motion.div
+      key="s1-boleto"
+      initial={false}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -24 }}
+      transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+    >
+      {scanning && (
+        <CameraScanner
+          mode="barcode"
+          onResult={(text) => {
+            setScanning(false);
+            handleChange(text);
+          }}
+          onClose={() => setScanning(false)}
+        />
+      )}
+
+      <p className="body-sm mb-5" style={{ color: "var(--color-ink-600)" }}>
+        Digite, cole ou escaneie o código de barras do boleto. Compensação bancária em até 48h.{" "}
+        <strong className="font-bold" style={{ color: "var(--color-ink-900)" }}>
+          Não são aceitos boletos vencidos.
+        </strong>
+      </p>
+
+      <div className="space-y-3">
+        {/* Botão câmera — destaque (mesmo estilo do botão de QR Code) */}
+        <button
+          type="button"
+          onClick={() => setScanning(true)}
+          className="w-full flex items-center justify-center gap-3 rounded-xl py-4 font-semibold text-[14px] tracking-tight text-white transition-all duration-200"
+          style={{
+            background: "linear-gradient(135deg, var(--color-green-700) 0%, var(--color-green-900) 100%)",
+            boxShadow: "0 6px 20px rgba(0,100,40,0.2)",
+          }}
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+            <rect x="3" y="5" width="1.6" height="14" rx="0.4"/>
+            <rect x="6.4" y="5" width="1" height="14" rx="0.4"/>
+            <rect x="9" y="5" width="2.2" height="14" rx="0.4"/>
+            <rect x="12.8" y="5" width="1" height="14" rx="0.4"/>
+            <rect x="15.4" y="5" width="2.4" height="14" rx="0.4"/>
+            <rect x="19.4" y="5" width="1.6" height="14" rx="0.4"/>
+          </svg>
+          Escanear código de barras
+        </button>
+
+        <div className="flex items-center gap-3">
+          <div className="flex-1 h-px" style={{ background: "var(--color-ink-100)" }} />
+          <span className="text-[11px] font-semibold" style={{ color: "var(--color-ink-400)" }}>ou digite</span>
+          <div className="flex-1 h-px" style={{ background: "var(--color-ink-100)" }} />
+        </div>
+
+        <div>
+          <label className="block mono-num text-[11px] font-bold tracking-widest uppercase mb-2" style={{ color: "var(--color-ink-500)" }}>
+            CÓDIGO DO BOLETO
+          </label>
+          <textarea
+            className="w-full rounded-xl border px-4 py-3 font-mono text-[13px] resize-none focus:outline-none focus:ring-2"
+            style={{
+              borderColor: valid ? "var(--color-green-400)" : digits.length > 0 ? "var(--color-ink-300)" : "var(--color-ink-200)",
+              background: "var(--color-off-white)",
+              color: "var(--color-ink-900)",
+              minHeight: 80,
+            }}
+            rows={3}
+            placeholder="Cole aqui o código de barras..."
+            value={displayCode(digits)}
+            onChange={(e) => handleChange(e.target.value)}
+          />
+          <p className="mt-1.5 text-[11px] font-medium" style={{ color: valid ? "var(--color-green-600)" : "var(--color-ink-400)" }}>
+            {digits.length === 0 ? "44, 47 ou 48 dígitos numéricos" : valid ? `${digits.length} dígitos · Código válido` : `${digits.length} dígitos · Continue digitando...`}
+          </p>
+        </div>
+
+        {valid && (
+          <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="rounded-xl p-4 flex items-start gap-3" style={{ background: "rgba(0, 200, 83, 0.06)", border: "1px solid rgba(0, 200, 83, 0.2)" }}>
+            <span style={{ color: "var(--color-green-500)" }}>✓</span>
+            <div>
+              <p className="text-[13px] font-semibold" style={{ color: "var(--color-ink-900)" }}>Boleto reconhecido</p>
+              <p className="text-[12px] mt-0.5" style={{ color: "var(--color-ink-500)" }}>Na próxima etapa confirme o valor em reais.</p>
+            </div>
+          </motion.div>
+        )}
+      </div>
+    </motion.div>
+  );
+}
+
+/* ====================== Step 1 PIX QR (scan + parse) ====================== */
+
+function Step1PixQR({
+  pixQrRaw,
+  onScan,
+}: {
+  pixQrRaw: string;
+  onScan: (raw: string, parsed: ReturnType<typeof parsePixQr>) => void;
+}) {
+  const [scanning, setScanning] = useState(false);
+  const [checking, setChecking] = useState(false);
+  const [statusError, setStatusError] = useState<string | null>(null);
+  const debTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastChecked = useRef("");
+  const parsed = pixQrRaw ? parsePixQr(pixQrRaw) : null;
+  const valid = isValidPixQr(pixQrRaw);
+
+  // Confirma no backend (decode-brcode) se o QR está ATIVO — algo que o EMV
+  // não carrega (se já foi pago/expirou). O parse local já extrai recebedor/
+  // valor/chave na hora; esta verificação é ADITIVA e debounced, não muda o
+  // fluxo de dados. Enquanto o backend da OprPay não expõe o endpoint (404),
+  // o catch é silencioso e seguimos com o parse local.
+  const verifyStatus = async (value: string) => {
+    const emv = value.trim();
+    if (!isValidPixQr(emv) || emv === lastChecked.current) return;
+    lastChecked.current = emv;
+    setChecking(true);
+    setStatusError(null);
+    try {
+      const { data: res } = await axios.post(`${BASE_API}/decode-brcode`, { emv });
+      const d = res?.data ?? res ?? {};
+      // BC não padroniza o gênero do status do QR dinâmico: aceita "ativo" OU
+      // "ativa". QR estático não traz status → 200 já significa válido.
+      const st = (d.status ?? "").toString().toLowerCase();
+      if (st && st !== "ativo" && st !== "ativa") {
+        setStatusError(
+          "Esse QR Code não está mais ativo (pago ou expirado). Gere uma nova cobrança.",
+        );
+      }
+    } catch {
+      lastChecked.current = ""; // endpoint indisponível (404) → fica no parse local
+    } finally {
+      setChecking(false);
+    }
+  };
+
+  function handleRaw(raw: string) {
+    const v = raw.trim();
+    onScan(v, parsePixQr(v)); // parse local imediato — fluxo inalterado
+    setStatusError(null);
+    if (debTimer.current) clearTimeout(debTimer.current);
+    if (isValidPixQr(v)) {
+      debTimer.current = setTimeout(() => verifyStatus(v), 450);
+    } else {
+      lastChecked.current = "";
+    }
+  }
+
+  return (
+    <motion.div
+      key="s1-pixqr"
+      initial={false}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -24 }}
+      transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+    >
+      {scanning && (
+        <CameraScanner
+          mode="qr"
+          onResult={(text) => {
+            setScanning(false);
+            handleRaw(text);
+          }}
+          onClose={() => setScanning(false)}
+        />
+      )}
+
+      <p className="body-sm mb-5" style={{ color: "var(--color-ink-600)" }}>
+        Digite, escaneie ou cole o QR Code PIX. Pagamento instantâneo.{" "}
+        <strong className="font-bold" style={{ color: "var(--color-ink-900)" }}>
+          Não são aceitos QR codes com vencimento inferior a 10 minutos.
+        </strong>
+      </p>
+
+      <div className="space-y-3">
+        {/* Botão câmera — destaque */}
+        <button
+          type="button"
+          onClick={() => setScanning(true)}
+          className="w-full flex items-center justify-center gap-3 rounded-xl py-4 font-semibold text-[14px] tracking-tight text-white transition-all duration-200"
+          style={{
+            background: "linear-gradient(135deg, var(--color-green-700) 0%, var(--color-green-900) 100%)",
+            boxShadow: "0 6px 20px rgba(0,100,40,0.2)",
+          }}
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>
+            <path d="M14 14h2v2h-2zM18 14h2v2h-2zM14 18h2v2h-2zM18 18h2v2h-2z"/>
+          </svg>
+          Escanear QR Code
+        </button>
+
+        <div className="flex items-center gap-3">
+          <div className="flex-1 h-px" style={{ background: "var(--color-ink-100)" }} />
+          <span className="text-[11px] font-semibold" style={{ color: "var(--color-ink-400)" }}>ou cole o código</span>
+          <div className="flex-1 h-px" style={{ background: "var(--color-ink-100)" }} />
+        </div>
+
+        <div>
+          <label className="block mono-num text-[11px] font-bold tracking-widest uppercase mb-2" style={{ color: "var(--color-ink-500)" }}>
+            CÓDIGO COPIA E COLA (PIX)
+          </label>
+          <textarea
+            className="w-full rounded-xl border px-4 py-3 font-mono text-[11px] resize-none focus:outline-none focus:ring-2"
+            style={{
+              borderColor: valid ? "var(--color-green-400)" : pixQrRaw.trim().length > 0 ? "var(--color-ink-300)" : "var(--color-ink-200)",
+              background: "var(--color-off-white)",
+              color: "var(--color-ink-900)",
+              minHeight: 80,
+            }}
+            rows={3}
+            placeholder="00020126..."
+            value={pixQrRaw}
+            onChange={(e) => handleRaw(e.target.value)}
+            spellCheck={false}
+            autoCorrect="off"
+            autoCapitalize="off"
+          />
+        </div>
+
+        {/* Resultado do parse */}
+        {valid && parsed && (
+          <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="rounded-xl p-4 space-y-2" style={{ background: "rgba(0, 200, 83, 0.06)", border: "1px solid rgba(0, 200, 83, 0.2)" }}>
+            <p className="text-[12px] font-bold uppercase tracking-wider" style={{ color: "var(--color-green-700)" }}>QR reconhecido</p>
+            {parsed.merchantName && (
+              <div className="flex items-baseline gap-2">
+                <span className="text-[11px] font-semibold" style={{ color: "var(--color-ink-400)" }}>Destinatário</span>
+                <span className="text-[13px] font-semibold" style={{ color: "var(--color-ink-900)" }}>{parsed.merchantName}</span>
+              </div>
+            )}
+            {parsed.amount ? (
+              <div className="flex items-baseline gap-2">
+                <span className="text-[11px] font-semibold" style={{ color: "var(--color-ink-400)" }}>Valor</span>
+                <span className="text-[13px] font-bold" style={{ color: "var(--color-green-700)" }}>R$ {Number(parsed.amount).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
+              </div>
+            ) : (
+              <p className="text-[12px]" style={{ color: "var(--color-ink-500)" }}>Valor não informado no QR — você vai digitar na próxima etapa.</p>
+            )}
+          </motion.div>
+        )}
+
+        {pixQrRaw.trim().length > 10 && !valid && (
+          <p className="text-[11px] font-medium" style={{ color: "#b42121" }}>
+            QR inválido ou incompleto. Tente escanear novamente.
+          </p>
+        )}
+
+        {/* Verificação de status no backend (decode-brcode) · aditiva */}
+        {checking && (
+          <p className="text-[11px] font-medium" style={{ color: "var(--color-ink-400)" }}>
+            Verificando se o QR está ativo…
+          </p>
+        )}
+        {statusError && (
+          <p className="text-[11px] font-medium" style={{ color: "#b42121" }}>
+            {statusError}
+          </p>
+        )}
+      </div>
+    </motion.div>
+  );
+}
+
+/* ====================== Step 2 PIX QR — confirma/digita valor ====================== */
+
+function Step2PixQRConfirm({
+  beneficiary,
+  hasAmount,
+  amountBRL,
+  amountUSDT,
+  overLimit,
+  rate,
+  network,
+  onAmountBRL,
+  onAmountUSDT,
+  onRate,
+  onNetwork,
+}: {
+  beneficiary: string;
+  hasAmount: boolean;
+  amountBRL: string;
+  amountUSDT: string;
+  overLimit: boolean;
+  rate: number;
+  network: Network;
+  onAmountBRL: (v: string) => void;
+  onAmountUSDT: (v: string) => void;
+  onRate: (v: number) => void;
+  onNetwork: (v: Network) => void;
+}) {
+  if (hasAmount) {
+    // Valor veio do QR — mostra tela de confirmação (read-only)
+    return (
+      <motion.div
+        key="s2-qr-confirm"
+        initial={false}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: -24 }}
+        transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+      >
+        <p className="body-sm mb-5" style={{ color: "var(--color-ink-600)" }}>
+          Confirme os dados da cobrança PIX antes de prosseguir.
+        </p>
+        <div className="space-y-3">
+          {beneficiary && (
+            <InfoRow label="Destinatário" value={beneficiary} />
+          )}
+          <InfoRow label="Valor em BRL" value={`R$ ${Number(amountBRL.replace(",", ".")).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`} accent />
+          {rate > 0 && amountBRL && (
+            <InfoRow label="Equivalente em USDT" value={`≈ ${amountUSDT || (parsePtBR(amountBRL) / rate).toFixed(2)} USDT`} />
+          )}
+          <NetworkSelectorMini network={network} onNetwork={onNetwork} />
+        </div>
+      </motion.div>
+    );
+  }
+
+  // Valor não está no QR — pede que o usuário informe
+  return (
+    <Step1Network
+      key="s2-qr-amount"
+      network={network}
+      amountUSDT={amountUSDT}
+      overLimit={overLimit}
+      rate={rate}
+      onNetwork={onNetwork}
+      onAmountUSDT={onAmountUSDT}
+      onAmountBRL={onAmountBRL}
+      onRate={onRate}
+      headerOverride={beneficiary ? `Valor a pagar para ${beneficiary}` : "Valor da cobrança PIX"}
+      subOverride="O QR não continha o valor. Digite o montante em USDT ou BRL a enviar."
+    />
+  );
+}
+
+function InfoRow({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
+  return (
+    <div className="flex items-baseline justify-between gap-4 py-2.5 border-b" style={{ borderColor: "var(--color-ink-100)" }}>
+      <span className="text-[12px] font-semibold" style={{ color: "var(--color-ink-400)" }}>{label}</span>
+      <span className="text-[14px] font-bold" style={{ color: accent ? "var(--color-green-700)" : "var(--color-ink-900)" }}>{value}</span>
+    </div>
+  );
+}
+
+function NetworkSelectorMini({ network, onNetwork }: { network: Network; onNetwork: (v: Network) => void }) {
+  return (
+    <div className="pt-2">
+      <p className="text-[11px] font-bold tracking-widest uppercase mb-2" style={{ color: "var(--color-ink-400)" }}>Rede USDT</p>
+      <div
+        className="flex items-center gap-3 px-4 py-3 rounded-xl border cursor-pointer"
+        style={{ borderColor: "var(--color-green-300)", background: "rgba(0,200,83,0.04)" }}
+        onClick={() => onNetwork("polygon")}
+      >
+        <ChainLogo chain="polygon" size={20} />
+        <span className="text-[13px] font-semibold" style={{ color: "var(--color-ink-900)" }}>Polygon (MATIC)</span>
+      </div>
+    </div>
+  );
+}
+
+/* ====================== Step 2 PIX Key ====================== */
 
 function Step2Pix({
   pixKeyType,
@@ -961,6 +1530,10 @@ function Step4QR({
   address_send,
   order_id,
   verifying,
+  expired,
+  onExpire,
+  onClose,
+  onRestart,
   onSimulatePaid,
 }: {
   amount: string;
@@ -968,6 +1541,10 @@ function Step4QR({
   address_send: string;
   order_id: string;
   verifying: boolean;
+  expired: boolean;
+  onExpire: () => void;
+  onClose: () => void;
+  onRestart: () => void;
   onSimulatePaid: () => void;
 }) {
   const t = useTranslations("wizard");
@@ -976,9 +1553,28 @@ function Step4QR({
 
   useEffect(() => {
     if (verifying) return;
-    const t = setInterval(() => setSeconds((s) => (s > 0 ? s - 1 : 0)), 1000);
-    return () => clearInterval(t);
-  }, [verifying]);
+    // Use Date.now() so the timer stays accurate when the tab loses focus.
+    // Browsers throttle setInterval to 1-60s on hidden tabs; counting ticks drifts badly.
+    const deadlineAt = Date.now() + seconds * 1000;
+    const tick = () => {
+      const remaining = Math.max(0, Math.ceil((deadlineAt - Date.now()) / 1000));
+      setSeconds(remaining);
+    };
+    const t = setInterval(tick, 500);
+    // Re-sync immediately when the tab becomes visible again.
+    const onVisibility = () => { if (!document.hidden) tick(); };
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      clearInterval(t);
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+  }, [verifying]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Zerou sem o pagamento ser detectado → dispara o fluxo de recuperação (hash) UMA vez.
+  // Se o SUCCESS chegar atrasado pelo polling, `verifying` tem precedência abaixo e mostra o comprovante.
+  useEffect(() => {
+    if (seconds === 0 && !verifying && !expired) onExpire();
+  }, [seconds, verifying, expired, onExpire]);
 
   const mm = String(Math.floor(seconds / 60)).padStart(2, "0");
   const ss = String(seconds % 60).padStart(2, "0");
@@ -1000,6 +1596,17 @@ function Step4QR({
     return <VerifyingFlow onComplete={onSimulatePaid} />;
   }
 
+  if (expired || seconds === 0) {
+    return (
+      <ExpiredHashFlow
+        orderId={order_id}
+        amount={amount}
+        onClose={onClose}
+        onRestart={onRestart}
+      />
+    );
+  }
+
   return (
     <motion.div {...fadeProps} className="flex flex-col gap-4">
       <StepTitle
@@ -1012,7 +1619,7 @@ function Step4QR({
       <div className="flex flex-col items-center sm:items-start sm:grid sm:grid-cols-[140px_1fr] gap-4 sm:gap-5">
         <div
           className="relative w-[140px] h-[140px] rounded-2xl bg-white grid place-items-center p-2.5 shrink-0"
-          style={{ boxShadow: "0 8px 24px rgba(0,82,39,0.12)" }}
+          style={{ boxShadow: "0 8px 24px color-mix(in srgb, var(--color-green-900) 12%, transparent)" }}
         >
           <div
             className="grid"
@@ -1080,6 +1687,291 @@ function Step4QR({
         </div>
       </div>
     </motion.div>
+  );
+}
+
+/** Recuperação pós-timeout (pedido do Thiago/Moya): quando os 15 min zeram sem o pagamento
+ * cair, em vez de só travar no 00:00, perguntamos se a pessoa pagou. Se sim, ela cola a hash
+ * (TXID) e a gente abre o WhatsApp do atendimento JÁ com a hash — o time confirma manualmente e
+ * libera o PIX. Se não, encerra com leveza. Reaproveitável nos whitelabels (oprpay/uspix). */
+export type ExpiredPhase = "ask" | "hash" | "sent" | "restart" | "thanks";
+
+export function ExpiredHashFlow({
+  orderId,
+  amount,
+  onClose,
+  onRestart,
+  initialPhase = "ask",
+}: {
+  orderId: string;
+  amount: string;
+  onClose: () => void;
+  /** Recomeça uma nova operação (reseta o wizard pro passo 1). */
+  onRestart: () => void;
+  /** Só pra página de preview — em produção sempre começa em "ask". */
+  initialPhase?: ExpiredPhase;
+}) {
+  const t = useTranslations("wizard");
+  const [phase, setPhase] = useState<ExpiredPhase>(initialPhase);
+  const [hash, setHash] = useState("");
+
+  const sendHash = () => {
+    if (!hash.trim()) return;
+    const msg = t("expired.waMessage", {
+      hash: hash.trim(),
+      order: orderId,
+      amount,
+    });
+    window.open(
+      `https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(msg)}`,
+      "_blank",
+      "noopener,noreferrer",
+    );
+    setPhase("sent");
+  };
+
+  return (
+    <motion.div {...fadeProps} className="flex flex-col gap-5 pb-2">
+      {phase === "ask" && (
+        <>
+          <div className="flex flex-col items-center text-center gap-3 pt-1">
+            <ExpiredClockIcon />
+            <StepTitle title={t("expired.title")} sub={t("expired.askSub")} />
+          </div>
+          <div className="flex flex-col gap-2.5">
+            <p className="text-center text-[13px] font-semibold text-ink-900">
+              {t("expired.askTitle")}
+            </p>
+            <button
+              type="button"
+              onClick={() => setPhase("hash")}
+              className="
+                w-full inline-flex items-center justify-center
+                px-6 py-3.5 rounded-2xl text-white font-semibold tracking-tight text-[14px]
+                transition-all duration-300
+              "
+              style={{
+                background:
+                  "linear-gradient(135deg, var(--color-green-700) 0%, var(--color-green-900) 100%)",
+                boxShadow: "0 8px 20px color-mix(in srgb, var(--color-green-900) 22%, transparent)",
+              }}
+            >
+              {t("expired.yes")}
+            </button>
+            <button
+              type="button"
+              onClick={() => setPhase("restart")}
+              className="
+                w-full px-6 py-3 rounded-2xl text-[14px] font-semibold tracking-tight
+                text-ink-700 transition
+              "
+              style={{
+                background: "var(--color-off-white)",
+                border: "1px solid var(--color-ink-200)",
+              }}
+            >
+              {t("expired.no")}
+            </button>
+          </div>
+        </>
+      )}
+
+      {phase === "hash" && (
+        <>
+          <StepTitle
+            title={t("expired.hashTitle")}
+            sub={t("expired.hashSub")}
+          />
+          <FieldShell label={t("expired.hashLabel")}>
+            <input
+              value={hash}
+              onChange={(e) => setHash(e.target.value.trim())}
+              placeholder={t("expired.hashPlaceholder")}
+              className="
+                w-full bg-transparent outline-none mono-num
+                text-[13px] font-medium text-ink-900
+                placeholder:text-ink-300
+              "
+              aria-label={t("expired.hashLabel")}
+            />
+          </FieldShell>
+          <button
+            type="button"
+            onClick={sendHash}
+            disabled={!hash.trim()}
+            className="
+              w-full inline-flex items-center justify-center gap-2
+              px-6 py-3.5 rounded-2xl text-white font-semibold tracking-tight text-[14px]
+              transition-all duration-300
+              disabled:opacity-40 disabled:cursor-not-allowed
+            "
+            style={{
+              background:
+                "linear-gradient(135deg, var(--color-green-700) 0%, var(--color-green-900) 100%)",
+              boxShadow: hash.trim() ? "0 8px 20px color-mix(in srgb, var(--color-green-900) 22%, transparent)" : "none",
+            }}
+          >
+            <WhatsAppGlyph />
+            {t("expired.sendHash")}
+          </button>
+          <button
+            type="button"
+            onClick={() => setPhase("ask")}
+            className="text-[13px] font-semibold text-ink-500 hover:text-ink-900 transition self-center"
+          >
+            ← {t("back")}
+          </button>
+        </>
+      )}
+
+      {phase === "sent" && (
+        <div className="flex flex-col items-center text-center gap-3 py-2">
+          <SuccessCheck />
+          <StepTitle title={t("expired.sentTitle")} sub={t("expired.sentSub")} />
+          <button
+            type="button"
+            onClick={onClose}
+            className="
+              mt-1 px-6 py-3 rounded-2xl text-[14px] font-semibold tracking-tight
+              text-ink-700 transition
+            "
+            style={{
+              background: "var(--color-off-white)",
+              border: "1px solid var(--color-ink-200)",
+            }}
+          >
+            {t("expired.close")}
+          </button>
+        </div>
+      )}
+
+      {phase === "restart" && (
+        <div className="flex flex-col items-center text-center gap-4 py-3">
+          <StepTitle
+            title={t("expired.restartTitle")}
+            sub={t("expired.restartSub")}
+          />
+          {/* Sim em destaque; "Não, obrigado" como link de texto abaixo. */}
+          <button
+            type="button"
+            onClick={onRestart}
+            className="
+              w-full inline-flex items-center justify-center
+              px-6 py-3.5 rounded-2xl text-white font-semibold tracking-tight text-[14px]
+              transition-all duration-300
+            "
+            style={{
+              background:
+                "linear-gradient(135deg, var(--color-green-700) 0%, var(--color-green-900) 100%)",
+              boxShadow: "0 8px 20px color-mix(in srgb, var(--color-green-900) 22%, transparent)",
+            }}
+          >
+            {t("expired.restartYes")}
+          </button>
+          <button
+            type="button"
+            onClick={() => setPhase("thanks")}
+            className="
+              text-[13px] font-medium text-ink-500 hover:text-ink-900
+              underline underline-offset-2 transition
+            "
+          >
+            {t("expired.restartNo")}
+          </button>
+        </div>
+      )}
+
+      {phase === "thanks" && (
+        <div className="flex flex-col items-center text-center gap-3 py-3">
+          <HeartIcon />
+          <StepTitle
+            title={t("expired.thanksTitle")}
+            sub={t("expired.thanksSub")}
+          />
+          <button
+            type="button"
+            onClick={onClose}
+            className="
+              mt-1 px-6 py-3 rounded-2xl text-[14px] font-semibold tracking-tight
+              text-ink-700 transition
+            "
+            style={{
+              background: "var(--color-off-white)",
+              border: "1px solid var(--color-ink-200)",
+            }}
+          >
+            {t("expired.close")}
+          </button>
+        </div>
+      )}
+    </motion.div>
+  );
+}
+
+function HeartIcon() {
+  return (
+    <motion.span
+      initial={{ scale: 0.6, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{ duration: 0.35, ease: easeOut }}
+      className="w-12 h-12 rounded-full grid place-items-center"
+      style={{ background: "var(--color-green-100)" }}
+      aria-hidden
+    >
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path
+          d="M12 20s-6.5-4.35-9-8.5C1.5 8.5 3 5.5 6 5.5c1.8 0 3 1 4 2.2 1-1.2 2.2-2.2 4-2.2 3 0 4.5 3 3 6-2.5 4.15-9 8.5-9 8.5Z"
+          fill="var(--color-green-700)"
+        />
+      </svg>
+    </motion.span>
+  );
+}
+
+function ExpiredClockIcon() {
+  return (
+    <span
+      className="w-12 h-12 rounded-full grid place-items-center"
+      style={{ background: "rgba(220, 38, 38, 0.1)" }}
+      aria-hidden
+    >
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="13" r="8" stroke="#dc2626" strokeWidth="1.8" />
+        <path
+          d="M12 9.5V13l2.5 1.5M9 3h6"
+          stroke="#dc2626"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+        />
+      </svg>
+    </span>
+  );
+}
+
+function SuccessCheck() {
+  return (
+    <motion.span
+      initial={{ scale: 0.6, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{ duration: 0.35, ease: easeOut }}
+      className="w-12 h-12 rounded-full grid place-items-center text-white text-lg font-bold"
+      style={{
+        background:
+          "linear-gradient(135deg, var(--color-green-500), var(--color-green-700))",
+        boxShadow: "0 0 0 5px rgba(157, 43, 237, 0.15)",
+      }}
+      aria-hidden
+    >
+      ✓
+    </motion.span>
+  );
+}
+
+function WhatsAppGlyph() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+      <path d="M12.04 2c-5.46 0-9.9 4.44-9.9 9.9 0 1.75.46 3.45 1.32 4.95L2 22l5.3-1.39c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.9-4.44 9.9-9.9S17.5 2 12.04 2Zm0 18.13c-1.48 0-2.93-.4-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.39c0-4.54 3.7-8.23 8.24-8.23 4.54 0 8.23 3.69 8.23 8.23 0 4.54-3.69 8.24-8.23 8.24Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.25-.64.8-.79.97-.14.16-.29.18-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.39.11-.51.11-.11.25-.29.37-.43.13-.14.17-.25.25-.41.08-.16.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.48c-.16 0-.43.06-.65.31-.23.25-.86.84-.86 2.05 0 1.21.88 2.38 1 2.54.12.16 1.73 2.64 4.19 3.7.59.25 1.04.4 1.4.52.59.19 1.12.16 1.54.1.47-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.14-1.18-.06-.11-.22-.17-.47-.29Z" />
+    </svg>
   );
 }
 
@@ -1184,13 +2076,13 @@ function VerifyingFlow({ onComplete }: { onComplete: () => void }) {
               style={{
                 background:
                   state === "done"
-                    ? "rgba(3, 187, 133, 0.06)"
+                    ? "rgba(157, 43, 237, 0.06)"
                     : state === "loading"
                       ? "var(--color-off-white)"
                       : "transparent",
                 border: `1px solid ${
                   state === "done"
-                    ? "rgba(3, 187, 133, 0.25)"
+                    ? "rgba(157, 43, 237, 0.25)"
                     : state === "loading"
                       ? "var(--color-ink-200)"
                       : "var(--color-ink-100)"
@@ -1252,7 +2144,7 @@ function StateIcon({ state }: { state: "pending" | "loading" | "done" }) {
         style={{
           background:
             "linear-gradient(135deg, var(--color-green-500), var(--color-green-700))",
-          boxShadow: "0 0 0 4px rgba(3, 187, 133, 0.15)",
+          boxShadow: "0 0 0 4px rgba(157, 43, 237, 0.15)",
         }}
         aria-label="concluído"
       >
@@ -1278,7 +2170,7 @@ function StateIcon({ state }: { state: "pending" | "loading" | "done" }) {
             cy="9"
             r="7"
             fill="none"
-            stroke="rgba(3, 187, 133, 0.2)"
+            stroke="rgba(157, 43, 237, 0.2)"
             strokeWidth="2"
           />
           <path

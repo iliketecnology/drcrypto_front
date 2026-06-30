@@ -168,3 +168,174 @@ body::before {
   outline-offset: 3px;
   border-radius: 4px;
 }
+
+/* ============================================================
+   Liquid glass VIOLETA · botões de pagamento do Hero (OprPay)
+   Violeta escuro translúcido + leve blur + borda refrativa.
+   Accent: #9d2bed / #cf9bf5 (paleta OprPay).
+   ============================================================ */
+.pay-glass-blue {
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(135deg, rgba(50, 15, 95, 0.88) 0%, rgba(26, 15, 46, 0.94) 100%);
+  -webkit-backdrop-filter: blur(7px) saturate(150%);
+  backdrop-filter: blur(7px) saturate(150%);
+  /* CRÍTICO: força a camada de composição (GPU) de forma permanente.
+     Sem isto o backdrop-filter só compõe enquanto há um transform ativo
+     (ex: durante a animação) e "salta" pra opaco quando o transform some. */
+  transform: translateZ(0);
+  will-change: transform;
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.22),      /* specular topo */
+    0 12px 34px rgba(20, 8, 40, 0.30);              /* sombra externa */
+  transition: box-shadow 0.3s ease;
+}
+
+/* Feedback de hover no desktop · só sombra (sem transform, pra não tocar o backdrop) */
+@media (min-width: 640px) {
+  .pay-glass-blue:hover {
+    box-shadow:
+      inset 0 1px 1px rgba(255, 255, 255, 0.24),
+      0 16px 42px rgba(20, 8, 40, 0.44);
+  }
+}
+
+/* Refração nas bordas · borda brilhante violeta recortada com mask */
+.pay-glass-blue::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    170deg,
+    #9d2bed 8%,
+    #cf9bf5 22%,
+    rgba(255, 255, 255, 0) 70%
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0.9;
+  z-index: 1;
+}
+
+/* Brilho líquido sutil no canto superior */
+.pay-glass-blue::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    radial-gradient(100% 80% at 86% -12%, rgba(207, 155, 245, 0.20), transparent 58%);
+}
+
+/* ============================================================
+   Liquid glass CLARO · botões de pagamento do Hero (ref. Thiago)
+   Pill branca fosca, texto escuro, seta + accent ROXO OprPay.
+   Mesmo tratamento da USPIX, recolorido pra identidade OprPay.
+   ============================================================ */
+
+/* Variável animável pro ângulo do conic-gradient (borda girando).
+   Sem @property o navegador não interpola <angle> e a animação trava. */
+@property --usp-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes usp-glass-border-spin {
+  to {
+    --usp-angle: 360deg;
+  }
+}
+
+.pay-glass-light {
+  position: relative;
+  overflow: hidden;
+  /* Vidro translúcido idêntico ao da USPIX: fill quase-nulo + blur baixo.
+     A "casca" é definida pelas bordas brilhantes + a sombra de float; o
+     efeito de refração depende da atmosfera atrás (ver halo dedicado no Hero). */
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.03) 100%);
+  -webkit-backdrop-filter: blur(3px) saturate(105%);
+  backdrop-filter: blur(3px) saturate(105%);
+  /* Trava de composição GPU (ver pay-glass-blue) · sem isto o backdrop-filter
+     "salta" pra opaco quando o transform da animação some. */
+  transform: translateZ(0);
+  will-change: transform;
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.9),       /* specular topo */
+    inset 0 0 0 1px rgba(255, 255, 255, 0.35),      /* rim de vidro */
+    0 0 0 1px rgba(59, 7, 100, 0.06),               /* hairline no perímetro */
+    0 8px 18px rgba(59, 7, 100, 0.05),              /* sombra de contato */
+    0 18px 44px rgba(59, 7, 100, 0.12);             /* float */
+  transition: box-shadow 0.3s ease, background 0.3s ease, transform 0.3s ease;
+}
+
+@media (min-width: 640px) {
+  .pay-glass-light:hover {
+    background:
+      linear-gradient(135deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.1) 100%);
+    box-shadow:
+      inset 0 1px 1px rgba(255, 255, 255, 1),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.45),
+      0 0 0 1px rgba(157, 43, 237, 0.22),
+      0 10px 22px rgba(59, 7, 100, 0.1),
+      0 24px 54px rgba(59, 7, 100, 0.18);
+  }
+}
+
+/* Borda roxa GIRANDO · conic-gradient com um "cometa" de luz que percorre
+   o perímetro. Mask recorta só a faixa de 1.5px da borda. */
+.pay-glass-light::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(
+    from var(--usp-angle),
+    transparent 0deg,
+    transparent 55deg,
+    rgba(157, 43, 237, 0.25) 85deg,
+    #9d2bed 110deg,
+    #f1e3fc 128deg,
+    #9d2bed 146deg,
+    rgba(157, 43, 237, 0.25) 175deg,
+    transparent 215deg,
+    transparent 360deg
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 1;
+  animation: usp-glass-border-spin 5s linear infinite;
+}
+
+/* Escalona os cards pra a luz não girar toda sincronizada. */
+.pay-glass-light:nth-child(2)::before {
+  animation-delay: -1.6s;
+}
+.pay-glass-light:nth-child(3)::before {
+  animation-delay: -3.2s;
+}
+
+/* Brilho líquido sutil no canto superior */
+.pay-glass-light::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    radial-gradient(100% 80% at 86% -12%, rgba(241, 227, 252, 0.28), transparent 60%);
+}
