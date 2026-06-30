@@ -1,6 +1,10 @@
+'use client';
+
 /** Logos inline pra marcas/redes citadas no site.
  * Não usa logos oficiais 1:1 (copyright); são interpretações geometricamente
  * fiéis das formas canônicas de cada marca. */
+
+import { useId } from 'react';
 
 type LogoProps = {
   size?: number;
@@ -9,6 +13,10 @@ type LogoProps = {
 
 /** Tether (USDT) · círculo com símbolo ₮ central */
 export function USDTLogo({ size = 24, className }: LogoProps) {
+  // id ÚNICO por instância: com id fixo, várias cópias do SVG colidem e, se a
+  // primeira ficar em display:none (ex.: badge `hidden sm:flex` no mobile), o
+  // url(#id) das outras não resolve e o ícone some. useId evita a colisão.
+  const gid = useId();
   return (
     <svg
       width={size}
@@ -20,12 +28,12 @@ export function USDTLogo({ size = 24, className }: LogoProps) {
       className={className}
     >
       <defs>
-        <linearGradient id="opr-usdt-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+        <linearGradient id={gid} x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#2BC18B" />
           <stop offset="100%" stopColor="#26A17B" />
         </linearGradient>
       </defs>
-      <circle cx="32" cy="32" r="32" fill="url(#opr-usdt-bg)" />
+      <circle cx="32" cy="32" r="32" fill={`url(#${gid})`} />
       <g fill="white">
         {/* Top bar do "T" */}
         <rect x="14" y="20" width="36" height="6" rx="0.5" />
@@ -49,6 +57,7 @@ export function USDTLogo({ size = 24, className }: LogoProps) {
 /** PIX (Bacen) · símbolo oficial.
  * Path SVG do Simple Icons (CC0) · forma característica do logo PIX. */
 export function PIXLogo({ size = 24, className }: LogoProps) {
+  const gid = useId();
   return (
     <svg
       width={size}
@@ -60,12 +69,12 @@ export function PIXLogo({ size = 24, className }: LogoProps) {
       className={className}
     >
       <defs>
-        <linearGradient id="opr-pix-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+        <linearGradient id={gid} x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#3FD8C7" />
           <stop offset="100%" stopColor="#1FA9A0" />
         </linearGradient>
       </defs>
-      <circle cx="16" cy="16" r="16" fill="url(#opr-pix-bg)" />
+      <circle cx="16" cy="16" r="16" fill={`url(#${gid})`} />
       <g transform="translate(4 4)" fill="white">
         <path d="M5.283 18.36a3.505 3.505 0 0 0 2.493-1.032l3.6-3.6a.684.684 0 0 1 .946 0l3.613 3.613a3.504 3.504 0 0 0 2.493 1.032h.71l-4.56 4.56a3.647 3.647 0 0 1-5.156 0L4.85 18.36ZM18.428 5.627a3.505 3.505 0 0 0-2.493 1.032l-3.613 3.614a.67.67 0 0 1-.946 0l-3.6-3.6A3.505 3.505 0 0 0 5.283 5.64h-.434l4.573-4.572a3.646 3.646 0 0 1 5.156 0l4.559 4.559ZM1.068 9.422 3.79 6.699h1.492a2.483 2.483 0 0 1 1.744.722l3.6 3.6a1.73 1.73 0 0 0 2.443 0l3.614-3.613a2.482 2.482 0 0 1 1.744-.723h1.767l2.737 2.737a3.646 3.646 0 0 1 0 5.156l-2.736 2.736h-1.768a2.482 2.482 0 0 1-1.744-.722l-3.613-3.613a1.77 1.77 0 0 0-2.444 0l-3.6 3.6a2.483 2.483 0 0 1-1.744.722H3.791l-2.723-2.723a3.646 3.646 0 0 1 0-5.156" />
       </g>
