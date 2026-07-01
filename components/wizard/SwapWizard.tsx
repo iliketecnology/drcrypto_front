@@ -572,8 +572,8 @@ function Header({ step, onClose }: { step: number; onClose: () => void }) {
             lineHeight: 1,
           }}
         >
-          <span style={{ color: "var(--color-ink-900)" }}>US</span>
-          <span style={{ color: "var(--color-green-500)" }}>PIX</span>
+          <span style={{ color: "var(--color-ink-900)" }}>OPR</span>
+          <span style={{ color: "var(--color-green-500)" }}>PAY</span>
         </span>
         <span
           className="mono-num text-[11px] tracking-wider font-bold uppercase"
