@@ -35,7 +35,7 @@ const PAYMENT_CARDS: PaymentCard[] = [
   // },
   {
     mode: "qr",
-    to: "QR Code",
+    to: "QR Copia e Cola",
     description: "Escaneie o QR Code do PIX ou cole o código.",
   },
 ];
