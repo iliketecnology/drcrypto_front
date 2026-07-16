@@ -21,6 +21,7 @@ import { QRCodeSVG } from "qrcode.react";
 import { useTranslations } from "next-intl";
 import axios from "axios";
 import { CameraScanner } from "./CameraScanner";
+import { parseBoleto } from "@/lib/boleto";
 
 const easeOut = [0.16, 1, 0.3, 1] as const;
 const TOTAL_STEPS = 4;
@@ -74,6 +75,8 @@ type WizardState = {
   rate: number;
   /** Modo boleto: código de barras / linha digitável (só dígitos). */
   boletoCode: string;
+  /** O boleto já trazia o valor embutido (read-only no step 2, igual ao QR). */
+  boletoHasAmount: boolean;
   /** Modo QR: payload EMV copia-e-cola do PIX. */
   pixQrRaw: string;
   /** O QR já trazia o valor embutido (read-only no step 2). */
@@ -100,6 +103,7 @@ const INITIAL_STATE: WizardState = {
   beneficiary: "",
   rate: 0,
   boletoCode: "",
+  boletoHasAmount: false,
   pixQrRaw: "",
   pixQrHasAmount: false,
   pixQrDecoded: false,
@@ -204,20 +208,18 @@ function truncateAddress(address: string): string {
   return `${address.slice(0, 14)}…${address.slice(-8)}`;
 }
 
-/** Valida código de boleto: 44 dígitos (código de barras) ou 47/48 (linha digitável). */
-function isValidBoletoCode(code: string): boolean {
-  const digits = code.replace(/\D/g, "");
-  return digits.length === 44 || digits.length === 47 || digits.length === 48;
+/** Parse do boleto (valida DVs, extrai valor/vencimento, converte barcode → linha
+ * digitável) + regra de negócio: boleto vencido não é aceito. null = código inválido. */
+function boletoInfo(code: string) {
+  const p = parseBoleto(code);
+  if (!p) return null;
+  const hoje = new Date().toISOString().slice(0, 10);
+  return { ...p, vencido: !!p.vencimento && p.vencimento < hoje };
 }
 
-/** Tenta extrair o valor do boleto bancário (código de barras 44 díg, posições 9-18). */
-function extractBoletoAmount(code: string): string {
-  const digits = code.replace(/\D/g, "");
-  if (digits.length !== 44) return "";
-  const raw = digits.slice(9, 19);
-  const cents = parseInt(raw, 10);
-  if (isNaN(cents) || cents === 0) return "";
-  return (cents / 100).toFixed(2).replace(".", ",");
+/** dd/mm/aaaa a partir de "YYYY-MM-DD". */
+function formatVencimento(iso: string): string {
+  return iso.split("-").reverse().join("/");
 }
 
 /** Valida payload EMV de PIX (copia-e-cola): começa com "000201" e tem tamanho razoável.
@@ -286,9 +288,18 @@ export function SwapWizard({ isOpen, mode, onClose, onComplete }: Props) {
 
   const canAdvance = (() => {
     if (mode === "boleto") {
-      // step 1 = código de barras válido · step 2 = valor (USDT mín + BRL ≤ teto)
-      if (state.step === 1) return isValidBoletoCode(state.boletoCode);
-      if (state.step === 2) return amountNumber >= 10 && !overMaxBRL;
+      // step 1 = código válido (DVs conferem) e não vencido · step 2 = valor (USDT mín + BRL ≤ teto)
+      if (state.step === 1) {
+        const b = boletoInfo(state.boletoCode);
+        return !!b && !b.vencido;
+      }
+      if (state.step === 2) {
+        // Boleto com valor embutido: BRL veio do código (read-only) → valida
+        // pelo BRL. Boleto de valor em aberto: usuário digita USDT.
+        if (state.boletoHasAmount)
+          return parsePtBR(state.amountBRL) >= 1 && !overMaxBRL;
+        return amountNumber >= 10 && !overMaxBRL;
+      }
     } else if (mode === "qr") {
       // step 1 = QR decodificado pela API (recebedor/valor/status ok)
       if (state.step === 1) return state.pixQrDecoded;
@@ -399,11 +410,18 @@ export function SwapWizard({ isOpen, mode, onClose, onComplete }: Props) {
                     key="s1b"
                     boletoCode={state.boletoCode}
                     onBoletoCode={(v) => {
-                      const extracted = extractBoletoAmount(v);
+                      // Se válido, guarda já convertido pra linha digitável
+                      // (barcode 44 vira digitável; digitável permanece) e
+                      // preenche o BRL com o valor extraído do código.
+                      const parsed = parseBoleto(v);
+                      const hasAmt = !!parsed?.valor;
                       setState((s) => ({
                         ...s,
-                        boletoCode: v,
-                        ...(extracted ? { amountBRL: extracted } : {}),
+                        boletoCode: parsed ? parsed.line.replace(/\D/g, "") : v,
+                        boletoHasAmount: hasAmt,
+                        amountBRL: hasAmt
+                          ? parsed!.valor!.replace(".", ",")
+                          : "",
                       }));
                     }}
                   />
@@ -463,9 +481,27 @@ export function SwapWizard({ isOpen, mode, onClose, onComplete }: Props) {
                     onNetwork={(v) => setState((s) => ({ ...s, network: v }))}
                   />
                 )}
-                {/* Step1Network: valor+rede · pix step 1 OU boleto step 2 */}
+                {/* BOLETO step 2 com valor embutido: confirmação read-only (igual ao QR) */}
+                {mode === "boleto" &&
+                  state.step === 2 &&
+                  state.boletoHasAmount && (
+                    <Step2BoletoConfirm
+                      key="s2boleto"
+                      amountBRL={state.amountBRL}
+                      amountUSDT={state.amountUSDT}
+                      vencimento={
+                        boletoInfo(state.boletoCode)?.vencimento ?? null
+                      }
+                      rate={rate}
+                      network={state.network}
+                      onNetwork={(v) => setState((s) => ({ ...s, network: v }))}
+                    />
+                  )}
+                {/* Step1Network: valor+rede · pix step 1 OU boleto step 2 (valor em aberto) */}
                 {((mode === "pix" && state.step === 1) ||
-                  (mode === "boleto" && state.step === 2)) && (
+                  (mode === "boleto" &&
+                    state.step === 2 &&
+                    !state.boletoHasAmount)) && (
                   <Step1Network
                     key="s1net"
                     mode={mode}
@@ -711,11 +747,14 @@ function Footer({
         let body: Record<string, unknown>;
 
         if (mode === "boleto") {
-          endpoint = `${BASE}/create-crypto-to-boleto`;
+          // Boleto vai pelo mesmo create de pix: a linha digitável (só dígitos,
+          // já convertida no step 1 se entrou barcode) é a key e type é BOLETO.
+          endpoint = `${BASE}/create-crypto-to-pix`;
           body = {
             network: state.network.toUpperCase(),
-            boletoCode: state.boletoCode.replace(/\D/g, ""),
+            key: state.boletoCode.replace(/\D/g, ""),
             walletRet: state.returnWallet,
+            typeKey: "BOLETO",
             email: state.receiptEmail,
             amount: parsePtBR(state.amountBRL),
             referal_code: referral,
@@ -1080,7 +1119,11 @@ function Step1Boleto({
 }) {
   const [scanning, setScanning] = useState(false);
   const digits = boletoCode.replace(/\D/g, "");
-  const valid = isValidBoletoCode(digits);
+  const parsed = boletoInfo(digits);
+  const valid = !!parsed && !parsed.vencido;
+  // Tamanho completo mas DVs não conferem → código digitado errado.
+  const lengthComplete = [44, 47, 48].includes(digits.length);
+  const invalid = lengthComplete && !parsed;
 
   function handleChange(raw: string) {
     onBoletoCode(raw.replace(/\D/g, ""));
@@ -1177,9 +1220,11 @@ function Step1Boleto({
             style={{
               borderColor: valid
                 ? "var(--color-green-400)"
-                : digits.length > 0
-                  ? "var(--color-ink-300)"
-                  : "var(--color-ink-200)",
+                : invalid || parsed?.vencido
+                  ? "#e7b4b4"
+                  : digits.length > 0
+                    ? "var(--color-ink-300)"
+                    : "var(--color-ink-200)",
               background: "var(--color-off-white)",
               color: "var(--color-ink-900)",
               minHeight: 80,
@@ -1192,14 +1237,22 @@ function Step1Boleto({
           <p
             className="mt-1.5 text-[11px] font-medium"
             style={{
-              color: valid ? "var(--color-green-600)" : "var(--color-ink-400)",
+              color: valid
+                ? "var(--color-green-600)"
+                : invalid || parsed?.vencido
+                  ? "#b42121"
+                  : "var(--color-ink-400)",
             }}
           >
             {digits.length === 0
               ? "44, 47 ou 48 dígitos numéricos"
               : valid
                 ? `${digits.length} dígitos · Código válido`
-                : `${digits.length} dígitos · Continue digitando...`}
+                : parsed?.vencido
+                  ? `Boleto vencido em ${formatVencimento(parsed.vencimento!)} · não aceitamos boletos vencidos`
+                  : invalid
+                    ? `${digits.length} dígitos · Código inválido — confira os dígitos`
+                    : `${digits.length} dígitos · Continue digitando...`}
           </p>
         </div>
 
@@ -1220,6 +1273,16 @@ function Step1Boleto({
                 style={{ color: "var(--color-ink-900)" }}
               >
                 Boleto reconhecido
+              </p>
+              <p
+                className="text-[12px] mt-0.5"
+                style={{ color: "var(--color-ink-500)" }}
+              >
+                {parsed!.valor
+                  ? `Valor: R$ ${parsed!.valor.replace(".", ",")}`
+                  : "Valor em aberto — informe na próxima etapa"}
+                {parsed!.vencimento &&
+                  ` · Vencimento: ${formatVencimento(parsed!.vencimento)}`}
               </p>
               <p
                 className="text-[12px] mt-0.5"
@@ -1563,6 +1626,56 @@ function Step2PixQRConfirm({
       }
       subOverride="O QR não continha o valor. Digite o montante em USDT ou BRL a enviar."
     />
+  );
+}
+
+/* ====================== Step 2 Boleto — confirma valor extraído do código ====================== */
+
+function Step2BoletoConfirm({
+  amountBRL,
+  amountUSDT,
+  vencimento,
+  rate,
+  network,
+  onNetwork,
+}: {
+  amountBRL: string;
+  amountUSDT: string;
+  vencimento: string | null;
+  rate: number;
+  network: Network;
+  onNetwork: (v: Network) => void;
+}) {
+  return (
+    <motion.div
+      key="s2-boleto-confirm"
+      initial={false}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -24 }}
+      transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+    >
+      <p className="body-sm mb-5" style={{ color: "var(--color-ink-600)" }}>
+        Confirme os dados do boleto antes de prosseguir. O valor foi extraído do
+        próprio código.
+      </p>
+      <div className="space-y-3">
+        <InfoRow
+          label="Valor do boleto"
+          value={`R$ ${parsePtBR(amountBRL).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`}
+          accent
+        />
+        {vencimento && (
+          <InfoRow label="Vencimento" value={formatVencimento(vencimento)} />
+        )}
+        {rate > 0 && amountBRL && (
+          <InfoRow
+            label="Equivalente em USDT"
+            value={`≈ ${amountUSDT || (parsePtBR(amountBRL) / rate).toFixed(2)} USDT`}
+          />
+        )}
+        <NetworkSelectorMini network={network} onNetwork={onNetwork} />
+      </div>
+    </motion.div>
   );
 }
 

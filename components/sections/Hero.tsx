@@ -28,11 +28,11 @@ const PAYMENT_CARDS: PaymentCard[] = [
   },
   // Boleto pronto, porém OCULTO até o Emerson finalizar o fluxo de boleto.
   // Para reativar, basta descomentar este card.
-  // {
-  //   mode: 'boleto',
-  //   to: 'Boleto',
-  //   description: 'Escaneie o código de barras ou digite.',
-  // },
+  {
+    mode: "boleto",
+    to: "Boleto",
+    description: "Escaneie o código de barras ou digite.",
+  },
   {
     mode: "qr",
     to: "QR Copia e Cola",
