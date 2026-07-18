@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import "@/styles/globals.css";
+import { MaintenanceModal } from "../components/wizard/MaintenanceModal";
 
 // Metadata textual (title/description/OG/Twitter) é localizada por idioma no
 // generateMetadata de app/[locale]/layout.tsx. Aqui fica só o que é global.
@@ -29,7 +30,10 @@ export default function RootLayout({
 }) {
   return (
     <html className={`${GeistSans.variable} ${GeistMono.variable}`}>
-      <body>{children}</body>
+      <body>
+        <MaintenanceModal />
+        {children}
+      </body>
     </html>
   );
 }

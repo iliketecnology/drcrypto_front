@@ -22,6 +22,7 @@ import { useTranslations } from "next-intl";
 import axios from "axios";
 import { CameraScanner } from "./CameraScanner";
 import { parseBoleto } from "@/lib/boleto";
+import { MaintenanceModal } from "./MaintenanceModal";
 
 const easeOut = [0.16, 1, 0.3, 1] as const;
 const TOTAL_STEPS = 4;
