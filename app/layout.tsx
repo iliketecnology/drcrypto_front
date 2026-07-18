@@ -31,7 +31,7 @@ export default function RootLayout({
   return (
     <html className={`${GeistSans.variable} ${GeistMono.variable}`}>
       <body>
-        <MaintenanceModal />
+        {/* <MaintenanceModal /> */}
         {children}
       </body>
     </html>
