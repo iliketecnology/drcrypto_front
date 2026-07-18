@@ -60,7 +60,7 @@ const TERMS_PT: LegalDoc = {
       ul: [
         "Rede USDT suportada: Polygon (USDT.POL).",
         "Valor mínimo por transação: 10 USDT.",
-        "Valor máximo por transação: R$ 99.000,00.",
+        "Valor máximo por transação: R$ 15.000,00.",
         "Quantidade de transações diárias: ilimitada.",
         "A cotação USDT/BRL é apresentada no momento da geração do QR Code e tem validade limitada (15 minutos).",
       ],
@@ -457,7 +457,7 @@ const TERMS_ES: LegalDoc = {
       ul: [
         "Red USDT soportada: Polygon (USDT.POL).",
         "Valor mínimo por transacción: 10 USDT.",
-        "Valor máximo por transacción: R$ 99.000,00.",
+        "Valor máximo por transacción: R$ 15.000,00.",
         "Cantidad de transacciones diarias: ilimitada.",
         "La cotización USDT/BRL se presenta al generar el QR y tiene validez limitada (15 minutos).",
       ],

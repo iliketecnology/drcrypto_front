@@ -150,7 +150,7 @@
       },
       "q4": {
         "question": "Tem limite de valor por transação?",
-        "answer": "Até R$ 99.000,00 por transação."
+        "answer": "Até R$ 15.000,00 por transação."
       },
       "q5": {
         "question": "E se o PIX não cair?",
@@ -182,8 +182,8 @@
       "networkLabel": "Rede USDT",
       "youSend": "VOCÊ ENVIA · USDT",
       "youReceive": "VOCÊ RECEBE · BRL",
-      "hint": "Mínimo: 10 USDT · Máximo: R$ 99.000,00 por transação.",
-      "overLimit": "O valor máximo é de R$ 99.000,00 por transação. Reduza o valor para continuar."
+      "hint": "Mínimo: 10 USDT · Máximo: R$ 15.000,00 por transação.",
+      "overLimit": "O valor máximo é de R$ 15.000,00 por transação. Reduza o valor para continuar."
     },
     "step2": {
       "title": "Pra onde mandamos o PIX",
