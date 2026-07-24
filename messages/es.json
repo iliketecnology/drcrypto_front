@@ -150,7 +150,7 @@
       },
       "q4": {
         "question": "¿Hay límite por transacción?",
-        "answer": "Hasta R$ 15.000,00 por transacción."
+        "answer": "Hasta R$ 30.000,00 por transacción."
       },
       "q5": {
         "question": "¿Y si el PIX no llega?",
@@ -182,8 +182,8 @@
       "networkLabel": "Red USDT",
       "youSend": "ENVÍAS · USDT",
       "youReceive": "RECIBES · BRL",
-      "hint": "Mínimo: 10 USDT · Máximo: R$ 15.000,00 por transacción.",
-      "overLimit": "El monto máximo es de R$ 15.000,00 por transacción. Reduce el monto para continuar."
+      "hint": "Mínimo: 10 USDT · Máximo: R$ 30.000,00 por transacción.",
+      "overLimit": "El monto máximo es de R$ 30.000,00 por transacción. Reduce el monto para continuar."
     },
     "step2": {
       "title": "A dónde enviamos el PIX",
