@@ -176,6 +176,11 @@
       "phone": "Telefone",
       "evp": "Aleatória"
     },
+    "settlement": {
+      "sameDay": "Acima de R$ 15.000, entre 9h e 20h (horário de Brasília), o processamento leva até 1 hora.",
+      "nextBusinessDay": "Acima de R$ 15.000 fora do horário de 9h às 20h, o processamento começa às 9h de {day}.",
+      "crossesCutoff": "Se o pagamento confirmar após as 20h, começa às 9h de {day}."
+    },
     "step1": {
       "title": "Valor da operação",
       "sub": "Você paga em USDT na rede Polygon. Digite o valor em USDT ou em reais; convertemos com a cotação do dólar do momento.",

@@ -176,6 +176,11 @@
       "phone": "Phone",
       "evp": "Random"
     },
+    "settlement": {
+      "sameDay": "Above R$ 15,000, between 9am and 8pm (Brasília time), processing takes up to 1 hour.",
+      "nextBusinessDay": "Above R$ 15,000 outside the 9am to 8pm window, processing starts at 9am on {day}.",
+      "crossesCutoff": "If the payment confirms after 8pm, it starts at 9am on {day}."
+    },
     "step1": {
       "title": "Set the amount",
       "sub": "You pay in USDT on the Polygon network. Enter the amount in USDT or in reais; we convert it using the current dollar rate.",

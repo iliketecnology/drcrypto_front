@@ -22,6 +22,11 @@ import { useTranslations } from "next-intl";
 import axios from "axios";
 import { CameraScanner } from "./CameraScanner";
 import { parseBoleto } from "@/lib/boleto";
+import {
+  SettlementNoticeBanner,
+  useSettlementNotice,
+} from "./SettlementNotice";
+import type { SettlementNotice } from "@/lib/settlementWindow";
 import { MaintenanceModal } from "./MaintenanceModal";
 
 const easeOut = [0.16, 1, 0.3, 1] as const;
@@ -251,7 +256,12 @@ export function SwapWizard({ isOpen, mode, onClose, onComplete }: Props) {
   // Teto de R$ 99.000 por transação (limite do PIX/provedor). Trava o avanço
   // já no passo 1 com feedback inline; o backend também rejeita acima disso.
   const MAX_BRL = 30000;
-  const overMaxBRL = parsePtBR(state.amountBRL) > MAX_BRL;
+  const amountBRLNumber = parsePtBR(state.amountBRL);
+  const overMaxBRL = amountBRLNumber > MAX_BRL;
+
+  // Operações a partir de R$ 15.000 dependem da janela 9h-20h em dia útil ·
+  // o aviso muda conforme a hora de Brasília. Ver lib/settlementWindow.ts.
+  const settlement = useSettlementNotice(amountBRLNumber);
 
   const reset = useCallback(() => setState(INITIAL_STATE), []);
 
@@ -470,6 +480,7 @@ export function SwapWizard({ isOpen, mode, onClose, onComplete }: Props) {
                     amountBRL={state.amountBRL}
                     amountUSDT={state.amountUSDT}
                     overMax={overMaxBRL}
+                    settlement={settlement}
                     rate={rate}
                     network={state.network}
                     onAmountBRL={(v) =>
@@ -493,6 +504,7 @@ export function SwapWizard({ isOpen, mode, onClose, onComplete }: Props) {
                       vencimento={
                         boletoInfo(state.boletoCode)?.vencimento ?? null
                       }
+                      settlement={settlement}
                       rate={rate}
                       network={state.network}
                       onNetwork={(v) => setState((s) => ({ ...s, network: v }))}
@@ -510,6 +522,7 @@ export function SwapWizard({ isOpen, mode, onClose, onComplete }: Props) {
                     amountUSDT={state.amountUSDT}
                     rate={rate}
                     overMax={overMaxBRL}
+                    settlement={settlement}
                     onNetwork={(v) => setState((s) => ({ ...s, network: v }))}
                     onAmountUSDT={(v) =>
                       setState((s) => ({ ...s, amountUSDT: v }))
@@ -551,6 +564,7 @@ export function SwapWizard({ isOpen, mode, onClose, onComplete }: Props) {
                   <Step4QR
                     key="s4"
                     amount={state.amountUSDT || "0"}
+                    amountBRL={amountBRLNumber}
                     network={state.network}
                     address_send={state.address_send}
                     order_id={state.order_id}
@@ -931,6 +945,7 @@ function Step1Network({
   amountUSDT,
   rate,
   overMax,
+  settlement,
   onNetwork,
   onAmountUSDT,
   onAmountBRL,
@@ -943,6 +958,8 @@ function Step1Network({
   amountUSDT: string;
   rate: number;
   overMax: boolean;
+  /** Aviso de janela de liquidação (null abaixo de R$ 15.000). */
+  settlement: SettlementNotice | null;
   onNetwork: (v: Network) => void;
   onAmountUSDT: (v: string) => void;
   onAmountBRL: (v: string) => void;
@@ -1102,6 +1119,11 @@ function Step1Network({
         >
           {t("step1.maxError")}
         </p>
+      ) : settlement ? (
+        // O aviso toma o lugar do hint (não soma): quem já digitou acima de
+        // R$ 15.000 não precisa mais ler o mínimo de 10 USDT, e no mobile as
+        // duas coisas juntas empurram o botão de avançar pra fora da tela.
+        <SettlementNoticeBanner notice={settlement} />
       ) : (
         <Hint>{t("step1.hint")}</Hint>
       )}
@@ -1556,6 +1578,7 @@ function Step2PixQRConfirm({
   amountBRL,
   amountUSDT,
   overMax,
+  settlement,
   rate,
   network,
   onAmountBRL,
@@ -1568,6 +1591,7 @@ function Step2PixQRConfirm({
   amountBRL: string;
   amountUSDT: string;
   overMax: boolean;
+  settlement: SettlementNotice | null;
   rate: number;
   network: Network;
   onAmountBRL: (v: string) => void;
@@ -1602,6 +1626,7 @@ function Step2PixQRConfirm({
             />
           )}
           <NetworkSelectorMini network={network} onNetwork={onNetwork} />
+          <SettlementNoticeBanner notice={settlement} />
         </div>
       </motion.div>
     );
@@ -1615,6 +1640,7 @@ function Step2PixQRConfirm({
       network={network}
       amountUSDT={amountUSDT}
       overMax={overMax}
+      settlement={settlement}
       rate={rate}
       onNetwork={onNetwork}
       onAmountUSDT={onAmountUSDT}
@@ -1636,6 +1662,7 @@ function Step2BoletoConfirm({
   amountBRL,
   amountUSDT,
   vencimento,
+  settlement,
   rate,
   network,
   onNetwork,
@@ -1643,6 +1670,7 @@ function Step2BoletoConfirm({
   amountBRL: string;
   amountUSDT: string;
   vencimento: string | null;
+  settlement: SettlementNotice | null;
   rate: number;
   network: Network;
   onNetwork: (v: Network) => void;
@@ -1675,6 +1703,7 @@ function Step2BoletoConfirm({
           />
         )}
         <NetworkSelectorMini network={network} onNetwork={onNetwork} />
+        <SettlementNoticeBanner notice={settlement} />
       </div>
     </motion.div>
   );
@@ -1907,6 +1936,7 @@ function Step3Return({
 
 function Step4QR({
   amount,
+  amountBRL,
   network,
   address_send,
   order_id,
@@ -1918,6 +1948,8 @@ function Step4QR({
   onSimulatePaid,
 }: {
   amount: string;
+  /** Valor em BRL da operação · alimenta o aviso de janela de liquidação. */
+  amountBRL: number;
   network: Network;
   address_send: string;
   order_id: string;
@@ -1943,6 +1975,10 @@ function Step4QR({
   useEffect(() => {
     if (seconds === 0 && !verifying && !expired) onExpire();
   }, [seconds, verifying, expired, onExpire]);
+
+  // Aqui a janela que importa é o tempo que resta no QR, não os 15 min cheios:
+  // se faltam 4 min e o corte das 20h cai dentro deles, o pagamento pode virar o dia.
+  const settlement = useSettlementNotice(amountBRL, Math.ceil(seconds / 60));
 
   const mm = String(Math.floor(seconds / 60)).padStart(2, "0");
   const ss = String(seconds % 60).padStart(2, "0");
@@ -2057,6 +2093,8 @@ function Step4QR({
           />
         </div>
       </div>
+
+      <SettlementNoticeBanner notice={settlement} />
     </motion.div>
   );
 }
