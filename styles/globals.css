@@ -339,3 +339,21 @@ body::before {
   background:
     radial-gradient(100% 80% at 86% -12%, rgba(241, 227, 252, 0.28), transparent 60%);
 }
+
+/* Teto de altura do card do wizard · o overlay é `fixed` e o body fica com
+   `overflow: hidden` enquanto ele está aberto, então tudo que passar da tela
+   fica INALCANÇÁVEL (foi assim que o botão "Avançar" do passo 1 sumiu no
+   celular). Com o teto, o miolo rola e o rodapé nunca sai da tela.
+   `--wizard-vh` vem do visualViewport (SwapWizard) e acompanha o teclado;
+   `100dvh` é o fallback e `100vh` cobre navegador sem suporte a dvh. */
+.wizard-shell {
+  max-height: calc(100vh - 2rem);
+  max-height: calc(var(--wizard-vh, 100dvh) - 2rem);
+}
+
+@media (min-width: 640px) {
+  .wizard-shell {
+    max-height: calc(100vh - 4rem);
+    max-height: calc(var(--wizard-vh, 100dvh) - 4rem);
+  }
+}

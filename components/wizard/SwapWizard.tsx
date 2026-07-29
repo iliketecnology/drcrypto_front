@@ -281,9 +281,27 @@ export function SwapWizard({ isOpen, mode, onClose, onComplete }: Props) {
     }
     document.addEventListener("keydown", onKey);
     document.body.style.overflow = "hidden";
+
+    // Altura real da área visível → `--wizard-vh` (usada pelo `.wizard-shell`).
+    // `dvh` sozinho não serve no celular: ele ignora o teclado, e é justamente
+    // com o teclado aberto que o card estoura a tela e o botão de avançar some.
+    const vv = window.visualViewport;
+    const applyVh = () => {
+      document.documentElement.style.setProperty(
+        "--wizard-vh",
+        `${vv ? vv.height : window.innerHeight}px`,
+      );
+    };
+    applyVh();
+    vv?.addEventListener("resize", applyVh);
+    vv?.addEventListener("scroll", applyVh);
+
     return () => {
       document.removeEventListener("keydown", onKey);
       document.body.style.overflow = "";
+      vv?.removeEventListener("resize", applyVh);
+      vv?.removeEventListener("scroll", applyVh);
+      document.documentElement.style.removeProperty("--wizard-vh");
     };
   }, [isOpen, onClose]);
 
@@ -403,6 +421,7 @@ export function SwapWizard({ isOpen, mode, onClose, onComplete }: Props) {
             exit={{ opacity: 0, y: 16, scale: 0.97 }}
             transition={{ duration: 0.5, ease: easeOut }}
             className="
+              wizard-shell
               relative z-10 w-full max-w-[560px] rounded-3xl overflow-hidden
               bg-white border border-ink-200
               flex flex-col
@@ -413,7 +432,10 @@ export function SwapWizard({ isOpen, mode, onClose, onComplete }: Props) {
 
             <ProgressBar step={state.step} />
 
-            <div className="px-8 sm:px-10 pb-2 pt-6">
+            {/* Miolo rolável · header, barra de progresso e rodapé ficam presos
+             * ao card, só o conteúdo do passo rola. Sem `min-h-0` o flex child
+             * ignora o overflow e volta a empurrar o botão pra fora da tela. */}
+            <div className="px-8 sm:px-10 pb-2 pt-6 flex-1 min-h-0 overflow-y-auto overscroll-contain">
               <AnimatePresence mode="wait">
                 {/* BOLETO: step 1 = código de barras (scanner/cola) */}
                 {mode === "boleto" && state.step === 1 && (
@@ -606,7 +628,7 @@ function Header({ step, onClose }: { step: number; onClose: () => void }) {
   const t = useTranslations("wizard");
   return (
     <div
-      className="flex items-center justify-between px-7 py-4"
+      className="shrink-0 flex items-center justify-between px-7 py-4"
       style={{
         background:
           "linear-gradient(180deg, var(--color-off-white) 0%, white 100%)",
@@ -660,7 +682,7 @@ function Header({ step, onClose }: { step: number; onClose: () => void }) {
 function ProgressBar({ step }: { step: number }) {
   const pct = (step / TOTAL_STEPS) * 100;
   return (
-    <div className="h-1 relative bg-ink-100 overflow-hidden">
+    <div className="shrink-0 h-1 relative bg-ink-100 overflow-hidden">
       <motion.div
         className="absolute inset-y-0 left-0"
         style={{
@@ -836,7 +858,7 @@ function Footer({
 
   return (
     <div
-      className="flex flex-col gap-2 px-7 py-4 border-t border-ink-200"
+      className="shrink-0 flex flex-col gap-2 px-7 py-4 border-t border-ink-200"
       style={{ background: "var(--color-off-white)" }}
     >
       {submitError && (
