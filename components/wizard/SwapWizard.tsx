@@ -282,26 +282,28 @@ export function SwapWizard({ isOpen, mode, onClose, onComplete }: Props) {
     document.addEventListener("keydown", onKey);
     document.body.style.overflow = "hidden";
 
-    // Altura real da área visível → `--wizard-vh` (usada pelo `.wizard-shell`).
-    // `dvh` sozinho não serve no celular: ele ignora o teclado, e é justamente
-    // com o teclado aberto que o card estoura a tela e o botão de avançar some.
+    // O overlay é colado no visualViewport, não na tela: no iOS o teclado não
+    // encolhe o layout viewport, ele EMPURRA a página pra cima. Um `fixed
+    // inset-0` centralizado continua mirando a tela inteira e o card vai parar
+    // atrás do teclado. Com `--wizard-vtop`/`--wizard-vh` o overlay ocupa
+    // exatamente a faixa visível e o card gruda no topo dela.
     const vv = window.visualViewport;
-    const applyVh = () => {
-      document.documentElement.style.setProperty(
-        "--wizard-vh",
-        `${vv ? vv.height : window.innerHeight}px`,
-      );
+    const applyViewport = () => {
+      const root = document.documentElement.style;
+      root.setProperty("--wizard-vh", `${vv ? vv.height : window.innerHeight}px`);
+      root.setProperty("--wizard-vtop", `${vv ? vv.offsetTop : 0}px`);
     };
-    applyVh();
-    vv?.addEventListener("resize", applyVh);
-    vv?.addEventListener("scroll", applyVh);
+    applyViewport();
+    vv?.addEventListener("resize", applyViewport);
+    vv?.addEventListener("scroll", applyViewport);
 
     return () => {
       document.removeEventListener("keydown", onKey);
       document.body.style.overflow = "";
-      vv?.removeEventListener("resize", applyVh);
-      vv?.removeEventListener("scroll", applyVh);
+      vv?.removeEventListener("resize", applyViewport);
+      vv?.removeEventListener("scroll", applyViewport);
       document.documentElement.style.removeProperty("--wizard-vh");
+      document.documentElement.style.removeProperty("--wizard-vtop");
     };
   }, [isOpen, onClose]);
 
@@ -390,7 +392,11 @@ export function SwapWizard({ isOpen, mode, onClose, onComplete }: Props) {
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 z-[1000] flex items-center justify-center p-4 sm:p-8"
+          /* `top-0` é só piso de segurança: `.wizard-overlay` (CSS plano, que
+           * vence as utilities do Tailwind v4) troca por `--wizard-vtop`. Sem
+           * ele, um CSS que não carregue deixaria `top: auto` e jogaria o
+           * modal pro fim do documento. */
+          className="wizard-overlay fixed top-0 left-0 right-0 z-[1000] flex items-start sm:items-center justify-center p-4 sm:p-8"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -399,10 +405,12 @@ export function SwapWizard({ isOpen, mode, onClose, onComplete }: Props) {
           aria-modal="true"
           aria-labelledby="usp-wizard-title"
         >
+          {/* `fixed` e não `absolute`: o overlay cobre só a faixa visível,
+           * mas o escurecido tem que cobrir a tela inteira. */}
           <motion.button
             type="button"
             aria-label="Fechar"
-            className="absolute inset-0 cursor-default"
+            className="fixed inset-0 cursor-default"
             style={{
               background:
                 "radial-gradient(ellipse at center, rgba(0,30,15,0.65) 0%, rgba(0,8,4,0.85) 90%)",
