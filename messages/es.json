@@ -177,7 +177,7 @@
       "evp": "Aleatoria"
     },
     "settlement": {
-      "sameDay": "Desde R$ 15.000, entre las 9:00 y las 20:00 (hora de Brasilia), el procesamiento tarda hasta 1 hora.",
+      "sameDay": "Desde R$ 15.000 · de 9:00 a 20:00 (Brasilia) el procesamiento tarda hasta 1h.",
       "nextBusinessDay": "Desde R$ 15.000 fuera del horario de 9:00 a 20:00, el procesamiento comienza a las 9:00 del {day}.",
       "crossesCutoff": "Si el pago se confirma después de las 20:00, comienza a las 9:00 del {day}."
     },
