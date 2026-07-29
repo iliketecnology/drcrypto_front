@@ -281,43 +281,9 @@ export function SwapWizard({ isOpen, mode, onClose, onComplete }: Props) {
     }
     document.addEventListener("keydown", onKey);
     document.body.style.overflow = "hidden";
-
-    // O overlay é colado no visualViewport, não na tela: no iOS o teclado não
-    // encolhe o layout viewport, ele EMPURRA a página pra cima. Um `fixed
-    // inset-0` centralizado continua mirando a tela inteira e o card vai parar
-    // atrás do teclado. Com `--wizard-vtop`/`--wizard-vh` o overlay ocupa
-    // exatamente a faixa visível e o card gruda no topo dela.
-    const vv = window.visualViewport;
-    const applyViewport = () => {
-      const root = document.documentElement.style;
-      root.setProperty("--wizard-vh", `${vv ? vv.height : window.innerHeight}px`);
-      root.setProperty("--wizard-vtop", `${vv ? vv.offsetTop : 0}px`);
-    };
-    // Quando o teclado abre, a faixa visível cai pra ~300px e o campo que o
-    // usuário tocou costuma ficar abaixo da dobra do miolo — dá a impressão de
-    // que o modal escondeu o conteúdo. Traz o campo focado de volta.
-    const onResize = () => {
-      applyViewport();
-      const el = document.activeElement;
-      if (
-        el instanceof HTMLInputElement ||
-        el instanceof HTMLTextAreaElement
-      ) {
-        el.scrollIntoView({ block: "center" });
-      }
-    };
-
-    applyViewport();
-    vv?.addEventListener("resize", onResize);
-    vv?.addEventListener("scroll", applyViewport);
-
     return () => {
       document.removeEventListener("keydown", onKey);
       document.body.style.overflow = "";
-      vv?.removeEventListener("resize", onResize);
-      vv?.removeEventListener("scroll", applyViewport);
-      document.documentElement.style.removeProperty("--wizard-vh");
-      document.documentElement.style.removeProperty("--wizard-vtop");
     };
   }, [isOpen, onClose]);
 
@@ -406,11 +372,7 @@ export function SwapWizard({ isOpen, mode, onClose, onComplete }: Props) {
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          /* `top-0` é só piso de segurança: `.wizard-overlay` (CSS plano, que
-           * vence as utilities do Tailwind v4) troca por `--wizard-vtop`. Sem
-           * ele, um CSS que não carregue deixaria `top: auto` e jogaria o
-           * modal pro fim do documento. */
-          className="wizard-overlay fixed top-0 left-0 right-0 z-[1000] flex items-start sm:items-center justify-center p-4 sm:p-8"
+          className="fixed inset-0 z-[1000] flex items-center justify-center p-4 sm:p-8"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -419,12 +381,10 @@ export function SwapWizard({ isOpen, mode, onClose, onComplete }: Props) {
           aria-modal="true"
           aria-labelledby="usp-wizard-title"
         >
-          {/* `fixed` e não `absolute`: o overlay cobre só a faixa visível,
-           * mas o escurecido tem que cobrir a tela inteira. */}
           <motion.button
             type="button"
             aria-label="Fechar"
-            className="fixed inset-0 cursor-default"
+            className="absolute inset-0 cursor-default"
             style={{
               background:
                 "radial-gradient(ellipse at center, rgba(0,30,15,0.65) 0%, rgba(0,8,4,0.85) 90%)",
@@ -443,7 +403,6 @@ export function SwapWizard({ isOpen, mode, onClose, onComplete }: Props) {
             exit={{ opacity: 0, y: 16, scale: 0.97 }}
             transition={{ duration: 0.5, ease: easeOut }}
             className="
-              wizard-shell
               relative z-10 w-full max-w-[560px] rounded-3xl overflow-hidden
               bg-white border border-ink-200
               flex flex-col
@@ -454,10 +413,7 @@ export function SwapWizard({ isOpen, mode, onClose, onComplete }: Props) {
 
             <ProgressBar step={state.step} />
 
-            {/* Miolo rolável · header, barra de progresso e rodapé ficam presos
-             * ao card, só o conteúdo do passo rola. Sem `min-h-0` o flex child
-             * ignora o overflow e volta a empurrar o botão pra fora da tela. */}
-            <div className="px-8 sm:px-10 pb-2 pt-6 flex-1 min-h-0 overflow-y-auto overscroll-contain">
+            <div className="px-8 sm:px-10 pb-2 pt-6">
               <AnimatePresence mode="wait">
                 {/* BOLETO: step 1 = código de barras (scanner/cola) */}
                 {mode === "boleto" && state.step === 1 && (
@@ -650,7 +606,7 @@ function Header({ step, onClose }: { step: number; onClose: () => void }) {
   const t = useTranslations("wizard");
   return (
     <div
-      className="shrink-0 flex items-center justify-between px-7 py-4"
+      className="flex items-center justify-between px-7 py-4"
       style={{
         background:
           "linear-gradient(180deg, var(--color-off-white) 0%, white 100%)",
@@ -704,7 +660,7 @@ function Header({ step, onClose }: { step: number; onClose: () => void }) {
 function ProgressBar({ step }: { step: number }) {
   const pct = (step / TOTAL_STEPS) * 100;
   return (
-    <div className="shrink-0 h-1 relative bg-ink-100 overflow-hidden">
+    <div className="h-1 relative bg-ink-100 overflow-hidden">
       <motion.div
         className="absolute inset-y-0 left-0"
         style={{
@@ -880,7 +836,7 @@ function Footer({
 
   return (
     <div
-      className="shrink-0 flex flex-col gap-2 px-7 py-4 border-t border-ink-200"
+      className="flex flex-col gap-2 px-7 py-4 border-t border-ink-200"
       style={{ background: "var(--color-off-white)" }}
     >
       {submitError && (
@@ -1073,7 +1029,7 @@ function Step1Network({
   };
 
   return (
-    <motion.div {...fadeProps} className="flex flex-col gap-5">
+    <motion.div {...fadeProps} className="flex flex-col gap-3 sm:gap-5">
       <StepTitle
         title={headerOverride ?? t("step1.title")}
         sub={subOverride ?? t("step1.sub")}
@@ -1094,7 +1050,10 @@ function Step1Network({
       </div>
 
       {/* Dual input USDT ↔ BRL · 2 colunas */}
-      <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto_1fr] gap-3 items-center">
+      {/* Dual input USDT ↔ BRL · lado a lado já no celular (empilhado custava
+       * 90px, o suficiente pra jogar o botão de avançar pra fora da tela).
+       * Abaixo de 360px volta a empilhar, senão os valores se espremem. */}
+      <div className="grid grid-cols-1 min-[360px]:grid-cols-2 sm:grid-cols-[1fr_auto_1fr] gap-2 sm:gap-3 items-center">
         <FieldShell
           label={t("step1.youSend")}
           right={
@@ -1111,7 +1070,7 @@ function Step1Network({
             placeholder="100.00"
             className="
               w-full bg-transparent outline-none mono-num
-              text-xl font-bold text-ink-900
+              text-[18px] sm:text-xl font-bold text-ink-900
               placeholder:text-ink-300
             "
             aria-label="Valor em USDT"
@@ -1134,7 +1093,7 @@ function Step1Network({
           }
         >
           <div className="flex items-baseline gap-1">
-            <span className="mono-num text-xl font-bold text-ink-900">R$</span>
+            <span className="mono-num text-[18px] sm:text-xl font-bold text-ink-900">R$</span>
             <input
               inputMode="decimal"
               value={brlDisplayed}
@@ -1146,7 +1105,7 @@ function Step1Network({
               placeholder="0,00"
               className="
                 w-full bg-transparent outline-none mono-num
-                text-xl font-bold text-ink-900
+                text-[18px] sm:text-xl font-bold text-ink-900
                 placeholder:text-ink-300
               "
               aria-label="Valor em BRL"
@@ -1283,9 +1242,7 @@ function Step1Boleto({
             CÓDIGO DO BOLETO
           </label>
           <textarea
-            /* 16px: abaixo disso o Safari do iPhone da zoom no foco e o
-              * modal `fixed` passa a sangrar pra fora da tela. */
-            className="w-full rounded-xl border px-4 py-3 font-mono text-[16px] resize-none focus:outline-none focus:ring-2"
+            className="w-full rounded-xl border px-4 py-3 font-mono text-[13px] resize-none focus:outline-none focus:ring-2"
             style={{
               borderColor: valid
                 ? "var(--color-green-400)"
@@ -1513,9 +1470,7 @@ function Step1PixQR({
             CÓDIGO COPIA E COLA (PIX)
           </label>
           <textarea
-            /* 16px: abaixo disso o Safari do iPhone da zoom no foco e o
-              * modal `fixed` passa a sangrar pra fora da tela. */
-            className="w-full rounded-xl border px-4 py-3 font-mono text-[16px] resize-none focus:outline-none focus:ring-2"
+            className="w-full rounded-xl border px-4 py-3 font-mono text-[11px] resize-none focus:outline-none focus:ring-2"
             style={{
               borderColor: decoded
                 ? "var(--color-green-400)"
@@ -1945,7 +1900,7 @@ function Step3Return({
           }
           className="
             w-full bg-transparent outline-none mono-num
-            text-[16px] font-medium text-ink-900
+            text-[13px] font-medium text-ink-900
             placeholder:text-ink-300
           "
           aria-label="Carteira de retorno"
@@ -2244,7 +2199,7 @@ function ExpiredHashFlow({
               placeholder={t("expired.hashPlaceholder")}
               className="
                 w-full bg-transparent outline-none mono-num
-                text-[16px] font-medium text-ink-900
+                text-[13px] font-medium text-ink-900
                 placeholder:text-ink-300
               "
               aria-label={t("expired.hashLabel")}
@@ -2722,7 +2677,7 @@ function FieldShell({
 }) {
   return (
     <div
-      className="rounded-2xl px-5 py-3.5 transition-colors"
+      className="rounded-2xl px-3.5 py-2.5 sm:px-5 sm:py-3.5 transition-colors"
       style={{
         background: highlight
           ? "var(--color-green-100)"
@@ -2732,7 +2687,7 @@ function FieldShell({
           : "1px solid var(--color-ink-200)",
       }}
     >
-      <div className="flex items-center justify-between mb-2.5 gap-3">
+      <div className="flex items-center justify-between mb-1.5 sm:mb-2.5 gap-2 sm:gap-3">
         <span className="text-[9.5px] uppercase tracking-wider font-bold text-ink-500">
           {label}
         </span>

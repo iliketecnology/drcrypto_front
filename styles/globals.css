@@ -339,22 +339,3 @@ body::before {
   background:
     radial-gradient(100% 80% at 86% -12%, rgba(241, 227, 252, 0.28), transparent 60%);
 }
-
-/* Wizard no celular · o overlay é colado na faixa REALMENTE visível, não na
-   tela. No iOS o teclado não encolhe o layout viewport, ele empurra a página:
-   um `inset-0` centralizado joga o card atrás do teclado. `--wizard-vtop` e
-   `--wizard-vh` vêm do visualViewport (ver SwapWizard) e `100dvh`/`100vh` são
-   os fallbacks pra quando não houver a API. */
-.wizard-overlay {
-  top: var(--wizard-vtop, 0px);
-  height: 100vh;
-  height: var(--wizard-vh, 100dvh);
-}
-
-/* Teto de altura do card · sem ele o conteúdo passa da tela e fica
-   INALCANÇÁVEL (o overlay é `fixed` e o body está com `overflow: hidden`),
-   que foi como o botão "Avançar" do passo 1 sumiu no celular. Com o teto, o
-   miolo rola e o rodapé nunca sai da tela. */
-.wizard-shell {
-  max-height: 100%;
-}
