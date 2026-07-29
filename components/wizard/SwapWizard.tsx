@@ -293,14 +293,28 @@ export function SwapWizard({ isOpen, mode, onClose, onComplete }: Props) {
       root.setProperty("--wizard-vh", `${vv ? vv.height : window.innerHeight}px`);
       root.setProperty("--wizard-vtop", `${vv ? vv.offsetTop : 0}px`);
     };
+    // Quando o teclado abre, a faixa visível cai pra ~300px e o campo que o
+    // usuário tocou costuma ficar abaixo da dobra do miolo — dá a impressão de
+    // que o modal escondeu o conteúdo. Traz o campo focado de volta.
+    const onResize = () => {
+      applyViewport();
+      const el = document.activeElement;
+      if (
+        el instanceof HTMLInputElement ||
+        el instanceof HTMLTextAreaElement
+      ) {
+        el.scrollIntoView({ block: "center" });
+      }
+    };
+
     applyViewport();
-    vv?.addEventListener("resize", applyViewport);
+    vv?.addEventListener("resize", onResize);
     vv?.addEventListener("scroll", applyViewport);
 
     return () => {
       document.removeEventListener("keydown", onKey);
       document.body.style.overflow = "";
-      vv?.removeEventListener("resize", applyViewport);
+      vv?.removeEventListener("resize", onResize);
       vv?.removeEventListener("scroll", applyViewport);
       document.documentElement.style.removeProperty("--wizard-vh");
       document.documentElement.style.removeProperty("--wizard-vtop");
@@ -1269,7 +1283,9 @@ function Step1Boleto({
             CÓDIGO DO BOLETO
           </label>
           <textarea
-            className="w-full rounded-xl border px-4 py-3 font-mono text-[13px] resize-none focus:outline-none focus:ring-2"
+            /* 16px: abaixo disso o Safari do iPhone da zoom no foco e o
+              * modal `fixed` passa a sangrar pra fora da tela. */
+            className="w-full rounded-xl border px-4 py-3 font-mono text-[16px] resize-none focus:outline-none focus:ring-2"
             style={{
               borderColor: valid
                 ? "var(--color-green-400)"
@@ -1497,7 +1513,9 @@ function Step1PixQR({
             CÓDIGO COPIA E COLA (PIX)
           </label>
           <textarea
-            className="w-full rounded-xl border px-4 py-3 font-mono text-[11px] resize-none focus:outline-none focus:ring-2"
+            /* 16px: abaixo disso o Safari do iPhone da zoom no foco e o
+              * modal `fixed` passa a sangrar pra fora da tela. */
+            className="w-full rounded-xl border px-4 py-3 font-mono text-[16px] resize-none focus:outline-none focus:ring-2"
             style={{
               borderColor: decoded
                 ? "var(--color-green-400)"
@@ -1927,7 +1945,7 @@ function Step3Return({
           }
           className="
             w-full bg-transparent outline-none mono-num
-            text-[13px] font-medium text-ink-900
+            text-[16px] font-medium text-ink-900
             placeholder:text-ink-300
           "
           aria-label="Carteira de retorno"
@@ -2226,7 +2244,7 @@ function ExpiredHashFlow({
               placeholder={t("expired.hashPlaceholder")}
               className="
                 w-full bg-transparent outline-none mono-num
-                text-[13px] font-medium text-ink-900
+                text-[16px] font-medium text-ink-900
                 placeholder:text-ink-300
               "
               aria-label={t("expired.hashLabel")}
