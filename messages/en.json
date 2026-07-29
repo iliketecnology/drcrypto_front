@@ -97,7 +97,7 @@
         "label": "Average time from QR paid to PIX received"
       },
       "max": {
-        "value": "R$ 90K",
+        "value": "R$ 250k",
         "label": "Maximum per transaction"
       },
       "unlimited": {

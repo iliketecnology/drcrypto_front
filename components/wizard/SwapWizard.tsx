@@ -255,7 +255,7 @@ export function SwapWizard({ isOpen, mode, onClose, onComplete }: Props) {
   const amountNumber = parseUSD(state.amountUSDT);
   // Teto de R$ 99.000 por transação (limite do PIX/provedor). Trava o avanço
   // já no passo 1 com feedback inline; o backend também rejeita acima disso.
-  const MAX_BRL = 30000;
+  const MAX_BRL = 250000;
   const amountBRLNumber = parsePtBR(state.amountBRL);
   const overMaxBRL = amountBRLNumber > MAX_BRL;
 
