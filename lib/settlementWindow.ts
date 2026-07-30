@@ -1,7 +1,7 @@
 /**
  * Janela de liquidação para operações de alto valor (pedido do Thiago, 28/07).
  *
- * Regra do provedor: operações a partir de R$ 15.000 só são processadas dentro da
+ * Regra do provedor: operações a partir de R$ 30.000 só são processadas dentro da
  * janela de 9h às 20h (horário de Brasília) em dia útil. Dentro da janela, a
  * liquidação pode levar até 1 hora. Fora dela, a operação entra na fila e é
  * processada a partir das 9h do próximo dia útil.
@@ -15,10 +15,10 @@
  */
 
 /**
- * A regra vale para valores ACIMA deste piso · R$ 15.000,00 exatos não entram,
- * R$ 15.000,01 entra (decisão do Thiago, 28/07).
+ * A regra vale para valores ACIMA deste piso · R$ 30.000,00 exatos não entram,
+ * R$ 30.000,01 entra (decisão do Thiago, 28/07).
  */
-export const SETTLEMENT_THRESHOLD_BRL = 15000;
+export const SETTLEMENT_THRESHOLD_BRL = 30000;
 
 /** Toda a regra roda no horário de Brasília. */
 export const SETTLEMENT_TZ = "America/Sao_Paulo";

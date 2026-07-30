@@ -9,7 +9,7 @@ import {
 } from "@/lib/settlementWindow";
 
 /**
- * Aviso de prazo pra operações a partir de R$ 15.000 (regra da janela 9h-20h).
+ * Aviso de prazo pra operações a partir de R$ 30.000 (regra da janela 9h-20h).
  * Ver `lib/settlementWindow.ts` pra regra de negócio.
  */
 

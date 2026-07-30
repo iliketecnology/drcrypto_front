@@ -177,8 +177,8 @@
       "evp": "Aleatória"
     },
     "settlement": {
-      "sameDay": "Acima de R$ 15.000, entre 9h e 20h (horário de Brasília), o processamento leva até 1 hora.",
-      "nextBusinessDay": "Acima de R$ 15.000 fora do horário de 9h às 20h, o processamento começa às 9h de {day}.",
+      "sameDay": "Acima de R$ 30.000, entre 9h e 20h (horário de Brasília), o processamento leva até 1 hora.",
+      "nextBusinessDay": "Acima de R$ 30.000 fora do horário de 9h às 20h, o processamento começa às 9h de {day}.",
       "crossesCutoff": "Se o pagamento confirmar após as 20h, começa às 9h de {day}."
     },
     "step1": {

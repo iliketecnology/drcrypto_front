@@ -259,7 +259,7 @@ export function SwapWizard({ isOpen, mode, onClose, onComplete }: Props) {
   const amountBRLNumber = parsePtBR(state.amountBRL);
   const overMaxBRL = amountBRLNumber > MAX_BRL;
 
-  // Operações a partir de R$ 15.000 dependem da janela 9h-20h em dia útil ·
+  // Operações a partir de R$ 30.000 dependem da janela 9h-20h em dia útil ·
   // o aviso muda conforme a hora de Brasília. Ver lib/settlementWindow.ts.
   const settlement = useSettlementNotice(amountBRLNumber);
 
@@ -958,7 +958,7 @@ function Step1Network({
   amountUSDT: string;
   rate: number;
   overMax: boolean;
-  /** Aviso de janela de liquidação (null abaixo de R$ 15.000). */
+  /** Aviso de janela de liquidação (null abaixo de R$ 30.000). */
   settlement: SettlementNotice | null;
   onNetwork: (v: Network) => void;
   onAmountUSDT: (v: string) => void;
@@ -1121,7 +1121,7 @@ function Step1Network({
         </p>
       ) : settlement ? (
         // O aviso toma o lugar do hint (não soma): quem já digitou acima de
-        // R$ 15.000 não precisa mais ler o mínimo de 10 USDT, e no mobile as
+        // R$ 30.000 não precisa mais ler o mínimo de 10 USDT, e no mobile as
         // duas coisas juntas empurram o botão de avançar pra fora da tela.
         <SettlementNoticeBanner notice={settlement} />
       ) : (
