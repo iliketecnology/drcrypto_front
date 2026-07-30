@@ -1029,7 +1029,7 @@ function Step1Network({
   };
 
   return (
-    <motion.div {...fadeProps} className="flex flex-col gap-5">
+    <motion.div {...fadeProps} className="flex flex-col gap-2.5 sm:gap-5">
       <StepTitle
         title={headerOverride ?? t("step1.title")}
         sub={subOverride ?? t("step1.sub")}
@@ -1050,7 +1050,10 @@ function Step1Network({
       </div>
 
       {/* Dual input USDT ↔ BRL · 2 colunas */}
-      <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto_1fr] gap-3 items-center">
+      {/* Dual input USDT ↔ BRL · um embaixo do outro no celular (pedido do
+       * cliente: lado a lado ele não quis). A altura que isso custa sai dos
+       * espaçamentos e do bloco de cotação, logo abaixo. */}
+      <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto_1fr] gap-2 sm:gap-3 items-center">
         <FieldShell
           label={t("step1.youSend")}
           right={
@@ -1067,7 +1070,7 @@ function Step1Network({
             placeholder="100.00"
             className="
               w-full bg-transparent outline-none mono-num
-              text-xl font-bold text-ink-900
+              text-[18px] sm:text-xl font-bold text-ink-900
               placeholder:text-ink-300
             "
             aria-label="Valor em USDT"
@@ -1090,7 +1093,7 @@ function Step1Network({
           }
         >
           <div className="flex items-baseline gap-1">
-            <span className="mono-num text-xl font-bold text-ink-900">R$</span>
+            <span className="mono-num text-[18px] sm:text-xl font-bold text-ink-900">R$</span>
             <input
               inputMode="decimal"
               value={brlDisplayed}
@@ -1102,7 +1105,7 @@ function Step1Network({
               placeholder="0,00"
               className="
                 w-full bg-transparent outline-none mono-num
-                text-xl font-bold text-ink-900
+                text-[18px] sm:text-xl font-bold text-ink-900
                 placeholder:text-ink-300
               "
               aria-label="Valor em BRL"
@@ -2674,7 +2677,7 @@ function FieldShell({
 }) {
   return (
     <div
-      className="rounded-2xl px-5 py-3.5 transition-colors"
+      className="rounded-2xl px-3.5 py-2 sm:px-5 sm:py-3.5 transition-colors"
       style={{
         background: highlight
           ? "var(--color-green-100)"
@@ -2684,7 +2687,7 @@ function FieldShell({
           : "1px solid var(--color-ink-200)",
       }}
     >
-      <div className="flex items-center justify-between mb-2.5 gap-3">
+      <div className="flex items-center justify-between mb-1 sm:mb-2.5 gap-2 sm:gap-3">
         <span className="text-[9.5px] uppercase tracking-wider font-bold text-ink-500">
           {label}
         </span>
@@ -2711,7 +2714,7 @@ function NetworkOption({
       type="button"
       onClick={onClick}
       className="
-        relative flex items-center gap-3 px-4 py-2.5 rounded-2xl
+        relative flex items-center gap-3 px-4 py-2 sm:py-2.5 rounded-2xl
         text-left transition-all duration-200
       "
       style={{

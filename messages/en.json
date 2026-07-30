@@ -177,7 +177,7 @@
       "evp": "Random"
     },
     "settlement": {
-      "sameDay": "Above R$ 15,000, between 9am and 8pm (Brasília time), processing takes up to 1 hour.",
+      "sameDay": "Above R$ 15,000 · from 9am to 8pm (Brasília) processing takes up to 1h.",
       "nextBusinessDay": "Above R$ 15,000 outside the 9am to 8pm window, processing starts at 9am on {day}.",
       "crossesCutoff": "If the payment confirms after 8pm, it starts at 9am on {day}."
     },
