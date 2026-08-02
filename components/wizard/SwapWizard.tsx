@@ -711,7 +711,7 @@ function Footer({
     const interval = setInterval(async () => {
       try {
         const { data } = await axios.get(
-          `https://crypto2pay-backend-drcrypto.mebq4k.easypanel.host/v1/sell/get-status-crypto-to-pix?uuid=${orderId}`,
+          `https://api.oprpay.com.br/v1/sell/get-status-crypto-to-pix?uuid=${orderId}`,
         );
         if (data.res.status === "SUCCESS") {
           clearInterval(interval);
@@ -756,8 +756,7 @@ function Footer({
         }
         const referral = getReferral();
 
-        const BASE =
-          "https://crypto2pay-backend-drcrypto.mebq4k.easypanel.host/v1/sell";
+        const BASE = "https://api.oprpay.com.br/v1/sell";
         let endpoint: string;
         let body: Record<string, unknown>;
 
@@ -1093,7 +1092,9 @@ function Step1Network({
           }
         >
           <div className="flex items-baseline gap-1">
-            <span className="mono-num text-[18px] sm:text-xl font-bold text-ink-900">R$</span>
+            <span className="mono-num text-[18px] sm:text-xl font-bold text-ink-900">
+              R$
+            </span>
             <input
               inputMode="decimal"
               value={brlDisplayed}
@@ -1354,7 +1355,7 @@ function Step1PixQR({
     onReset();
     try {
       const { data: res } = await axios.post(
-        "https://crypto2pay-backend-drcrypto.mebq4k.easypanel.host/v1/sell/decode-brcode",
+        "https://api.oprpay.com.br/v1/sell/decode-brcode",
         { emv },
       );
       const d: DecodedQr = res.data ?? res;
