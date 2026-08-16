@@ -225,7 +225,7 @@ function ReceiptInner({
             </ReceiptBlock>
           </div>
 
-          <VpnPromo />
+          {/* <VpnPromo /> */}
           {/*
           <button
             type="button"
