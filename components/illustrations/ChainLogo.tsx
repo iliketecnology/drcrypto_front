@@ -1,13 +1,14 @@
 /** Logos das chains USDT — interpretações fiéis das marcas oficiais,
  * desenhadas inline pra evitar problemas de copyright/licença. */
 
-export type ChainKey = 'tron' | 'ethereum' | 'polygon' | 'solana';
+export type ChainKey = 'tron' | 'ethereum' | 'polygon' | 'solana' | 'plasma';
 
 export const CHAIN_COLORS: Record<ChainKey, string> = {
   tron: '#FF060A',
   ethereum: '#627EEA',
   polygon: '#6C00F6',
-  solana: '#14F195',
+  solana: '#0E9F6E',
+  plasma: '#0F0F0F',
 };
 
 export function ChainLogo({
@@ -31,6 +32,8 @@ export function ChainLogo({
       return <PolygonLogo size={size} className={className} white={white} />;
     case 'solana':
       return <SolanaLogo size={size} className={className} />;
+    case 'plasma':
+      return <PlasmaLogo size={size} className={className} />;
   }
 }
 
@@ -173,5 +176,19 @@ function SolanaLogo({ size, className }: { size: number; className?: string }) {
         <path d="M 19 46 L 41 46 L 45.5 41 L 23.5 41 Z" />
       </g>
     </svg>
+  );
+}
+
+/** Marca oficial da Plasma (favicon de plasma.to, versão escura). */
+function PlasmaLogo({ size, className }: { size: number; className?: string }) {
+  return (
+    <img
+      src="/brand/plasma.svg"
+      alt="Plasma"
+      width={size}
+      height={size}
+      className={className}
+      style={{ width: size, height: size, display: 'block' }}
+    />
   );
 }

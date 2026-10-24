@@ -134,7 +134,7 @@ export function About() {
 
           <div className="mt-10 flex flex-wrap items-center gap-3">
             <ValueChip>Pague em 4 etapas</ValueChip>
-            <ValueChip>Polygon</ValueChip>
+            <ValueChip>Polygon · Solana · Plasma</ValueChip>
             <ValueChip>Liquidação 24/7</ValueChip>
             <ValueChip>Sem cadastro</ValueChip>
           </div>

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { useTranslations } from "next-intl";
-import { LIQUIDITY_FEE, type SwapResult } from "./types";
+import { LIQUIDITY_FEE, NETWORK_META, type SwapResult } from "./types";
 import { VpnPromo } from "./VpnPromo";
 
 const easeOut = [0.16, 1, 0.3, 1] as const;
@@ -58,7 +58,7 @@ function ReceiptInner({
   const [sent, setSent] = useState(false);
 
   const beneficiary = data.beneficiary || "Beneficiário PIX";
-  const networkLabel = "Polygon";
+  const networkLabel = NETWORK_META[data.network].label;
 
   // Parse seguro do valor enviado em USDT pra calcular a taxa do provedor de liquidez.
   // Aceita formato BR (1.234,56) ou US (1234.56).

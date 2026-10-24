@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "OprPay · USDT to PIX, instant",
-    "description": "Get your USDT straight to PIX, instantly. No signup, no KYC, no red tape. Polygon network supported.",
+    "description": "Get your USDT straight to PIX, instantly. No signup, no KYC, no red tape. Polygon, Solana and Plasma supported.",
     "ogAlt": "OprPay · USDT to PIX, instant"
   },
   "header": {
@@ -56,11 +56,11 @@
   },
   "how": {
     "title": "How it works",
-    "body": "Paying has never been easier. Four quick steps, no sign-up, no friction. Set the amount and PIX key, pay the USDT QR Code on the Polygon network and receive reais in seconds.",
+    "body": "Paying has never been easier. Four quick steps, no sign-up, no friction. Set the amount and PIX key, pay the USDT QR Code on the network you picked (Polygon, Solana or Plasma) and receive reais in seconds.",
     "steps": {
       "1": {
         "title": "Network and amount",
-        "hint": "Polygon network. Type in USDT or in reais; we convert with the current rate."
+        "hint": "Polygon, Solana or Plasma. Type in USDT or in reais; we convert with the current rate."
       },
       "2": {
         "title": "Enter the PIX key",
@@ -93,8 +93,8 @@
         "body": "7 days a week, 24 hours a day."
       },
       "networks": {
-        "title": "Polygon",
-        "body": "We run on the most-used USDT network. Polygon: low fees and fast confirmation."
+        "title": "3 USDT networks",
+        "body": "Polygon, Solana and Plasma. You pick the network when you pay."
       },
       "fee": {
         "title": "Lowest fees on the market",
@@ -131,8 +131,8 @@
   },
   "networks": {
     "eyebrow": "SUPPORTED NETWORKS",
-    "title": "Polygon, live and ready.",
-    "body": "We accept USDT on the Polygon network, with the best fees on the market and fast confirmation.",
+    "title": "Polygon, Solana and Plasma, live and ready.",
+    "body": "We accept USDT on three networks. Polygon has the best fees; Solana and Plasma stay available for those who already use them.",
     "defaultBadge": "Lowest fees",
     "polygonHeadline": "USDT.POL · Polygon PoS",
     "polygonBody": "The cheapest and fastest USDT network available. No waiting, no expensive gas, no headache.",
@@ -142,7 +142,11 @@
     "stat1Label": "Network fee",
     "stat2Label": "Confirmation",
     "stat3Label": "USDT contract",
-    "footnote": "Support for other networks may be evaluated based on demand."
+    "footnote": "Always send the USDT on the same network you picked in the first step of the payment.",
+    "solanaHeadline": "USDT.SPL · Solana",
+    "solanaBody": "Confirmation in seconds and network costs of a fraction of a cent. Ideal if you already hold USDT on Solana.",
+    "plasmaHeadline": "USDT0 · Plasma",
+    "plasmaBody": "A blockchain built for stablecoins, with native USDT0 and gas-free transfers for the sender."
   },
   "about": {
     "eyebrow": "WHO WE ARE",
@@ -156,7 +160,7 @@
     "items": {
       "q1": {
         "question": "How fast does PIX arrive after I pay USDT?",
-        "answer": "As soon as the USDT transaction is confirmed on-chain, PIX is automatically triggered. End-to-end usually takes 12 to 30 seconds, depending on Polygon network confirmation."
+        "answer": "As soon as the USDT transaction is confirmed on-chain, PIX is automatically triggered. End-to-end usually takes 12 to 30 seconds, depending on confirmation on the chosen network."
       },
       "q2": {
         "question": "Do I need to sign up?",
@@ -164,7 +168,7 @@
       },
       "q3": {
         "question": "Which USDT network do you accept?",
-        "answer": "We operate on the most-used USDT network: Polygon (USDT.POL)."
+        "answer": "We accept USDT on three networks: Polygon (USDT.POL), Solana (USDT.SPL) and Plasma (USDT0)."
       },
       "q4": {
         "question": "Is there a per-transaction limit?",
@@ -201,7 +205,7 @@
     },
     "step1": {
       "title": "Set the amount",
-      "sub": "You pay in USDT on the Polygon network. Enter the amount in USDT or in reais; we convert it using the current dollar rate.",
+      "sub": "You pay in USDT on the network you choose. Enter the amount in USDT or in reais; we convert it using the current dollar rate.",
       "networkLabel": "USDT network",
       "youSend": "YOU SEND · USDT",
       "youReceive": "YOU RECEIVE · BRL",
@@ -220,7 +224,11 @@
       "sub": "Use a {network} wallet you control. If anything goes wrong on-chain, we refund the USDT to it. The receipt goes to the email you provide.",
       "walletField": "RETURN WALLET · {network}",
       "walletErrorPolygon": "Invalid address for the Polygon network. Polygon uses the 0x + 40 hexadecimal characters format.",
-      "emailField": "EMAIL FOR THE RECEIPT"
+      "emailField": "EMAIL FOR THE RECEIPT",
+      "walletErrorSolana": "Invalid address for the Solana network. Solana uses 32 to 44 characters, no 0x.",
+      "walletErrorPlasma": "Invalid address for the Plasma network. Plasma uses the 0x + 40 hexadecimal characters format.",
+      "walletPlaceholderEvm": "0x... (42 characters)",
+      "walletPlaceholderSolana": "Solana address (32 to 44 characters)"
     },
     "step4": {
       "title": "Pay the QR Code",

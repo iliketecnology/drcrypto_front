@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "OprPay · USDT a PIX al instante",
-    "description": "Recibe tus USDT directo en PIX, al instante. Sin registro, sin KYC, sin burocracia. Red Polygon compatible.",
+    "description": "Recibe tus USDT directo en PIX, al instante. Sin registro, sin KYC, sin burocracia. Polygon, Solana y Plasma compatibles.",
     "ogAlt": "OprPay · USDT a PIX al instante"
   },
   "header": {
@@ -56,11 +56,11 @@
   },
   "how": {
     "title": "Cómo funciona",
-    "body": "Pagar nunca fue tan simple. Cuatro pasos rápidos, sin registro, sin burocracia. Defines el monto y la llave PIX, pagas el QR Code USDT en la red Polygon y recibes reales en segundos.",
+    "body": "Pagar nunca fue tan simple. Cuatro pasos rápidos, sin registro, sin burocracia. Defines el monto y la llave PIX, pagas el QR Code USDT en la red elegida (Polygon, Solana o Plasma) y recibes reales en segundos.",
     "steps": {
       "1": {
         "title": "Red y valor",
-        "hint": "Red Polygon. Escribe en USDT o en reales; convertimos con la cotización actual."
+        "hint": "Polygon, Solana o Plasma. Escribe en USDT o en reales; convertimos con la cotización actual."
       },
       "2": {
         "title": "Informa la llave PIX",
@@ -93,8 +93,8 @@
         "body": "7 días a la semana, 24 horas al día."
       },
       "networks": {
-        "title": "Polygon",
-        "body": "Operamos en la red USDT más usada. Polygon: tarifas bajas y confirmación rápida."
+        "title": "3 redes USDT",
+        "body": "Polygon, Solana y Plasma. Eliges la red al momento de pagar."
       },
       "fee": {
         "title": "Las tarifas más bajas del mercado",
@@ -131,8 +131,8 @@
   },
   "networks": {
     "eyebrow": "REDES COMPATIBLES",
-    "title": "Polygon, lista para operar.",
-    "body": "Aceptamos USDT en la red Polygon, con las mejores tarifas del mercado y confirmación rápida.",
+    "title": "Polygon, Solana y Plasma, listas para operar.",
+    "body": "Aceptamos USDT en tres redes. Polygon tiene las mejores tarifas; Solana y Plasma quedan disponibles para quienes ya operan en ellas.",
     "defaultBadge": "Tarifas más bajas",
     "polygonHeadline": "USDT.POL · Polygon PoS",
     "polygonBody": "La red USDT más barata y rápida disponible. Sin espera, sin gas caro, sin dolor de cabeza.",
@@ -142,7 +142,11 @@
     "stat1Label": "Tarifa de red",
     "stat2Label": "Confirmación",
     "stat3Label": "Contrato USDT",
-    "footnote": "Soporte adicional a otras redes puede evaluarse según demanda."
+    "footnote": "Envía el USDT siempre por la misma red elegida en la primera etapa del pago.",
+    "solanaHeadline": "USDT.SPL · Solana",
+    "solanaBody": "Confirmación en segundos y costo de red de fracciones de centavo. Ideal si ya guardas USDT en Solana.",
+    "plasmaHeadline": "USDT0 · Plasma",
+    "plasmaBody": "Blockchain hecha para stablecoins, con USDT0 nativo y transferencias sin costo de gas para quien envía."
   },
   "about": {
     "eyebrow": "QUIÉNES SOMOS",
@@ -156,7 +160,7 @@
     "items": {
       "q1": {
         "question": "¿En cuánto tiempo cae el PIX después de pagar el USDT?",
-        "answer": "Apenas la transacción USDT se confirma en la blockchain, el PIX se dispara automáticamente. En promedio, el proceso completo lleva entre 12 y 30 segundos, según la confirmación en la red Polygon."
+        "answer": "Apenas la transacción USDT se confirma en la blockchain, el PIX se dispara automáticamente. En promedio, el proceso completo lleva entre 12 y 30 segundos, según la confirmación en la red elegida."
       },
       "q2": {
         "question": "¿Necesito registrarme?",
@@ -164,7 +168,7 @@
       },
       "q3": {
         "question": "¿Qué red USDT aceptan?",
-        "answer": "Operamos con la red USDT más usada del mercado: Polygon (USDT.POL)."
+        "answer": "Aceptamos USDT en tres redes: Polygon (USDT.POL), Solana (USDT.SPL) y Plasma (USDT0)."
       },
       "q4": {
         "question": "¿Hay límite por transacción?",
@@ -201,7 +205,7 @@
     },
     "step1": {
       "title": "Monto de la operación",
-      "sub": "Pagas en USDT en la red Polygon. Ingresa el monto en USDT o en reales; lo convertimos con la cotización del dólar del momento.",
+      "sub": "Pagas en USDT en la red que elijas. Ingresa el monto en USDT o en reales; lo convertimos con la cotización del dólar del momento.",
       "networkLabel": "Red USDT",
       "youSend": "ENVÍAS · USDT",
       "youReceive": "RECIBES · BRL",
@@ -220,7 +224,11 @@
       "sub": "Usa una billetera {network} que controles. Si algo sale mal on-chain, te devolvemos el USDT a ella. El comprobante va al correo indicado.",
       "walletField": "BILLETERA DE RETORNO · {network}",
       "walletErrorPolygon": "Dirección inválida para la red Polygon. Polygon usa el formato 0x + 40 caracteres hexadecimales.",
-      "emailField": "CORREO PARA EL COMPROBANTE"
+      "emailField": "CORREO PARA EL COMPROBANTE",
+      "walletErrorSolana": "Dirección inválida para la red Solana. Solana usa de 32 a 44 caracteres, sin 0x.",
+      "walletErrorPlasma": "Dirección inválida para la red Plasma. Plasma usa el formato 0x + 40 caracteres hexadecimales.",
+      "walletPlaceholderEvm": "0x... (42 caracteres)",
+      "walletPlaceholderSolana": "Dirección Solana (32 a 44 caracteres)"
     },
     "step4": {
       "title": "Paga el código QR",

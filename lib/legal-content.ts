@@ -58,7 +58,7 @@ const TERMS_PT: LegalDoc = {
     {
       h: "4. Operação",
       ul: [
-        "Rede USDT suportada: Polygon (USDT.POL).",
+        "Redes USDT suportadas: Polygon (USDT.POL), Solana (USDT.SPL) e Plasma (USDT0).",
         "Valor mínimo por transação: 10 USDT.",
         "Valor máximo por transação: R$ 250.000,00.",
         "Quantidade de transações diárias: ilimitada.",
@@ -80,7 +80,7 @@ const TERMS_PT: LegalDoc = {
     {
       h: "7. Limitações de responsabilidade",
       p: [
-        "O OprPay não se responsabiliza por: (i) erros de digitação, endereço de carteira ou rede selecionada pelo usuário; (ii) atrasos das redes blockchain públicas (Polygon) ou da rede PIX; (iii) bloqueios bancários, judiciais ou regulatórios alheios ao nosso controle; (iv) prejuízos decorrentes de oscilação cambial entre o início e a conclusão da operação.",
+        "O OprPay não se responsabiliza por: (i) erros de digitação, endereço de carteira ou rede selecionada pelo usuário; (ii) atrasos das redes blockchain públicas (Polygon, Solana e Plasma) ou da rede PIX; (iii) bloqueios bancários, judiciais ou regulatórios alheios ao nosso controle; (iv) prejuízos decorrentes de oscilação cambial entre o início e a conclusão da operação.",
       ],
     },
     {
@@ -136,7 +136,7 @@ const PRIVACY_PT: LegalDoc = {
       ul: [
         "Chave PIX informada para recebimento dos reais.",
         "E-mail para envio do comprovante.",
-        "Endereço de carteira USDT de retorno (rede Polygon).",
+        "Endereço de carteira USDT de retorno (na rede escolhida).",
         "Metadados técnicos da transação: hash blockchain, timestamp, valor, rede USDT escolhida.",
         "Dados mínimos de navegação: endereço IP, user-agent, idioma do navegador.",
       ],
@@ -259,7 +259,7 @@ const TERMS_EN: LegalDoc = {
     {
       h: "4. Operation",
       ul: [
-        "Supported USDT network: Polygon (USDT.POL).",
+        "Supported USDT networks: Polygon (USDT.POL), Solana (USDT.SPL) and Plasma (USDT0).",
         "Minimum per transaction: 10 USDT.",
         "Maximum per transaction: R$ 99,000.00.",
         "Daily transactions: unlimited.",
@@ -281,7 +281,7 @@ const TERMS_EN: LegalDoc = {
     {
       h: "7. Limitation of liability",
       p: [
-        "OprPay is not liable for: (i) user typos, wrong wallet address or wrong network; (ii) public blockchain (Polygon) or PIX network delays; (iii) banking, judicial or regulatory blocks outside our control; (iv) losses due to FX fluctuation between the start and the completion of the operation.",
+        "OprPay is not liable for: (i) user typos, wrong wallet address or wrong network; (ii) public blockchain (Polygon, Solana and Plasma) or PIX network delays; (iii) banking, judicial or regulatory blocks outside our control; (iv) losses due to FX fluctuation between the start and the completion of the operation.",
       ],
     },
     {
@@ -335,7 +335,7 @@ const PRIVACY_EN: LegalDoc = {
       ul: [
         "PIX key for receiving BRL.",
         "Email address for the receipt.",
-        "USDT return wallet address (Polygon network).",
+        "USDT return wallet address (on the chosen network).",
         "Technical transaction metadata: blockchain hash, timestamp, amount, chosen USDT network.",
         "Minimal navigation data: IP address, user-agent, browser language.",
       ],
@@ -455,7 +455,7 @@ const TERMS_ES: LegalDoc = {
     {
       h: "4. Operación",
       ul: [
-        "Red USDT soportada: Polygon (USDT.POL).",
+        "Redes USDT soportadas: Polygon (USDT.POL), Solana (USDT.SPL) y Plasma (USDT0).",
         "Valor mínimo por transacción: 10 USDT.",
         "Valor máximo por transacción: R$ 250.000,00.",
         "Cantidad de transacciones diarias: ilimitada.",
@@ -477,7 +477,7 @@ const TERMS_ES: LegalDoc = {
     {
       h: "7. Limitaciones de responsabilidad",
       p: [
-        "OprPay no se responsabiliza por: (i) errores de tipeo, dirección de billetera o red seleccionada por el usuario; (ii) retrasos de las redes blockchain públicas (Polygon) o de la red PIX; (iii) bloqueos bancarios, judiciales o regulatorios ajenos a nuestro control; (iv) pérdidas derivadas de oscilación cambial entre el inicio y la conclusión de la operación.",
+        "OprPay no se responsabiliza por: (i) errores de tipeo, dirección de billetera o red seleccionada por el usuario; (ii) retrasos de las redes blockchain públicas (Polygon, Solana y Plasma) o de la red PIX; (iii) bloqueos bancarios, judiciales o regulatorios ajenos a nuestro control; (iv) pérdidas derivadas de oscilación cambial entre el inicio y la conclusión de la operación.",
       ],
     },
     {
@@ -533,7 +533,7 @@ const PRIVACY_ES: LegalDoc = {
       ul: [
         "Llave PIX informada para recibir los reales.",
         "E-mail para envío del comprobante.",
-        "Dirección de billetera USDT de retorno (red Polygon).",
+        "Dirección de billetera USDT de retorno (en la red elegida).",
         "Metadatos técnicos de la transacción: hash blockchain, timestamp, valor, red USDT elegida.",
         "Datos mínimos de navegación: dirección IP, user-agent, idioma del navegador.",
       ],

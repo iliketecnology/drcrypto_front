@@ -11,6 +11,8 @@ import {
 import { useUsdtBrlRate, formatBRL } from "@/lib/useUsdtBrlRate";
 import {
   NETWORK_ADDRESS,
+  NETWORK_META,
+  NETWORKS,
   isValidWallet,
   type Network,
   type PaymentMode,
@@ -56,7 +58,7 @@ const PIX_KEY_OPTIONS: Array<{
 type Props = {
   isOpen: boolean;
   /** Modalidade de destino escolhida na home (PIX por chave, boleto ou QR/copia-e-cola).
-   * Tron só é oferecida no modo "pix"; boleto e QR são Polygon-only. */
+   * Solana e Plasma são oferecidas no PIX por chave e no boleto; QR é Polygon-only. */
   mode: PaymentMode;
   onClose: () => void;
   onComplete: (result: SwapResult) => void;
@@ -1011,20 +1013,22 @@ function Step1Network({
   headerOverride?: string;
   subOverride?: string;
 }) {
-  // Tron só está disponível no fluxo de PIX por chave. Boleto e QR (copia-e-cola)
-  // rodam só na Polygon, então escondemos o Tron e travamos a rede em polygon.
-  const allowTron = mode === "pix";
+  // PIX por chave e boleto aceitam Polygon, Solana e Plasma (igual ao FastPix).
+  // QR (copia-e-cola) segue só na Polygon.
+  const multiNetwork = mode !== "qr";
 
-  // Se o modo não permite Tron mas a rede ficou em tron (seleção antiga), volta pra polygon.
+  // Se o modo é Polygon-only mas a rede ficou em outra (seleção antiga), volta pra polygon.
   useEffect(() => {
-    if (!allowTron && network !== "polygon") onNetwork("polygon");
-  }, [allowTron, network, onNetwork]);
+    if (!multiNetwork && network !== "polygon") onNetwork("polygon");
+  }, [multiNetwork, network, onNetwork]);
   const t = useTranslations("wizard");
   const [editing, setEditing] = useState<"usdt" | "brl" | null>(null);
   const [brlDraft, setBrlDraft] = useState("");
   let markup = 0;
 
-  if (network === "polygon") {
+  // Mesmo markup em todas as redes: Solana e Plasma seguem a Polygon até o
+  // Emerson definir a taxa delas.
+  {
     markup = 1 - 3.2 / 100;
     rate = Number(Number(rate * markup).toFixed(4));
   }
@@ -1081,14 +1085,18 @@ function Step1Network({
       <div className="flex flex-col gap-2">
         <Label>{t("step1.networkLabel")}</Label>
         <div
-          className={`grid gap-3 ${allowTron ? "grid-cols-2" : "grid-cols-1"}`}
+          className={`grid gap-2 sm:gap-3 ${multiNetwork ? "grid-cols-3" : "grid-cols-1"}`}
         >
-          <NetworkOption
-            chain="polygon"
-            label="Polygon"
-            selected={network === "polygon"}
-            onClick={() => onNetwork("polygon")}
-          />
+          {(multiNetwork ? NETWORKS : (["polygon"] as Network[])).map((n) => (
+            <NetworkOption
+              key={n}
+              chain={n}
+              label={NETWORK_META[n].label}
+              selected={network === n}
+              onClick={() => onNetwork(n)}
+              compact={multiNetwork}
+            />
+          ))}
         </div>
       </div>
 
@@ -1750,10 +1758,43 @@ function Step2BoletoConfirm({
             value={`≈ ${amountUSDT || (parsePtBR(amountBRL) / rate).toFixed(2)} USDT`}
           />
         )}
-        <NetworkSelectorMini network={network} onNetwork={onNetwork} />
+        {/* Boleto aceita as 3 redes (QR segue Polygon-only via NetworkSelectorMini) */}
+        <NetworkSelectorFull network={network} onNetwork={onNetwork} />
         <SettlementNoticeBanner notice={settlement} />
       </div>
     </motion.div>
+  );
+}
+
+function NetworkSelectorFull({
+  network,
+  onNetwork,
+}: {
+  network: Network;
+  onNetwork: (v: Network) => void;
+}) {
+  const t = useTranslations("wizard");
+  return (
+    <div className="pt-2">
+      <p
+        className="text-[11px] font-bold tracking-widest uppercase mb-2"
+        style={{ color: "var(--color-ink-400)" }}
+      >
+        {t("step1.networkLabel")}
+      </p>
+      <div className="grid grid-cols-3 gap-2 sm:gap-3">
+        {NETWORKS.map((n) => (
+          <NetworkOption
+            key={n}
+            chain={n}
+            label={NETWORK_META[n].label}
+            selected={network === n}
+            onClick={() => onNetwork(n)}
+            compact
+          />
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -1923,7 +1964,7 @@ function Step3Return({
   const t = useTranslations("wizard");
   const hasInput = returnWallet.trim().length > 0;
   const showError = hasInput && !walletValid;
-  const networkLabel = network === "polygon" ? "Polygon" : "Tron";
+  const networkLabel = NETWORK_META[network].label;
 
   return (
     <motion.div {...fadeProps} className="flex flex-col gap-5">
@@ -1939,9 +1980,11 @@ function Step3Return({
           value={returnWallet}
           onChange={(e) => onReturnWallet(e.target.value.trim())}
           placeholder={
-            network === "polygon"
-              ? "0x... (42 caracteres)"
-              : "T... (34 caracteres)"
+            {
+              polygon: t("step3.walletPlaceholderEvm"),
+              solana: t("step3.walletPlaceholderSolana"),
+              plasma: t("step3.walletPlaceholderEvm"),
+            }[network]
           }
           className="
             w-full bg-transparent outline-none mono-num
@@ -1958,9 +2001,13 @@ function Step3Return({
           className="text-[11.5px] -mt-2 leading-snug"
           style={{ color: "#b42121" }}
         >
-          {network === "polygon"
-            ? t("step3.walletErrorPolygon")
-            : t("step3.walletErrorTron")}
+          {t(
+            {
+              polygon: "step3.walletErrorPolygon",
+              solana: "step3.walletErrorSolana",
+              plasma: "step3.walletErrorPlasma",
+            }[network],
+          )}
         </p>
       )}
 
@@ -2032,7 +2079,7 @@ function Step4QR({
   const ss = String(seconds % 60).padStart(2, "0");
 
   const address = NETWORK_ADDRESS[network];
-  const networkLabel = network === "polygon" ? "Polygon" : "Tron";
+  const networkLabel = NETWORK_META[network].label;
 
   const copy = async (label: "amount" | "address", value: string) => {
     try {
@@ -2748,20 +2795,24 @@ function NetworkOption({
   label,
   selected,
   onClick,
+  compact = false,
 }: {
   chain: ChainKey;
   label: string;
   selected: boolean;
   onClick: () => void;
+  /** Grade de 3 redes: no celular o logo vai em cima do nome pra caber. */
+  compact?: boolean;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="
-        relative flex items-center gap-3 px-4 py-2 sm:py-2.5 rounded-2xl
-        text-left transition-all duration-200
-      "
+      className={
+        compact
+          ? "relative flex flex-col sm:flex-row items-center gap-1.5 sm:gap-2.5 px-2 sm:px-3 py-2 sm:py-2.5 rounded-2xl text-center sm:text-left transition-all duration-200 min-w-0"
+          : "relative flex items-center gap-3 px-4 py-2 sm:py-2.5 rounded-2xl text-left transition-all duration-200"
+      }
       style={{
         background: selected ? "white" : "var(--color-off-white)",
         border: selected
@@ -2771,14 +2822,18 @@ function NetworkOption({
       }}
       aria-pressed={selected}
     >
-      <ChainLogo chain={chain} size={26} />
+      <ChainLogo chain={chain} size={compact ? 24 : 26} />
       <span
-        className="flex-1 text-sm font-bold tracking-tight text-ink-900"
+        className={
+          compact
+            ? "sm:flex-1 text-[13px] sm:text-sm font-bold tracking-tight text-ink-900 min-w-0"
+            : "flex-1 text-sm font-bold tracking-tight text-ink-900"
+        }
         style={{ lineHeight: 1.1 }}
       >
         {label}
       </span>
-      {selected && (
+      {selected && !compact && (
         <span
           aria-hidden
           className="hidden sm:grid w-5 h-5 rounded-full place-items-center text-white text-[10px] font-bold"
