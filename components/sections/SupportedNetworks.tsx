@@ -74,7 +74,10 @@ export function SupportedNetworks() {
                   </div>
                   {n.chain === 'polygon' && (
                     <span
+                      /* 3 cards por linha: o selo vai pro canto (dentro do
+                         padding) pra não truncar o ticker da Polygon. */
                       className="
+                        lg:absolute lg:top-4 lg:right-4
                         shrink-0 inline-flex items-center gap-1.5
                         px-2.5 py-1 rounded-full whitespace-nowrap
                         text-[10px] uppercase tracking-wider font-bold
