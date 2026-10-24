@@ -275,7 +275,7 @@
       "hashLabel": "Transaction hash / TXID",
       "hashPlaceholder": "0x... or transaction ID",
       "sendHash": "Send hash on WhatsApp",
-      "waMessage": "Hi! I made the payment but the 15-min window expired. Here's the transaction hash to confirm: {hash} · Order: {order} · Amount: {amount} USDT",
+      "waMessage": "Hi! I made the payment on OprPay but the 15-min window expired. Here's the transaction hash to confirm: {hash} · Order: {order} · Amount: {amount} USDT",
       "sentTitle": "Receipt sent",
       "sentSub": "We opened WhatsApp support with your hash. Once we confirm the payment, your PIX is released (15 min to 2h).",
       "close": "Close",
