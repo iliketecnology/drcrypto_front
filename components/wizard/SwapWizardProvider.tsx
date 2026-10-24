@@ -3,7 +3,8 @@
 import { createContext, useCallback, useContext, useState } from "react";
 import { SwapWizard } from "./SwapWizard";
 import { ReceiptDialog } from "./ReceiptDialog";
-import type { PaymentMode, SwapResult } from "./types";
+import { RefundDialog } from "./RefundDialog";
+import type { PaymentMode, RefundResult, SwapResult } from "./types";
 
 type Ctx = {
   isOpen: boolean;
@@ -24,6 +25,8 @@ export function SwapWizardProvider({
   const [mode, setMode] = useState<PaymentMode>("pix");
   const [receiptData, setReceiptData] = useState<SwapResult | null>(null);
   const [receiptOpen, setReceiptOpen] = useState(false);
+  const [refundData, setRefundData] = useState<RefundResult | null>(null);
+  const [refundOpen, setRefundOpen] = useState(false);
 
   const open = useCallback(() => { setMode("pix"); setIsOpen(true); }, []);
   const openWithMode = useCallback((m: PaymentMode) => { setMode(m); setIsOpen(true); }, []);
@@ -40,14 +43,30 @@ export function SwapWizardProvider({
     setTimeout(() => setReceiptData(null), 400);
   }, []);
 
+  const openRefund = useCallback((data: RefundResult) => {
+    setRefundData(data);
+    setIsOpen(false);
+    setRefundOpen(true);
+  }, []);
+
+  const closeRefund = useCallback(() => {
+    setRefundOpen(false);
+    setTimeout(() => setRefundData(null), 400);
+  }, []);
+
   return (
     <SwapWizardContext.Provider value={{ isOpen, open, openWithMode, close, openReceipt }}>
       {children}
-      <SwapWizard isOpen={isOpen} mode={mode} onClose={close} onComplete={openReceipt} />
+      <SwapWizard isOpen={isOpen} mode={mode} onClose={close} onComplete={openReceipt} onRefund={openRefund} />
       <ReceiptDialog
         isOpen={receiptOpen}
         data={receiptData}
         onClose={closeReceipt}
+      />
+      <RefundDialog
+        isOpen={refundOpen}
+        data={refundData}
+        onClose={closeRefund}
       />
     </SwapWizardContext.Provider>
   );

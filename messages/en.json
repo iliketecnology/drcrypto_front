@@ -277,6 +277,30 @@
       "restartNo": "No, thanks",
       "thanksTitle": "Thank you!",
       "thanksSub": "It was a pleasure. Whenever you want to swap USDT for PIX, just come back. See you soon!"
+    },
+    "refund": {
+      "label": "Refund Receipt",
+      "labelFailed": "Operation not completed",
+      "status": "Refunded",
+      "statusFailed": "Not completed",
+      "lead": "The PIX for this operation could not be completed. Your USDT was automatically refunded to the return wallet you provided.",
+      "leadFailed": "We could not complete this operation and no PIX was sent. If you have already sent the USDT, contact support with the ID below.",
+      "amount": "Amount refunded",
+      "amountFailed": "Operation amount",
+      "network": "Network",
+      "wallet": "Return wallet",
+      "hash": "Refund hash",
+      "order": "Operation ID",
+      "representative": "Representative",
+      "reason": "Reason",
+      "explorer": "View on blockchain",
+      "copy": "Copy",
+      "copied": "Copied",
+      "save": "Save receipt",
+      "support": "Contact support",
+      "close": "Close",
+      "waRefunded": "Hi! I received a refund on OprPay and would like to understand what happened. Operation: {order} · Refund hash: {hash}",
+      "waFailed": "Hi! My OprPay operation was not completed. Operation: {order}"
     }
   },
   "footer": {

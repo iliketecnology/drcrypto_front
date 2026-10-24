@@ -15,6 +15,7 @@ import {
   type Network,
   type PaymentMode,
   type PixKeyType,
+  type RefundResult,
   type SwapResult,
 } from "./types";
 import { QRCodeSVG } from "qrcode.react";
@@ -59,11 +60,15 @@ type Props = {
   mode: PaymentMode;
   onClose: () => void;
   onComplete: (result: SwapResult) => void;
+  /** A ordem voltou REFUNDED ou FAILED no polling · abre o RefundDialog. */
+  onRefund: (result: RefundResult) => void;
 };
 
 type WizardState = {
   step: 1 | 2 | 3 | 4;
   verifying: boolean;
+  /** Polling recebeu REFUNDED/FAILED · repassado ao provider pelo effect do SwapWizard. */
+  refund: RefundResult | null;
   /** O timer de 15 min zerou sem o pagamento ser detectado → mostra o fluxo de recuperação (hash). */
   expired: boolean;
   network: Network;
@@ -94,6 +99,7 @@ type WizardState = {
 const INITIAL_STATE: WizardState = {
   step: 1,
   verifying: false,
+  refund: null,
   expired: false,
   network: "polygon",
   amountUSDT: "",
@@ -247,8 +253,22 @@ type DecodedQr = {
   txid?: string;
 };
 
-export function SwapWizard({ isOpen, mode, onClose, onComplete }: Props) {
+export function SwapWizard({
+  isOpen,
+  mode,
+  onClose,
+  onComplete,
+  onRefund,
+}: Props) {
   const [state, setState] = useState<WizardState>(INITIAL_STATE);
+
+  // O polling segue rodando mesmo com o wizard fechado, então o estorno pode chegar
+  // depois: o provider abre o comprovante de devolução de qualquer jeito.
+  useEffect(() => {
+    if (!state.refund) return;
+    onRefund(state.refund);
+    setState((s) => ({ ...s, refund: null }));
+  }, [state.refund, onRefund]);
 
   const { rate } = useUsdtBrlRate();
 
@@ -732,8 +752,32 @@ function Footer({
           }));
           onNext();
         }
-        if (data.res.status === "FAILED") {
+        // REFUNDED: o PIX não saiu e o USDT já voltou pra carteira de retorno.
+        // FAILED: a ordem morreu sem estorno. Antes os dois deixavam o usuário
+        // parado na tela de espera (REFUNDED nem parava o polling).
+        if (
+          data.res.status === "REFUNDED" ||
+          data.res.status === "FAILED"
+        ) {
           clearInterval(interval);
+          const res = data.res;
+          const createdAt = Date.parse(res.createdAt);
+          setState((prev) => ({
+            ...prev,
+            refund: {
+              kind: res.status === "REFUNDED" ? "refunded" : "failed",
+              orderId: res.uuid || orderId,
+              amountUSDT:
+                res.amount_usd && Number.parseFloat(res.amount_usd) > 0
+                  ? res.amount_usd
+                  : prev.amountUSDT || "0",
+              network: res.cryptoNetwork || prev.network.toUpperCase(),
+              returnWallet: res.wallet_ret || prev.returnWallet,
+              returnTxid: res.returnTxid || "",
+              reason: typeof res.msg === "string" ? res.msg.trim() : "",
+              createdAt: Number.isFinite(createdAt) ? createdAt : Date.now(),
+            },
+          }));
         }
       } catch (error) {
         console.error(error);

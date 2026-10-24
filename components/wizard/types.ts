@@ -29,6 +29,40 @@ export type SwapResult = {
   rate: number;
 };
 
+export type RefundResult = {
+  kind: "refunded" | "failed";
+  orderId: string;
+  /** Valor devolvido em USDT (amount_usd da API, cai pro valor digitado). */
+  amountUSDT: string;
+  /** Rede da operação original (cryptoNetwork da API). */
+  network: string;
+  /** Carteira que recebeu o estorno (wallet_ret da API). */
+  returnWallet: string;
+  /** Hash on-chain da devolução (returnTxid da API). */
+  returnTxid: string;
+  /** Motivo do estorno/falha (msg da API), exibido como vier. */
+  reason: string;
+  /** Data da ordem (createdAt da API), em ms. */
+  createdAt: number;
+};
+
+/** Rede e explorer da hash de devolução. Solana e Plasma devolvem na própria rede;
+ * Tron passa pela bridge e devolve em Polygon (hash 0x), então só hash sem 0x
+ * de ordem Tron vai pro Tronscan. */
+export function refundChain(
+  txid: string,
+  orderNetwork: string,
+): { label: string; url: string } {
+  const net = orderNetwork.toUpperCase();
+  if (net === "SOLANA")
+    return { label: "Solana", url: `https://solscan.io/tx/${txid}` };
+  if (net === "PLASMA")
+    return { label: "Plasma", url: `https://plasmascan.to/tx/${txid}` };
+  if (net === "TRON" && !txid.startsWith("0x"))
+    return { label: "Tron", url: `https://tronscan.org/#/transaction/${txid}` };
+  return { label: "Polygon", url: `https://polygonscan.com/tx/${txid}` };
+}
+
 /** Taxa do provedor de liquidez sobre o valor enviado em USDT.
  * Polygon paga taxa de gas em MATIC e tem spread cambial. */
 export const LIQUIDITY_FEE: Record<Network, number> = {

@@ -277,6 +277,30 @@
       "restartNo": "Não, obrigado",
       "thanksTitle": "Obrigado!",
       "thanksSub": "Foi um prazer. Quando quiser trocar USDT por PIX, é só voltar aqui. Até a próxima!"
+    },
+    "refund": {
+      "label": "Comprovante de Devolução",
+      "labelFailed": "Operação não concluída",
+      "status": "Estornado",
+      "statusFailed": "Não concluída",
+      "lead": "Não foi possível concluir o PIX desta operação. O seu USDT foi devolvido automaticamente para a carteira de retorno informada.",
+      "leadFailed": "Não conseguimos concluir esta operação e nenhum PIX foi enviado. Se você já transferiu o USDT, fale com o atendimento informando o ID abaixo.",
+      "amount": "Valor devolvido",
+      "amountFailed": "Valor da operação",
+      "network": "Rede",
+      "wallet": "Carteira de retorno",
+      "hash": "Hash da devolução",
+      "order": "ID da operação",
+      "representative": "Representante",
+      "reason": "Motivo",
+      "explorer": "Ver na blockchain",
+      "copy": "Copiar",
+      "copied": "Copiado",
+      "save": "Salvar comprovante",
+      "support": "Falar com o atendimento",
+      "close": "Fechar",
+      "waRefunded": "Olá! Recebi um estorno no OprPay e queria entender o que aconteceu. Operação: {order} · Hash da devolução: {hash}",
+      "waFailed": "Olá! Minha operação no OprPay não foi concluída. Operação: {order}"
     }
   },
   "footer": {
