@@ -1,12 +1,18 @@
 "use client";
 
+import { useCallback, useState } from "react";
 import { useTranslations } from "next-intl";
 import { motion } from "motion/react";
 import { TransactionCard } from "@/components/ui/TransactionCard";
+import {
+  ServiceAlertBadge,
+  ServiceAlertDialog,
+} from "@/components/ui/ServiceAlert";
 import { USDTLogo, PIXLogo } from "@/components/illustrations/BrandLogos";
 import { GlobeWireframe } from "@/components/illustrations/GlobeWireframe";
 import { useSwapWizard } from "@/components/wizard/SwapWizardProvider";
 import type { PaymentMode } from "@/components/wizard/types";
+import { isUnstable } from "@/lib/service-status";
 
 const easeOut = [0.16, 1, 0.3, 1] as const;
 
@@ -43,6 +49,10 @@ const PAYMENT_CARDS: PaymentCard[] = [
 export function Hero() {
   const t = useTranslations("hero");
   const { openWithMode } = useSwapWizard();
+  const [alertMode, setAlertMode] = useState<PaymentMode | null>(null);
+  const closeAlert = useCallback(() => setAlertMode(null), []);
+  const activateCard = (mode: PaymentMode) =>
+    isUnstable(mode) ? setAlertMode(mode) : openWithMode(mode);
 
   return (
     <section className="relative isolate overflow-hidden">
@@ -175,10 +185,22 @@ export function Hero() {
               {PAYMENT_CARDS.map((card, i) => (
                 /* Animação de entrada em cascata (stagger). SÓ opacity:
                    animar transform/y quebraria a composição do backdrop-filter. */
-                <motion.button
+                /* div[role=button], não <button>: o badge de alerta é um
+                   botão de verdade dentro do card, e botão dentro de botão é
+                   HTML inválido (o navegador achata o DOM). */
+                <motion.div
                   key={card.mode}
-                  type="button"
-                  onClick={() => openWithMode(card.mode)}
+                  role="button"
+                  tabIndex={0}
+                  /* Método com alerta: o card inteiro abre o aviso, igual à
+                     exclamação, em vez do wizard (Thiago, 16/10). */
+                  onClick={() => activateCard(card.mode)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      activateCard(card.mode);
+                    }
+                  }}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{
@@ -192,6 +214,7 @@ export function Hero() {
                     rounded-full sm:rounded-2xl
                     px-5 py-4 sm:p-4 sm:min-h-[84px]
                     transition-shadow duration-300
+                    cursor-pointer select-none
                   "
                 >
                   <span
@@ -221,6 +244,12 @@ export function Hero() {
                           <span className="text-green-700"> {card.accent}</span>
                         )}
                       </span>
+                      {isUnstable(card.mode) && (
+                        <ServiceAlertBadge
+                          mode={card.mode}
+                          onOpen={setAlertMode}
+                        />
+                      )}
                     </span>
                     <span className="hidden sm:block text-[11px] mt-1.5 leading-snug text-ink-500">
                       {card.description}
@@ -256,9 +285,11 @@ export function Hero() {
                       <path d="M7 17 L17 7 M8 7 H17 V16" />
                     </svg>
                   </span>
-                </motion.button>
+                </motion.div>
               ))}
             </div>
+
+            <ServiceAlertDialog mode={alertMode} onClose={closeAlert} />
 
             {/* Prova institucional · 3 badges curtos */}
             <motion.div

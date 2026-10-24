@@ -20,6 +20,24 @@
     "chip": "USDT → PIX",
     "sub": "Haz transacciones sin burocracia.",
     "cta": "Haz clic aquí",
+    "alert": {
+      "badge": "Aviso de inestabilidad: {method}",
+      "badgeTitle": "Aviso de inestabilidad",
+      "tooltip": "Inestabilidad en el pago de {method}.",
+      "tooltipHint": "Haz clic para saber más",
+      "eyebrow": "AVISO",
+      "title": "Inestabilidad en el pago",
+      "bodyOne": "Estamos enfrentando inestabilidades solamente en el pago de {method}. Pedimos disculpas por las molestias.",
+      "bodyMany": "Estamos enfrentando inestabilidades en el pago de {methods}. Pedimos disculpas por las molestias.",
+      "joiner": " y ",
+      "signature": "Atentamente, Equipo TMBS, LLC.",
+      "close": "Entendido",
+      "methods": {
+        "pix": "PIX",
+        "boleto": "boletos",
+        "qr": "QR Code"
+      }
+    },
     "badgeSteps": "Paga en 4 pasos",
     "badgeInstant": "Pago instantáneo",
     "badgeNoBureaucracy": "Transacciones sin burocracia",

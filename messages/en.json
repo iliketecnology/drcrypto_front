@@ -20,6 +20,24 @@
     "chip": "USDT → PIX",
     "sub": "Send transactions without friction.",
     "cta": "Click here",
+    "alert": {
+      "badge": "Service notice: {method}",
+      "badgeTitle": "Service notice",
+      "tooltip": "Instability with {method} payments.",
+      "tooltipHint": "Click for details",
+      "eyebrow": "NOTICE",
+      "title": "Payment instability",
+      "bodyOne": "We are experiencing instability only with {method} payments. We apologize for the inconvenience.",
+      "bodyMany": "We are experiencing instability with {methods} payments. We apologize for the inconvenience.",
+      "joiner": " and ",
+      "signature": "Sincerely, TMBS, LLC Team.",
+      "close": "Got it",
+      "methods": {
+        "pix": "PIX",
+        "boleto": "boleto",
+        "qr": "QR Code"
+      }
+    },
     "badgeSteps": "Pay in 4 steps",
     "badgeInstant": "Instant payment",
     "badgeNoBureaucracy": "Hassle-free transactions",
