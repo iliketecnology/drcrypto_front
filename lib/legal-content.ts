@@ -58,7 +58,7 @@ const TERMS_PT: LegalDoc = {
     {
       h: "4. Operação",
       ul: [
-        "Redes USDT suportadas: Polygon (USDT.POL), Solana (USDT.SPL) e Plasma (USDT0).",
+        "Redes USDT suportadas: Polygon (USDT.POL), Tron (USDT.TRC20), Solana (USDT.SPL) e Plasma (USDT0).",
         "Valor mínimo por transação: 10 USDT.",
         "Valor máximo por transação: R$ 250.000,00.",
         "Quantidade de transações diárias: ilimitada.",
@@ -80,7 +80,7 @@ const TERMS_PT: LegalDoc = {
     {
       h: "7. Limitações de responsabilidade",
       p: [
-        "O OprPay não se responsabiliza por: (i) erros de digitação, endereço de carteira ou rede selecionada pelo usuário; (ii) atrasos das redes blockchain públicas (Polygon, Solana e Plasma) ou da rede PIX; (iii) bloqueios bancários, judiciais ou regulatórios alheios ao nosso controle; (iv) prejuízos decorrentes de oscilação cambial entre o início e a conclusão da operação.",
+        "O OprPay não se responsabiliza por: (i) erros de digitação, endereço de carteira ou rede selecionada pelo usuário; (ii) atrasos das redes blockchain públicas (Polygon, Tron, Solana e Plasma) ou da rede PIX; (iii) bloqueios bancários, judiciais ou regulatórios alheios ao nosso controle; (iv) prejuízos decorrentes de oscilação cambial entre o início e a conclusão da operação.",
       ],
     },
     {
@@ -259,7 +259,7 @@ const TERMS_EN: LegalDoc = {
     {
       h: "4. Operation",
       ul: [
-        "Supported USDT networks: Polygon (USDT.POL), Solana (USDT.SPL) and Plasma (USDT0).",
+        "Supported USDT networks: Polygon (USDT.POL), Tron (USDT.TRC20), Solana (USDT.SPL) and Plasma (USDT0).",
         "Minimum per transaction: 10 USDT.",
         "Maximum per transaction: R$ 99,000.00.",
         "Daily transactions: unlimited.",
@@ -281,7 +281,7 @@ const TERMS_EN: LegalDoc = {
     {
       h: "7. Limitation of liability",
       p: [
-        "OprPay is not liable for: (i) user typos, wrong wallet address or wrong network; (ii) public blockchain (Polygon, Solana and Plasma) or PIX network delays; (iii) banking, judicial or regulatory blocks outside our control; (iv) losses due to FX fluctuation between the start and the completion of the operation.",
+        "OprPay is not liable for: (i) user typos, wrong wallet address or wrong network; (ii) public blockchain (Polygon, Tron, Solana and Plasma) or PIX network delays; (iii) banking, judicial or regulatory blocks outside our control; (iv) losses due to FX fluctuation between the start and the completion of the operation.",
       ],
     },
     {
@@ -455,7 +455,7 @@ const TERMS_ES: LegalDoc = {
     {
       h: "4. Operación",
       ul: [
-        "Redes USDT soportadas: Polygon (USDT.POL), Solana (USDT.SPL) y Plasma (USDT0).",
+        "Redes USDT soportadas: Polygon (USDT.POL), Tron (USDT.TRC20), Solana (USDT.SPL) y Plasma (USDT0).",
         "Valor mínimo por transacción: 10 USDT.",
         "Valor máximo por transacción: R$ 250.000,00.",
         "Cantidad de transacciones diarias: ilimitada.",
@@ -477,7 +477,7 @@ const TERMS_ES: LegalDoc = {
     {
       h: "7. Limitaciones de responsabilidad",
       p: [
-        "OprPay no se responsabiliza por: (i) errores de tipeo, dirección de billetera o red seleccionada por el usuario; (ii) retrasos de las redes blockchain públicas (Polygon, Solana y Plasma) o de la red PIX; (iii) bloqueos bancarios, judiciales o regulatorios ajenos a nuestro control; (iv) pérdidas derivadas de oscilación cambial entre el inicio y la conclusión de la operación.",
+        "OprPay no se responsabiliza por: (i) errores de tipeo, dirección de billetera o red seleccionada por el usuario; (ii) retrasos de las redes blockchain públicas (Polygon, Tron, Solana y Plasma) o de la red PIX; (iii) bloqueos bancarios, judiciales o regulatorios ajenos a nuestro control; (iv) pérdidas derivadas de oscilación cambial entre el inicio y la conclusión de la operación.",
       ],
     },
     {

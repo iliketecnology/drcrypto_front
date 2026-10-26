@@ -58,7 +58,7 @@ const PIX_KEY_OPTIONS: Array<{
 type Props = {
   isOpen: boolean;
   /** Modalidade de destino escolhida na home (PIX por chave, boleto ou QR/copia-e-cola).
-   * Solana e Plasma são oferecidas no PIX por chave e no boleto; QR é Polygon-only. */
+   * Tron, Solana e Plasma são oferecidas no PIX por chave e no boleto; QR é Polygon-only. */
   mode: PaymentMode;
   onClose: () => void;
   onComplete: (result: SwapResult) => void;
@@ -1013,7 +1013,7 @@ function Step1Network({
   headerOverride?: string;
   subOverride?: string;
 }) {
-  // PIX por chave e boleto aceitam Polygon, Solana e Plasma (igual ao FastPix).
+  // PIX por chave e boleto aceitam Polygon, Tron, Solana e Plasma.
   // QR (copia-e-cola) segue só na Polygon.
   const multiNetwork = mode !== "qr";
 
@@ -1026,7 +1026,7 @@ function Step1Network({
   const [brlDraft, setBrlDraft] = useState("");
   let markup = 0;
 
-  // Mesmo markup em todas as redes: Solana e Plasma seguem a Polygon até o
+  // Mesmo markup em todas as redes: Tron, Solana e Plasma seguem a Polygon até o
   // Emerson definir a taxa delas.
   {
     markup = 1 - 3.2 / 100;
@@ -1085,7 +1085,7 @@ function Step1Network({
       <div className="flex flex-col gap-2">
         <Label>{t("step1.networkLabel")}</Label>
         <div
-          className={`grid gap-2 sm:gap-3 ${multiNetwork ? "grid-cols-3" : "grid-cols-1"}`}
+          className={`grid gap-2 sm:gap-3 ${multiNetwork ? "grid-cols-2 sm:grid-cols-4" : "grid-cols-1"}`}
         >
           {(multiNetwork ? NETWORKS : (["polygon"] as Network[])).map((n) => (
             <NetworkOption
@@ -1758,7 +1758,7 @@ function Step2BoletoConfirm({
             value={`≈ ${amountUSDT || (parsePtBR(amountBRL) / rate).toFixed(2)} USDT`}
           />
         )}
-        {/* Boleto aceita as 3 redes (QR segue Polygon-only via NetworkSelectorMini) */}
+        {/* Boleto aceita as 4 redes (QR segue Polygon-only via NetworkSelectorMini) */}
         <NetworkSelectorFull network={network} onNetwork={onNetwork} />
         <SettlementNoticeBanner notice={settlement} />
       </div>
@@ -1782,7 +1782,7 @@ function NetworkSelectorFull({
       >
         {t("step1.networkLabel")}
       </p>
-      <div className="grid grid-cols-3 gap-2 sm:gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
         {NETWORKS.map((n) => (
           <NetworkOption
             key={n}
@@ -1982,6 +1982,7 @@ function Step3Return({
           placeholder={
             {
               polygon: t("step3.walletPlaceholderEvm"),
+              tron: t("step3.walletPlaceholderTron"),
               solana: t("step3.walletPlaceholderSolana"),
               plasma: t("step3.walletPlaceholderEvm"),
             }[network]
@@ -2004,6 +2005,7 @@ function Step3Return({
           {t(
             {
               polygon: "step3.walletErrorPolygon",
+              tron: "step3.walletErrorTron",
               solana: "step3.walletErrorSolana",
               plasma: "step3.walletErrorPlasma",
             }[network],
@@ -2801,7 +2803,7 @@ function NetworkOption({
   label: string;
   selected: boolean;
   onClick: () => void;
-  /** Grade de 3 redes: no celular o logo vai em cima do nome pra caber. */
+  /** Grade de redes: no celular o logo vai em cima do nome pra caber. */
   compact?: boolean;
 }) {
   return (

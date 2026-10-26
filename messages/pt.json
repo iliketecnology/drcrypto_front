@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "OprPay · USDT para PIX instantâneo",
-    "description": "Receba seus USDT direto em PIX, instantâneo. Sem cadastro, sem KYC, sem burocracia. Polygon, Solana e Plasma suportadas.",
+    "description": "Receba seus USDT direto em PIX, instantâneo. Sem cadastro, sem KYC, sem burocracia. Polygon, Tron, Solana e Plasma suportadas.",
     "ogAlt": "OprPay · USDT para PIX instantâneo"
   },
   "header": {
@@ -56,11 +56,11 @@
   },
   "how": {
     "title": "Como funciona",
-    "body": "Pagar nunca foi tão simples. Quatro passos rápidos, sem cadastro, sem burocracia. Você define o valor e a chave PIX, paga o QR Code USDT na rede escolhida (Polygon, Solana ou Plasma) e recebe os reais em segundos.",
+    "body": "Pagar nunca foi tão simples. Quatro passos rápidos, sem cadastro, sem burocracia. Você define o valor e a chave PIX, paga o QR Code USDT na rede escolhida (Polygon, Tron, Solana ou Plasma) e recebe os reais em segundos.",
     "steps": {
       "1": {
         "title": "Rede e valor",
-        "hint": "Polygon, Solana ou Plasma. Digite em USDT ou em reais; convertemos com a cotação do dólar do momento."
+        "hint": "Polygon, Tron, Solana ou Plasma. Digite em USDT ou em reais; convertemos com a cotação do dólar do momento."
       },
       "2": {
         "title": "Informe a chave PIX",
@@ -93,8 +93,8 @@
         "body": "7 dias por semana, 24 horas por dia."
       },
       "networks": {
-        "title": "3 redes USDT",
-        "body": "Polygon, Solana e Plasma. Você escolhe a rede na hora de pagar."
+        "title": "4 redes USDT",
+        "body": "Polygon, Tron, Solana e Plasma. Você escolhe a rede na hora de pagar."
       },
       "fee": {
         "title": "Menores taxas do mercado",
@@ -131,11 +131,13 @@
   },
   "networks": {
     "eyebrow": "REDES SUPORTADAS",
-    "title": "Polygon, Solana e Plasma, prontas pra operação.",
-    "body": "Aceitamos USDT em três redes. Polygon tem as melhores taxas; Solana e Plasma ficam disponíveis pra quem já opera nelas.",
+    "title": "Polygon, Tron, Solana e Plasma, prontas pra operação.",
+    "body": "Aceitamos USDT em quatro redes. Polygon tem as melhores taxas; Tron, Solana e Plasma ficam disponíveis pra quem já opera nelas.",
     "defaultBadge": "Melhores taxas",
     "polygonHeadline": "USDT.POL · Polygon PoS",
     "polygonBody": "A rede USDT mais barata e rápida disponível no mercado. Sem espera, sem taxa cara de gas, sem dor de cabeça.",
+    "tronHeadline": "USDT.TRC20 · Tron",
+    "tronBody": "Padrão consolidado pra quem já opera USDT em TRC-20. Taxas baixas, confirmação rápida e ampla liquidez global.",
     "polygonStat1Value": "< $0,01",
     "polygonStat2Value": "~5s",
     "polygonStat3Value": "0xc213...831174",
@@ -168,7 +170,7 @@
       },
       "q3": {
         "question": "Qual rede USDT vocês aceitam?",
-        "answer": "Aceitamos USDT em três redes: Polygon (USDT.POL), Solana (USDT.SPL) e Plasma (USDT0)."
+        "answer": "Aceitamos USDT em quatro redes: Polygon (USDT.POL), Tron (USDT.TRC20), Solana (USDT.SPL) e Plasma (USDT0)."
       },
       "q4": {
         "question": "Tem limite de valor por transação?",
@@ -224,10 +226,12 @@
       "sub": "Use uma carteira {network} que você controla. Se algo der errado on-chain, devolvemos o USDT pra ela. O comprovante vai para o e-mail informado.",
       "walletField": "CARTEIRA DE RETORNO · {network}",
       "walletErrorPolygon": "Endereço inválido pra rede Polygon. Polygon usa formato 0x + 40 caracteres hexadecimais.",
+      "walletErrorTron": "Endereço inválido pra rede Tron. Tron usa formato T + 33 caracteres.",
       "emailField": "E-MAIL PARA O COMPROVANTE",
       "walletErrorSolana": "Endereço inválido pra rede Solana. Solana usa de 32 a 44 caracteres, sem 0x.",
       "walletErrorPlasma": "Endereço inválido pra rede Plasma. Plasma usa formato 0x + 40 caracteres hexadecimais.",
       "walletPlaceholderEvm": "0x... (42 caracteres)",
+      "walletPlaceholderTron": "T... (34 caracteres)",
       "walletPlaceholderSolana": "Endereço Solana (32 a 44 caracteres)"
     },
     "step4": {

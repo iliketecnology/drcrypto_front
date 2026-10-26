@@ -8,6 +8,7 @@ const easeOut = [0.16, 1, 0.3, 1] as const;
 
 const NETWORK_CARDS = [
   { chain: 'polygon', label: 'Polygon' },
+  { chain: 'tron', label: 'Tron' },
   { chain: 'solana', label: 'Solana' },
   { chain: 'plasma', label: 'Plasma' },
 ] as const;
@@ -34,7 +35,7 @@ export function SupportedNetworks() {
           </div>
         </motion.header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
           {NETWORK_CARDS.map((n, i) => (
             <motion.article
               key={n.chain}
@@ -74,8 +75,8 @@ export function SupportedNetworks() {
                   </div>
                   {n.chain === 'polygon' && (
                     <span
-                      /* 3 cards por linha: o selo vai pro canto (dentro do
-                         padding) pra não truncar o ticker da Polygon. */
+                      /* O selo vai pro canto (dentro do padding) pra não
+                         truncar o ticker da Polygon. */
                       className="
                         lg:absolute lg:top-4 lg:right-4
                         shrink-0 inline-flex items-center gap-1.5

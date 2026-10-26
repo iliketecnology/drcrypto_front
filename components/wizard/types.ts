@@ -1,14 +1,15 @@
 /** Tipos compartilhados entre SwapWizard e ReceiptDialog.
  * Centralizado aqui pra evitar import circular wizard ↔ provider. */
 
-export type Network = "polygon" | "solana" | "plasma";
+export type Network = "polygon" | "tron" | "solana" | "plasma";
 
 /** Ordem de exibição das redes no seletor. */
-export const NETWORKS: Network[] = ["polygon", "solana", "plasma"];
+export const NETWORKS: Network[] = ["polygon", "tron", "solana", "plasma"];
 
 /** Nome e ticker de cada rede, usados no wizard e no comprovante. */
 export const NETWORK_META: Record<Network, { label: string; ticker: string }> = {
   polygon: { label: "Polygon", ticker: "USDT.POL" },
+  tron: { label: "Tron", ticker: "USDT.TRC20" },
   solana: { label: "Solana", ticker: "USDT.SPL" },
   plasma: { label: "Plasma", ticker: "USDT0" },
 };
@@ -75,25 +76,29 @@ export function refundChain(
 
 /** Taxa do provedor de liquidez sobre o valor enviado em USDT.
  * Polygon paga taxa de gas em MATIC e tem spread cambial.
- * Solana e Plasma seguem a taxa da Polygon até o Emerson definir a delas. */
+ * Tron, Solana e Plasma seguem a taxa da Polygon até o Emerson definir a delas. */
 export const LIQUIDITY_FEE: Record<Network, number> = {
   polygon: 0.03,
+  tron: 0.03,
   solana: 0.03,
   plasma: 0.03,
 };
 
 export const NETWORK_ADDRESS: Record<Network, string> = {
   polygon: "0x9aF3c2B8e5F1d4A6c0E7b9D2f8A1c3B5e7F0a9D4",
+  tron: "TQn9Y2khEsLJW1ChVWFMSMeRDow5KcbLSE",
   solana: "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU",
   plasma: "0x9aF3c2B8e5F1d4A6c0E7b9D2f8A1c3B5e7F0a9D4",
 };
 
 /** Regex de validação dos endereços de carteira por rede.
  * Polygon (EVM): 0x + 40 hex chars.
+ * Tron: T + 33 chars base58.
  * Solana: 32 a 44 chars base58.
  * Plasma (EVM): mesmo formato da Polygon. */
 export const WALLET_REGEX: Record<Network, RegExp> = {
   polygon: /^0x[a-fA-F0-9]{40}$/,
+  tron: /^T[1-9A-HJ-NP-Za-km-z]{33}$/,
   solana: /^[1-9A-HJ-NP-Za-km-z]{32,44}$/,
   plasma: /^0x[a-fA-F0-9]{40}$/,
 };

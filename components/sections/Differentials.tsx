@@ -9,7 +9,7 @@ import { CTAButton } from '@/components/wizard/CTAButton';
 import { useLiveAverageTime } from '@/lib/liveAverageTime';
 
 const easeOut = [0.16, 1, 0.3, 1] as const;
-// redes suportadas · Polygon, Solana e Plasma
+// redes suportadas · Polygon, Tron, Solana e Plasma
 type _ChainKeyUnused = ChainKey;
 
 export function Differentials() {
@@ -211,7 +211,7 @@ export function Differentials() {
             </div>
           </FloatingCard>
 
-          {/* Card redes · branco com borda roxa, logos das 3 redes */}
+          {/* Card redes · branco com borda roxa, logos das 4 redes */}
           <FloatingCard
             className="col-span-6 md:col-span-2 row-span-1"
             delay={0.3}
@@ -223,13 +223,13 @@ export function Differentials() {
                 aria-hidden
                 className="absolute top-3 right-3 pointer-events-none flex items-center"
               >
-                {(['polygon', 'solana', 'plasma'] as const).map((c, i) => (
+                {(['polygon', 'tron', 'solana', 'plasma'] as const).map((c, i) => (
                   <div
                     key={c}
                     className="rounded-full"
                     style={{
                       marginLeft: i === 0 ? 0 : -10,
-                      zIndex: 3 - i,
+                      zIndex: 4 - i,
                       boxShadow: '0 0 0 2px white',
                       filter: 'drop-shadow(0 2px 6px rgba(108,0,246,0.25))',
                     }}
